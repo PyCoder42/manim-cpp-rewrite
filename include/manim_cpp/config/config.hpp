@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -20,6 +21,10 @@ class ManimConfig {
   std::string get(const std::string& section,
                   const std::string& key,
                   const std::string& fallback) const;
+  std::optional<std::filesystem::path> resolve_path(
+      const std::string& section,
+      const std::string& key,
+      const std::unordered_map<std::string, std::string>& substitutions = {}) const;
 
   void set(const std::string& section,
            const std::string& key,
