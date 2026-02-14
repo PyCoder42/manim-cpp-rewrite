@@ -15,8 +15,10 @@ namespace {
 struct MigrateArgs {
   std::filesystem::path input_path;
   std::filesystem::path output_path;
+  std::filesystem::path output_dir;
   std::filesystem::path report_path;
   bool write_output = false;
+  bool write_output_dir = false;
   bool write_report = false;
 };
 
@@ -40,6 +42,11 @@ bool parse_args(int argc, const char* const argv[], MigrateArgs* out_args) {
     if (token == "--out" && i + 1 < argc) {
       out_args->output_path = argv[++i];
       out_args->write_output = true;
+      continue;
+    }
+    if (token == "--out-dir" && i + 1 < argc) {
+      out_args->output_dir = argv[++i];
+      out_args->write_output_dir = true;
       continue;
     }
     if (token == "--report" && i + 1 < argc) {
@@ -105,6 +112,43 @@ std::vector<std::string> detect_construct_calls(const std::string& source_text) 
   return calls;
 }
 
+bool read_text_file(const std::filesystem::path& input_path, std::string* output) {
+  std::ifstream input(input_path);
+  if (!input.is_open()) {
+    return false;
+  }
+  std::stringstream buffer;
+  buffer << input.rdbuf();
+  *output = buffer.str();
+  return true;
+}
+
+bool write_text_file(const std::filesystem::path& output_path,
+                     const std::string& text) {
+  if (output_path.has_parent_path()) {
+    std::filesystem::create_directories(output_path.parent_path());
+  }
+  std::ofstream out(output_path);
+  if (!out.is_open()) {
+    return false;
+  }
+  out << text;
+  return true;
+}
+
+std::vector<std::filesystem::path> discover_python_files(
+    const std::filesystem::path& input_dir) {
+  std::vector<std::filesystem::path> files;
+  for (const auto& entry : std::filesystem::directory_iterator(input_dir)) {
+    if (!entry.is_regular_file() || entry.path().extension() != ".py") {
+      continue;
+    }
+    files.push_back(entry.path());
+  }
+  std::sort(files.begin(), files.end());
+  return files;
+}
+
 }  // namespace
 
 std::string translate_python_scene_to_cpp(const std::string& source_text,
@@ -163,8 +207,8 @@ std::string translate_python_scene_to_cpp(const std::string& source_text,
 int run_migrate(int argc, const char* const argv[]) {
   if (argc <= 1 || std::string(argv[1]) == "--help" ||
       std::string(argv[1]) == "-h") {
-    std::cout
-        << "Usage: manim-cpp-migrate <python_scene.py> [--out <file.cpp>]\n";
+    std::cout << "Usage: manim-cpp-migrate <python_scene.py|directory> "
+                 "[--out <file.cpp>] [--out-dir <directory>]\n";
     std::cout << "Deterministic Python-to-C++ migration scaffolder.\n";
     return 0;
   }
@@ -175,36 +219,80 @@ int run_migrate(int argc, const char* const argv[]) {
     return 2;
   }
 
-  std::ifstream input(args.input_path);
-  if (!input.is_open()) {
+  if (std::filesystem::is_directory(args.input_path)) {
+    if (!args.write_output_dir) {
+      std::cerr << "Directory migration requires --out-dir <directory>.\n";
+      return 2;
+    }
+
+    const auto python_files = discover_python_files(args.input_path);
+    std::vector<std::string> report_lines;
+    report_lines.reserve(python_files.size());
+
+    for (const auto& input_path : python_files) {
+      std::string source_text;
+      if (!read_text_file(input_path, &source_text)) {
+        std::cerr << "Unable to open input file: " << input_path << "\n";
+        return 2;
+      }
+
+      std::string report;
+      const std::string output = translate_python_scene_to_cpp(source_text, &report);
+      const auto output_path = args.output_dir / (input_path.stem().string() + ".cpp");
+      if (!write_text_file(output_path, output)) {
+        std::cerr << "Unable to write output file: " << output_path << "\n";
+        return 2;
+      }
+      report_lines.push_back(input_path.filename().string() + ": " + report);
+      std::cout << "Wrote translated C++ scaffold to " << output_path << "\n";
+    }
+
+    if (args.write_report) {
+      std::ostringstream report_text;
+      for (const auto& line : report_lines) {
+        report_text << line << "\n";
+      }
+      if (!write_text_file(args.report_path, report_text.str())) {
+        std::cerr << "Unable to write report file: " << args.report_path << "\n";
+        return 2;
+      }
+    }
+
+    std::cout << "Migration report: files_processed=" << python_files.size() << "\n";
+    return 0;
+  }
+
+  std::string source_text;
+  if (!read_text_file(args.input_path, &source_text)) {
     std::cerr << "Unable to open input file: " << args.input_path << "\n";
     return 2;
   }
-  std::stringstream source_buffer;
-  source_buffer << input.rdbuf();
 
   std::string report;
-  const std::string output = translate_python_scene_to_cpp(source_buffer.str(), &report);
+  const std::string output = translate_python_scene_to_cpp(source_text, &report);
 
-  if (args.write_output) {
-    std::ofstream out(args.output_path);
-    if (!out.is_open()) {
-      std::cerr << "Unable to write output file: " << args.output_path << "\n";
+  std::filesystem::path output_path = args.output_path;
+  bool write_output = args.write_output;
+  if (args.write_output_dir) {
+    output_path = args.output_dir / (args.input_path.stem().string() + ".cpp");
+    write_output = true;
+  }
+
+  if (write_output) {
+    if (!write_text_file(output_path, output)) {
+      std::cerr << "Unable to write output file: " << output_path << "\n";
       return 2;
     }
-    out << output;
-    std::cout << "Wrote translated C++ scaffold to " << args.output_path << "\n";
+    std::cout << "Wrote translated C++ scaffold to " << output_path << "\n";
   } else {
     std::cout << output;
   }
 
   if (args.write_report) {
-    std::ofstream report_file(args.report_path);
-    if (!report_file.is_open()) {
+    if (!write_text_file(args.report_path, report + "\n")) {
       std::cerr << "Unable to write report file: " << args.report_path << "\n";
       return 2;
     }
-    report_file << report << "\n";
   }
 
   std::cout << "Migration report: " << report << "\n";

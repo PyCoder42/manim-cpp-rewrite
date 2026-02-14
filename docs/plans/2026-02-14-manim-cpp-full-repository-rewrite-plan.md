@@ -70,6 +70,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [ ] Milestone I: Migration utility parity
 - [x] Milestone I.1: Detect `Scene`-family base classes + preserve original `self.*(...)` calls as TODO annotations
 - [x] Milestone I.2: `manim-cpp-migrate --report <file>` writes deterministic migration summaries
+- [x] Milestone I.3: `manim-cpp-migrate <dir> --out-dir <dir>` batch-converts `.py` scenes to deterministic `.cpp` outputs
 - [ ] Milestone J: Test suite full port
 - [x] Milestone J.1: Added C++ unit/integration coverage for core math/scene/cli/plugin/migrate scaffolds
 - [ ] Milestone K: Docs and i18n migration parity

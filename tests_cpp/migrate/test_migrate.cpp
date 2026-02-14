@@ -85,3 +85,53 @@ TEST(MigrateTool, WritesReportFileWhenRequested) {
 
   std::filesystem::remove_all(temp_root);
 }
+
+TEST(MigrateTool, ConvertsDirectoryInputWhenOutDirIsProvided) {
+  const auto temp_root = std::filesystem::temp_directory_path() / "manim_cpp_migrate_out_dir";
+  std::filesystem::remove_all(temp_root);
+  std::filesystem::create_directories(temp_root);
+
+  const auto input_dir = temp_root / "input";
+  const auto output_dir = temp_root / "output";
+  std::filesystem::create_directories(input_dir);
+
+  {
+    std::ofstream first_scene(input_dir / "alpha.py");
+    first_scene << "from manim import *\n"
+                   "class Alpha(Scene):\n"
+                   "    def construct(self):\n"
+                   "        self.wait(1)\n";
+  }
+  {
+    std::ofstream second_scene(input_dir / "beta.py");
+    second_scene << "from manim import *\n"
+                    "class Beta(ThreeDScene):\n"
+                    "    def construct(self):\n"
+                    "        self.wait(2)\n";
+  }
+
+  const auto input_dir_str = input_dir.string();
+  const auto output_dir_str = output_dir.string();
+  const std::array<const char*, 4> args = {
+      "manim-cpp-migrate",
+      input_dir_str.c_str(),
+      "--out-dir",
+      output_dir_str.c_str(),
+  };
+
+  EXPECT_EQ(manim_cpp::migrate::run_migrate(static_cast<int>(args.size()), args.data()), 0);
+  EXPECT_TRUE(std::filesystem::exists(output_dir / "alpha.cpp"));
+  EXPECT_TRUE(std::filesystem::exists(output_dir / "beta.cpp"));
+
+  std::ifstream alpha_file(output_dir / "alpha.cpp");
+  const std::string alpha_contents((std::istreambuf_iterator<char>(alpha_file)),
+                                   std::istreambuf_iterator<char>());
+  EXPECT_NE(alpha_contents.find("MANIM_REGISTER_SCENE(Alpha);"), std::string::npos);
+
+  std::ifstream beta_file(output_dir / "beta.cpp");
+  const std::string beta_contents((std::istreambuf_iterator<char>(beta_file)),
+                                  std::istreambuf_iterator<char>());
+  EXPECT_NE(beta_contents.find("MANIM_REGISTER_SCENE(Beta);"), std::string::npos);
+
+  std::filesystem::remove_all(temp_root);
+}
