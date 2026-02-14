@@ -16,6 +16,33 @@ constexpr const char* kLibraryExtension = ".dylib";
 constexpr const char* kLibraryExtension = ".so";
 #endif
 
+struct HostCallbackState {
+  int log_level = -1;
+  std::string log_message;
+  std::string scene_name;
+  std::string symbol_name;
+  int register_result = 0;
+};
+
+HostCallbackState* g_host_callback_state = nullptr;
+
+void capture_log(int level, const char* message) {
+  if (g_host_callback_state == nullptr) {
+    return;
+  }
+  g_host_callback_state->log_level = level;
+  g_host_callback_state->log_message = message != nullptr ? message : "";
+}
+
+int capture_registration(const char* scene_name, const char* symbol_name) {
+  if (g_host_callback_state == nullptr) {
+    return 1;
+  }
+  g_host_callback_state->scene_name = scene_name != nullptr ? scene_name : "";
+  g_host_callback_state->symbol_name = symbol_name != nullptr ? symbol_name : "";
+  return g_host_callback_state->register_result;
+}
+
 manim_plugin_host_api_v1 make_host_api(const uint32_t abi_version) {
   return manim_plugin_host_api_v1{
       .abi_version = abi_version,
@@ -110,4 +137,29 @@ TEST(PluginLoader, LoadFromDirectoryComposesDiscoveryAndBatchLoad) {
   EXPECT_EQ(errors.size(), static_cast<size_t>(1));
 
   std::filesystem::remove_all(root);
+}
+
+TEST(PluginLoader, LoadsValidSharedLibraryAndInvokesHostCallbacks) {
+  ASSERT_TRUE(std::filesystem::exists(MANIM_CPP_TEST_PLUGIN_FIXTURE_PATH));
+
+  HostCallbackState callback_state;
+  callback_state.register_result = 0;
+  g_host_callback_state = &callback_state;
+  const manim_plugin_host_api_v1 host_api = {
+      .abi_version = MANIM_PLUGIN_ABI_VERSION_V1,
+      .log_message = &capture_log,
+      .register_scene_symbol = &capture_registration,
+  };
+
+  std::string error;
+  auto loaded = manim_cpp::plugin::PluginLoader::load(
+      MANIM_CPP_TEST_PLUGIN_FIXTURE_PATH, host_api, &error);
+
+  ASSERT_NE(loaded, nullptr) << error;
+  EXPECT_TRUE(error.empty());
+  EXPECT_EQ(callback_state.log_level, 1);
+  EXPECT_EQ(callback_state.log_message, std::string("fixture plugin loaded"));
+  EXPECT_EQ(callback_state.scene_name, std::string("FixtureScene"));
+  EXPECT_EQ(callback_state.symbol_name, std::string("_fixture_scene_factory"));
+  g_host_callback_state = nullptr;
 }

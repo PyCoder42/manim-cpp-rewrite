@@ -12,6 +12,15 @@ if(NOT GTest_FOUND)
   FetchContent_MakeAvailable(googletest)
 endif()
 
+add_library(
+  manim_cpp_test_plugin
+  SHARED
+  plugin/fixtures/sample_plugin.cpp
+)
+
+target_link_libraries(manim_cpp_test_plugin PRIVATE manim_cpp_core)
+target_compile_features(manim_cpp_test_plugin PRIVATE cxx_std_23)
+
 add_executable(
   manim_cpp_tests
   unit/test_scene_registry.cpp
@@ -43,6 +52,13 @@ target_link_libraries(
 )
 
 target_compile_features(manim_cpp_tests PRIVATE cxx_std_23)
+
+add_dependencies(manim_cpp_tests manim_cpp_test_plugin)
+target_compile_definitions(
+  manim_cpp_tests
+  PRIVATE
+    MANIM_CPP_TEST_PLUGIN_FIXTURE_PATH="$<TARGET_FILE:manim_cpp_test_plugin>"
+)
 
 include(GoogleTest)
 gtest_discover_tests(manim_cpp_tests)
