@@ -1,3 +1,5 @@
+find_package(Eigen3 QUIET CONFIG)
+
 add_library(
   manim_cpp_core
   manim_cpp/animation/animation.cpp
@@ -5,6 +7,7 @@ add_library(
   manim_cpp/cli/cli.cpp
   manim_cpp/config/config.cpp
   manim_cpp/math/core.cpp
+  manim_cpp/math/eigen_adapter.cpp
   manim_cpp/migrate/migrate.cpp
   manim_cpp/mobject/mobject.cpp
   manim_cpp/plugin/loader.cpp
@@ -23,6 +26,21 @@ target_include_directories(
 
 target_compile_features(manim_cpp_core PUBLIC cxx_std_23)
 target_link_libraries(manim_cpp_core PUBLIC ${CMAKE_DL_LIBS})
+
+if(Eigen3_FOUND)
+  target_link_libraries(manim_cpp_core PUBLIC Eigen3::Eigen)
+else()
+  find_path(
+    MANIM_CPP_EIGEN3_INCLUDE_DIR
+    Eigen/Core
+    PATH_SUFFIXES eigen3
+    PATHS /opt/homebrew/include /usr/local/include /usr/include
+  )
+  if(NOT MANIM_CPP_EIGEN3_INCLUDE_DIR)
+    message(FATAL_ERROR "Eigen3 headers not found. Install Eigen3 before building manim-cpp.")
+  endif()
+  target_include_directories(manim_cpp_core PUBLIC ${MANIM_CPP_EIGEN3_INCLUDE_DIR})
+endif()
 
 if(MANIM_CPP_ENABLE_STRICT_WARNINGS)
   if(MSVC)
