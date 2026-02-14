@@ -4,6 +4,7 @@ add_library(
   manim_cpp/camera/camera.cpp
   manim_cpp/cli/cli.cpp
   manim_cpp/config/config.cpp
+  manim_cpp/math/core.cpp
   manim_cpp/migrate/migrate.cpp
   manim_cpp/mobject/mobject.cpp
   manim_cpp/plugin/loader.cpp

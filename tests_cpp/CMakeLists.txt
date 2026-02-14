@@ -16,6 +16,7 @@ add_executable(
   manim_cpp_tests
   unit/test_scene_registry.cpp
   unit/test_config.cpp
+  unit/test_math_core.cpp
   cli/test_cli.cpp
   plugin/test_plugin_abi.cpp
   migrate/test_migrate.cpp

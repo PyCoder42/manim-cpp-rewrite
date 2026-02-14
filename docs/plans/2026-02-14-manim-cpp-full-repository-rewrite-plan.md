@@ -30,6 +30,9 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 ### Implementation Workstreams and Milestones
 - [x] Milestone A: Foundation and build skeleton
 - [ ] Milestone B: Core math and geometry kernel
+- [x] Milestone B.1: Math kernel bootstrap (`choose`, `rotate_z`, fan triangulation) with `gtest` coverage
+- [ ] Milestone B.2: Introduce Eigen-backed vector/matrix adapters for kernel usage
+- [ ] Milestone B.3: Port geometry algorithms (triangulation variants, boolean path ops, graph layouts, isocurve extraction)
 - [ ] Milestone C: Scene graph and animation engine parity
 - [ ] Milestone D: Cairo backend parity
 - [ ] Milestone E: OpenGL backend + interaction parity
@@ -87,4 +90,5 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 
 ## Notes
 - Existing implementation commits already landed for the foundation and shader migration scaffolds.
-- Build verification is currently blocked on local toolchain header availability (`<iostream>` not found by `/usr/bin/c++` in this environment).
+- Current local verification command:
+  `cmake --preset debug --fresh -D CMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm/bin/clang++ -D CMAKE_CXX_FLAGS='-stdlib=libc++ -I/opt/homebrew/opt/llvm/include/c++/v1' -D CMAKE_EXE_LINKER_FLAGS='-L/opt/homebrew/opt/llvm/lib/c++ -Wl,-rpath,/opt/homebrew/opt/llvm/lib/c++ -stdlib=libc++' -D CMAKE_SHARED_LINKER_FLAGS='-L/opt/homebrew/opt/llvm/lib/c++ -Wl,-rpath,/opt/homebrew/opt/llvm/lib/c++ -stdlib=libc++' && cmake --build --preset debug -j4 && ctest --preset debug --output-on-failure`
