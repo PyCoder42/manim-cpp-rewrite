@@ -4,6 +4,7 @@ add_library(
   advanced_tex_fonts.cpp
   basic.cpp
   customtex.cpp
+  opengl.cpp
 )
 
 target_include_directories(
