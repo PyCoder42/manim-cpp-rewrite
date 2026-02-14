@@ -1,7 +1,9 @@
 #include "manim_cpp/cli/cli.hpp"
 
 #include <algorithm>
+#include <climits>
 #include <cstdlib>
+#include <cerrno>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -97,6 +99,22 @@ bool command_on_path(const std::string& command) {
 #endif
   }
   return false;
+}
+
+bool parse_int_strict(const std::string& value, int* output) {
+  if (value.empty() || output == nullptr) {
+    return false;
+  }
+
+  char* end = nullptr;
+  errno = 0;
+  const long parsed = std::strtol(value.c_str(), &end, 10);
+  if (errno != 0 || end == value.c_str() || *end != '\0' || parsed < INT_MIN ||
+      parsed > INT_MAX) {
+    return false;
+  }
+  *output = static_cast<int>(parsed);
+  return true;
 }
 
 std::filesystem::path default_cfg_template_path() {
@@ -311,6 +329,12 @@ int handle_render(const int argc, const char* const argv[]) {
   auto media_format = manim_cpp::scene::MediaFormat::kMp4;
   bool watch = false;
   bool interactive = false;
+  bool enable_gui = false;
+  bool fullscreen = false;
+  bool force_window = false;
+  std::string window_position = "UR";
+  std::string window_size = "default";
+  int window_monitor = 0;
   for (int i = 2; i < argc; ++i) {
     const std::string token = argv[i];
     if (is_help_flag(token)) {
@@ -351,6 +375,46 @@ int handle_render(const int argc, const char* const argv[]) {
       interactive = true;
       continue;
     }
+    if (token == "--enable_gui") {
+      enable_gui = true;
+      continue;
+    }
+    if (token == "--fullscreen") {
+      fullscreen = true;
+      continue;
+    }
+    if (token == "--force_window") {
+      force_window = true;
+      continue;
+    }
+    if (token == "--window_position") {
+      if (i + 1 >= argc) {
+        std::cerr << "Missing value for --window_position.\n";
+        return 2;
+      }
+      window_position = argv[++i];
+      continue;
+    }
+    if (token == "--window_size") {
+      if (i + 1 >= argc) {
+        std::cerr << "Missing value for --window_size.\n";
+        return 2;
+      }
+      window_size = argv[++i];
+      continue;
+    }
+    if (token == "--window_monitor") {
+      if (i + 1 >= argc) {
+        std::cerr << "Missing value for --window_monitor.\n";
+        return 2;
+      }
+      const std::string raw_value = argv[++i];
+      if (!parse_int_strict(raw_value, &window_monitor)) {
+        std::cerr << "Invalid value for --window_monitor: " << raw_value << "\n";
+        return 2;
+      }
+      continue;
+    }
     if (token.rfind("-", 0) == 0) {
       std::cerr << "Unknown render option: " << token << "\n";
       return 2;
@@ -372,7 +436,13 @@ int handle_render(const int argc, const char* const argv[]) {
             << " renderer=" << manim_cpp::renderer::to_string(renderer_type)
             << " format=" << manim_cpp::scene::to_string(media_format)
             << " watch=" << (watch ? "true" : "false")
-            << " interactive=" << (interactive ? "true" : "false") << "\n";
+            << " interactive=" << (interactive ? "true" : "false")
+            << " gui=" << (enable_gui ? "true" : "false")
+            << " fullscreen=" << (fullscreen ? "true" : "false")
+            << " force_window=" << (force_window ? "true" : "false")
+            << " window_position=" << window_position
+            << " window_size=" << window_size
+            << " window_monitor=" << window_monitor << "\n";
   return 0;
 }
 

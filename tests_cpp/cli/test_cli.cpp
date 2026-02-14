@@ -88,6 +88,48 @@ TEST(Cli, RenderValidatesFormatOption) {
             2);
 }
 
+TEST(Cli, RenderAcceptsWindowAndGuiOptions) {
+  const std::array<const char*, 14> args = {
+      "manim-cpp",
+      "render",
+      "example_scene.cpp",
+      "--renderer",
+      "opengl",
+      "--enable_gui",
+      "--fullscreen",
+      "--force_window",
+      "--window_position",
+      "UR",
+      "--window_size",
+      "1280,720",
+      "--window_monitor",
+      "2"};
+
+  std::ostringstream out_capture;
+  std::streambuf* old_cout = std::cout.rdbuf(out_capture.rdbuf());
+  const int exit_code = manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data());
+  std::cout.rdbuf(old_cout);
+
+  EXPECT_EQ(exit_code, 0);
+  EXPECT_NE(out_capture.str().find("gui=true"), std::string::npos);
+  EXPECT_NE(out_capture.str().find("fullscreen=true"), std::string::npos);
+  EXPECT_NE(out_capture.str().find("force_window=true"), std::string::npos);
+  EXPECT_NE(out_capture.str().find("window_position=UR"), std::string::npos);
+  EXPECT_NE(out_capture.str().find("window_size=1280,720"), std::string::npos);
+  EXPECT_NE(out_capture.str().find("window_monitor=2"), std::string::npos);
+}
+
+TEST(Cli, RenderRejectsInvalidWindowMonitorValue) {
+  const std::array<const char*, 7> args = {"manim-cpp",
+                                            "render",
+                                            "example_scene.cpp",
+                                            "--renderer",
+                                            "opengl",
+                                            "--window_monitor",
+                                            "display-1"};
+  EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data()), 2);
+}
+
 TEST(Cli, AcceptsKnownScaffoldedSubcommands) {
   const std::array<const char*, 3> plugins_list_args = {"manim-cpp", "plugins", "list"};
   EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(plugins_list_args.size()),
