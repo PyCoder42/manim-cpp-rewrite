@@ -17,6 +17,7 @@ add_subdirectory(apps/manim_cpp_cli)
 add_subdirectory(apps/manim_cpp_migrate)
 add_subdirectory(apps/manim_alias_manim)
 add_subdirectory(apps/manim_alias_manimce)
+add_subdirectory(example_scenes)
 
 if(MANIM_CPP_BUILD_TESTS)
   enable_testing()

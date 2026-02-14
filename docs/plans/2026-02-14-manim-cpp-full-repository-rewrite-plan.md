@@ -111,6 +111,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone L.4: Removed `.github/scripts/ci_build_cairo.py` and tightened transitional allowlist scope by dropping `.github/scripts/*`
 - [x] Milestone L.5: Replaced `scripts/make_and_open_docs.py` with `scripts/make_and_open_docs.sh` and migrated the docstring template from `.py` to `.rst`, shrinking `scripts/` allowlist scope
 - [x] Milestone L.6: Removed legacy Sphinx `docs/source/conf.py` from tracked Python inventory after docs toolchain migration to mdBook + Doxygen
+- [x] Milestone L.7: Converted `example_scenes/basic.py`, `advanced_tex_fonts.py`, and `customtex.py` to compiled C++ scene stubs and narrowed Python allowlist to `example_scenes/opengl.py`
 
 ### Detailed Subsystem Mapping (Source-to-Source Intent)
 - [ ] `manim/mobject` -> `src/manim_cpp/mobject`
