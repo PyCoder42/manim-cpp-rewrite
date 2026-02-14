@@ -38,6 +38,7 @@ class SceneFileWriter {
                          double start_seconds,
                          double gain_db);
   bool write_subcaptions_srt(const std::filesystem::path& output_path) const;
+  bool write_media_manifest(const std::filesystem::path& output_path) const;
 
   const std::string& scene_name() const { return scene_name_; }
   const std::vector<Section>& sections() const { return sections_; }

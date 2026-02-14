@@ -117,3 +117,29 @@ TEST(SceneFileWriter, SkipsAutoPartialMovieFilesWhenFramesAreDisabledOrSkipped) 
   EXPECT_TRUE(writer.sections()[0].partial_movie_files().empty());
   EXPECT_TRUE(writer.sections()[1].partial_movie_files().empty());
 }
+
+TEST(SceneFileWriter, WritesMediaManifestJson) {
+  manim_cpp::scene::SceneFileWriter writer("TestScene");
+  writer.begin_section("Intro", false);
+  writer.begin_animation(true);
+  writer.end_animation(true);
+  writer.add_subcaption("Intro subtitle", 0.0, 1.0);
+  writer.add_audio_segment("intro.wav", 0.25, -3.0);
+
+  const auto output_path =
+      std::filesystem::temp_directory_path() / "manim_cpp_scene_manifest_test.json";
+  std::filesystem::remove(output_path);
+
+  ASSERT_TRUE(writer.write_media_manifest(output_path));
+  const auto content = read_file(output_path);
+
+  EXPECT_NE(content.find("\"scene\":\"TestScene\""), std::string::npos);
+  EXPECT_NE(content.find("\"sections\":"), std::string::npos);
+  EXPECT_NE(content.find("\"name\":\"Intro\""), std::string::npos);
+  EXPECT_NE(content.find("\"subcaptions\":"), std::string::npos);
+  EXPECT_NE(content.find("Intro subtitle"), std::string::npos);
+  EXPECT_NE(content.find("\"audio_segments\":"), std::string::npos);
+  EXPECT_NE(content.find("intro.wav"), std::string::npos);
+
+  std::filesystem::remove(output_path);
+}

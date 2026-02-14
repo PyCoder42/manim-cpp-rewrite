@@ -21,6 +21,34 @@ std::string format_srt_timestamp(const double seconds) {
   return stream.str();
 }
 
+std::string escape_json(const std::string& value) {
+  std::string escaped;
+  escaped.reserve(value.size());
+  for (const char ch : value) {
+    switch (ch) {
+      case '"':
+        escaped += "\\\"";
+        break;
+      case '\\':
+        escaped += "\\\\";
+        break;
+      case '\n':
+        escaped += "\\n";
+        break;
+      case '\r':
+        escaped += "\\r";
+        break;
+      case '\t':
+        escaped += "\\t";
+        break;
+      default:
+        escaped.push_back(ch);
+        break;
+    }
+  }
+  return escaped;
+}
+
 }  // namespace
 
 SceneFileWriter::SceneFileWriter(std::string scene_name)
@@ -103,6 +131,70 @@ bool SceneFileWriter::write_subcaptions_srt(const std::filesystem::path& output_
     ++index;
   }
 
+  return output.good();
+}
+
+bool SceneFileWriter::write_media_manifest(
+    const std::filesystem::path& output_path) const {
+  std::ofstream output(output_path);
+  if (!output.is_open()) {
+    return false;
+  }
+
+  output << "{";
+  output << "\"scene\":\"" << escape_json(scene_name_) << "\",";
+
+  output << "\"sections\":[";
+  for (std::size_t i = 0; i < sections_.size(); ++i) {
+    const auto& section = sections_[i];
+    if (i > 0) {
+      output << ",";
+    }
+    output << "{";
+    output << "\"name\":\"" << escape_json(section.name()) << "\",";
+    output << "\"skip_animations\":"
+           << (section.skip_animations() ? "true" : "false") << ",";
+    output << "\"partial_movie_files\":[";
+    for (std::size_t j = 0; j < section.partial_movie_files().size(); ++j) {
+      if (j > 0) {
+        output << ",";
+      }
+      output << "\"" << escape_json(section.partial_movie_files()[j]) << "\"";
+    }
+    output << "]";
+    output << "}";
+  }
+  output << "],";
+
+  output << "\"subcaptions\":[";
+  for (std::size_t i = 0; i < subcaptions_.size(); ++i) {
+    const auto& subcaption = subcaptions_[i];
+    if (i > 0) {
+      output << ",";
+    }
+    output << "{";
+    output << "\"content\":\"" << escape_json(subcaption.content) << "\",";
+    output << "\"start_seconds\":" << subcaption.start_seconds << ",";
+    output << "\"end_seconds\":" << subcaption.end_seconds;
+    output << "}";
+  }
+  output << "],";
+
+  output << "\"audio_segments\":[";
+  for (std::size_t i = 0; i < audio_segments_.size(); ++i) {
+    const auto& segment = audio_segments_[i];
+    if (i > 0) {
+      output << ",";
+    }
+    output << "{";
+    output << "\"path\":\"" << escape_json(segment.path) << "\",";
+    output << "\"start_seconds\":" << segment.start_seconds << ",";
+    output << "\"gain_db\":" << segment.gain_db;
+    output << "}";
+  }
+  output << "]";
+
+  output << "}";
   return output.good();
 }
 

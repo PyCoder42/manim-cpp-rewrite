@@ -62,6 +62,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone F.2: Explicit section tracking and per-section partial movie routing
 - [x] Milestone F.3: Audio segment layering scaffold (`path`, start offset, gain) with input validation
 - [x] Milestone F.4: Deterministic animation-driven partial movie caching with section skip handling
+- [x] Milestone F.5: Scene media manifest JSON writer captures sections, subcaptions, and audio segment metadata
 - [x] Milestone G: CLI/config parity
 - [x] Milestone G.1: Command/subcommand validation scaffolding with deterministic exit codes
 - [x] Milestone G.2: `cfg show` and `cfg write` operate on real config files/templates
