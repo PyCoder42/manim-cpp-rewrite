@@ -1,0 +1,9 @@
+# Transitional Python allowlist during C++ rewrite.
+# Goal: shrink this file to empty and then enforce zero Python in CI.
+
+.github/scripts/*
+docs/source/*
+example_scenes/*
+manim/*
+scripts/*
+tests/*

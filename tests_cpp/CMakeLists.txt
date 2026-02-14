@@ -75,3 +75,11 @@ add_test(
           --check-only
           ${PROJECT_SOURCE_DIR}
 )
+
+add_test(
+  NAME PythonInventoryAllowlistCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_python_inventory.sh
+          --allowlist
+          ${PROJECT_SOURCE_DIR}/config/python_allowlist.txt
+          ${PROJECT_SOURCE_DIR}
+)
