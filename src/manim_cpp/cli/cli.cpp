@@ -114,16 +114,11 @@ std::string to_scene_identifier(const std::filesystem::path& output_path) {
   return identifier;
 }
 
-int handle_init_scene(const int argc, const char* const argv[]) {
-  if (argc < 4) {
-    std::cerr << "Usage: manim-cpp init scene <output.cpp>\n";
-    return 2;
-  }
-
-  const std::filesystem::path output_path = argv[3];
+bool write_scene_template(const std::filesystem::path& output_path,
+                          const std::string& scene_identifier) {
   if (std::filesystem::exists(output_path)) {
     std::cerr << "Refusing to overwrite existing file: " << output_path << "\n";
-    return 2;
+    return false;
   }
 
   if (output_path.has_parent_path()) {
@@ -133,10 +128,9 @@ int handle_init_scene(const int argc, const char* const argv[]) {
   std::ofstream output(output_path);
   if (!output.is_open()) {
     std::cerr << "Unable to write scene template: " << output_path << "\n";
-    return 2;
+    return false;
   }
 
-  const std::string scene_identifier = to_scene_identifier(output_path);
   output << "#include \"manim_cpp/scene/registry.hpp\"\n";
   output << "#include \"manim_cpp/scene/scene.hpp\"\n\n";
   output << "using namespace manim_cpp::scene;\n\n";
@@ -149,8 +143,77 @@ int handle_init_scene(const int argc, const char* const argv[]) {
   output << "  }\n";
   output << "};\n\n";
   output << "MANIM_REGISTER_SCENE(" << scene_identifier << ");\n";
+  return true;
+}
+
+bool write_default_cfg(const std::filesystem::path& output_path) {
+  const auto template_path = default_cfg_template_path();
+  if (template_path.empty()) {
+    std::cerr << "Unable to locate default config template (config/manim.cfg.default).\n";
+    return false;
+  }
+  std::ifstream input(template_path);
+  if (!input.is_open()) {
+    std::cerr << "Unable to read default template: " << template_path << "\n";
+    return false;
+  }
+
+  if (output_path.has_parent_path()) {
+    std::filesystem::create_directories(output_path.parent_path());
+  }
+  std::ofstream output(output_path);
+  if (!output.is_open()) {
+    std::cerr << "Unable to write config file: " << output_path << "\n";
+    return false;
+  }
+  output << input.rdbuf();
+  return true;
+}
+
+int handle_init_scene(const int argc, const char* const argv[]) {
+  if (argc < 4) {
+    std::cerr << "Usage: manim-cpp init scene <output.cpp>\n";
+    return 2;
+  }
+
+  const std::filesystem::path output_path = argv[3];
+  if (!write_scene_template(output_path, to_scene_identifier(output_path))) {
+    return 2;
+  }
 
   std::cout << "Wrote scene template to " << output_path << "\n";
+  return 0;
+}
+
+int handle_init_project(const int argc, const char* const argv[]) {
+  if (argc < 4) {
+    std::cerr << "Usage: manim-cpp init project <directory>\n";
+    return 2;
+  }
+
+  const std::filesystem::path project_root = argv[3];
+  if (std::filesystem::exists(project_root) &&
+      !std::filesystem::is_directory(project_root)) {
+    std::cerr << "Project path is not a directory: " << project_root << "\n";
+    return 2;
+  }
+
+  std::filesystem::create_directories(project_root / "scenes");
+  const auto cfg_path = project_root / "manim.cfg";
+  if (std::filesystem::exists(cfg_path)) {
+    std::cerr << "Refusing to overwrite existing file: " << cfg_path << "\n";
+    return 2;
+  }
+  if (!write_default_cfg(cfg_path)) {
+    return 2;
+  }
+
+  const auto scene_path = project_root / "scenes" / "main_scene.cpp";
+  if (!write_scene_template(scene_path, "MainScene")) {
+    return 2;
+  }
+
+  std::cout << "Initialized project scaffold in " << project_root << "\n";
   return 0;
 }
 
@@ -285,6 +348,9 @@ int handle_init(const int argc, const char* const argv[]) {
 
   if (subcommand == "scene") {
     return handle_init_scene(argc, argv);
+  }
+  if (subcommand == "project") {
+    return handle_init_project(argc, argv);
   }
 
   std::cout << "Command 'init " << subcommand

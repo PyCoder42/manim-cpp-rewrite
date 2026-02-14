@@ -115,3 +115,27 @@ TEST(Cli, InitSceneGeneratesTemplateFile) {
 
   std::filesystem::remove_all(temp_root);
 }
+
+TEST(Cli, InitProjectGeneratesProjectScaffold) {
+  const auto temp_root =
+      std::filesystem::temp_directory_path() / "manim_cpp_cli_init_project";
+  std::filesystem::remove_all(temp_root);
+
+  const auto project_root = temp_root / "demo_project";
+  const auto project_root_string = project_root.string();
+  const std::array<const char*, 4> args = {
+      "manim-cpp", "init", "project", project_root_string.c_str()};
+  EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data()), 0);
+
+  const auto cfg_path = project_root / "manim.cfg";
+  const auto scene_path = project_root / "scenes" / "main_scene.cpp";
+  EXPECT_TRUE(std::filesystem::exists(cfg_path));
+  EXPECT_TRUE(std::filesystem::exists(scene_path));
+
+  std::ifstream scene_file(scene_path);
+  const std::string contents((std::istreambuf_iterator<char>(scene_file)),
+                             std::istreambuf_iterator<char>());
+  EXPECT_NE(contents.find("MANIM_REGISTER_SCENE"), std::string::npos);
+
+  std::filesystem::remove_all(temp_root);
+}
