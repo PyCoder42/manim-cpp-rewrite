@@ -23,6 +23,47 @@ bool on_segment(const Vec2& a, const Vec2& b, const Vec2& point) {
          point[1] <= std::max(a[1], b[1]) + kEpsilon;
 }
 
+double signed_area(const std::vector<Vec2>& polygon) {
+  if (polygon.size() < 3) {
+    return 0.0;
+  }
+
+  double sum = 0.0;
+  for (size_t i = 0; i < polygon.size(); ++i) {
+    const auto& a = polygon[i];
+    const auto& b = polygon[(i + 1) % polygon.size()];
+    sum += (a[0] * b[1]) - (b[0] * a[1]);
+  }
+  return 0.5 * sum;
+}
+
+bool is_inside_clip_edge(const Vec2& point,
+                         const Vec2& edge_start,
+                         const Vec2& edge_end,
+                         const double orientation_sign) {
+  return orientation_sign * orientation(edge_start, edge_end, point) >= -kEpsilon;
+}
+
+Vec2 intersect_lines(const Vec2& p1, const Vec2& p2, const Vec2& q1, const Vec2& q2) {
+  const double a1 = p2[1] - p1[1];
+  const double b1 = p1[0] - p2[0];
+  const double c1 = (a1 * p1[0]) + (b1 * p1[1]);
+
+  const double a2 = q2[1] - q1[1];
+  const double b2 = q1[0] - q2[0];
+  const double c2 = (a2 * q1[0]) + (b2 * q1[1]);
+
+  const double det = (a1 * b2) - (a2 * b1);
+  if (std::abs(det) <= kEpsilon) {
+    return p2;
+  }
+
+  return Vec2{
+      ((b2 * c1) - (b1 * c2)) / det,
+      ((a1 * c2) - (a2 * c1)) / det,
+  };
+}
+
 }  // namespace
 
 bool segments_intersect(const Vec2& a0, const Vec2& a1, const Vec2& b0, const Vec2& b1) {
@@ -99,6 +140,48 @@ bool has_self_intersections(const std::vector<Vec2>& polygon) {
   }
 
   return false;
+}
+
+std::vector<Vec2> intersect_convex_polygons(const std::vector<Vec2>& subject,
+                                            const std::vector<Vec2>& clip) {
+  if (subject.size() < 3 || clip.size() < 3) {
+    return {};
+  }
+
+  std::vector<Vec2> output = subject;
+  const double orientation_sign = signed_area(clip) >= 0.0 ? 1.0 : -1.0;
+
+  for (size_t i = 0; i < clip.size(); ++i) {
+    const auto& edge_start = clip[i];
+    const auto& edge_end = clip[(i + 1) % clip.size()];
+    const auto input = output;
+    output.clear();
+    if (input.empty()) {
+      break;
+    }
+
+    Vec2 previous = input.back();
+    bool previous_inside =
+        is_inside_clip_edge(previous, edge_start, edge_end, orientation_sign);
+    for (const auto& current : input) {
+      const bool current_inside =
+          is_inside_clip_edge(current, edge_start, edge_end, orientation_sign);
+
+      if (current_inside) {
+        if (!previous_inside) {
+          output.push_back(intersect_lines(previous, current, edge_start, edge_end));
+        }
+        output.push_back(current);
+      } else if (previous_inside) {
+        output.push_back(intersect_lines(previous, current, edge_start, edge_end));
+      }
+
+      previous = current;
+      previous_inside = current_inside;
+    }
+  }
+
+  return output;
 }
 
 }  // namespace manim_cpp::math
