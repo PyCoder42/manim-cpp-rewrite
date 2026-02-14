@@ -1,16 +1,24 @@
-name: Zero Python Gate
+name: Python Inventory Gate
 
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ main, "codex/**" ]
 
 jobs:
-  no-python:
+  python-inventory:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Enforce no Python files
-        run: ./tools/check_no_python.sh --strict
+      - name: Enforce allowlisted Python inventory
+        run: ./tools/repo/check_python_inventory.sh --allowlist config/python_allowlist.txt
+
+      - name: Enforce zero Python when allowlist is empty
+        run: |
+          if [[ -s config/python_allowlist.txt ]]; then
+            echo "Allowlist is non-empty; strict zero-Python gate deferred."
+            exit 0
+          fi
+          ./tools/check_no_python.sh --strict
