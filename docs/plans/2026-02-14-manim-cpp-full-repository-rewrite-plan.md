@@ -55,6 +55,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone D.2: Cairo renderer deterministic frame naming + static-frame signature dedupe scaffold
 - [ ] Milestone E: OpenGL backend + interaction parity
 - [x] Milestone E.1: Shader root discovery supports `MANIM_CPP_SHADER_ROOT` override for runtime/packaged deployments
+- [x] Milestone E.2: OpenGL renderer shader root/path helpers for deterministic program-stage shader resolution
 - [ ] Milestone F: Media/file writer + subtitles/audio parity
 - [x] Milestone F.1: Subcaption collection + `.srt` file emission scaffold
 - [x] Milestone F.2: Explicit section tracking and per-section partial movie routing

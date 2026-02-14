@@ -1,7 +1,11 @@
+#include <filesystem>
+
 #include <gtest/gtest.h>
 
 #include "manim_cpp/renderer/cairo_renderer.hpp"
+#include "manim_cpp/renderer/opengl_renderer.hpp"
 #include "manim_cpp/renderer/renderer.hpp"
+#include "manim_cpp/renderer/shader_paths.hpp"
 
 TEST(Renderer, ParsesKnownRendererNames) {
   const auto cairo = manim_cpp::renderer::parse_renderer_type("cairo");
@@ -55,4 +59,22 @@ TEST(Renderer, CairoRendererSkipsDuplicateStaticFrameSignatures) {
 
   renderer.reset_frame_cache();
   EXPECT_TRUE(renderer.should_render_for_signature("frame-hash-a"));
+}
+
+TEST(Renderer, OpenGLRendererDefaultsShaderRootFromResolver) {
+  manim_cpp::renderer::OpenGLRenderer renderer;
+
+  EXPECT_EQ(renderer.shader_root(), manim_cpp::renderer::default_shader_root());
+}
+
+TEST(Renderer, OpenGLRendererBuildsShaderPathFromProgramAndStage) {
+  manim_cpp::renderer::OpenGLRenderer renderer;
+  const auto temp_root =
+      std::filesystem::temp_directory_path() / "manim_cpp_opengl_shader_root";
+  renderer.set_shader_root(temp_root);
+
+  EXPECT_EQ(renderer.shader_path("surface", "vert"),
+            temp_root / "surface.vert");
+  EXPECT_EQ(renderer.shader_path("surface", "frag"),
+            temp_root / "surface.frag");
 }
