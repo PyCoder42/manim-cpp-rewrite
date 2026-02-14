@@ -58,7 +58,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone F.2: Explicit section tracking and per-section partial movie routing
 - [x] Milestone F.3: Audio segment layering scaffold (`path`, start offset, gain) with input validation
 - [x] Milestone F.4: Deterministic animation-driven partial movie caching with section skip handling
-- [ ] Milestone G: CLI/config parity
+- [x] Milestone G: CLI/config parity
 - [x] Milestone G.1: Command/subcommand validation scaffolding with deterministic exit codes
 - [x] Milestone G.2: `cfg show` and `cfg write` operate on real config files/templates
 - [x] Milestone G.3: `plugins list <dir>` validates input and reports discovered shared libraries
@@ -84,7 +84,9 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone I.4: `manim-cpp-migrate --recursive` discovers nested scene files and preserves relative output paths
 - [ ] Milestone J: Test suite full port
 - [x] Milestone J.1: Added C++ unit/integration coverage for core math/scene/cli/plugin/migrate scaffolds
+- [x] Milestone J.2: Added shared-library plugin integration fixture coverage in `ctest`
 - [ ] Milestone K: Docs and i18n migration parity
+- [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [ ] Milestone L: Release engineering and cutover
 
 ### Detailed Subsystem Mapping (Source-to-Source Intent)

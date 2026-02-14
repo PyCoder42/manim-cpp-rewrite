@@ -62,3 +62,9 @@ target_compile_definitions(
 
 include(GoogleTest)
 gtest_discover_tests(manim_cpp_tests)
+
+add_test(
+  NAME DocsI18nCatalogCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/docs/check_i18n_catalogs.sh
+          ${PROJECT_SOURCE_DIR}
+)
