@@ -35,7 +35,7 @@ TEST(Cli, AcceptsKnownScaffoldedSubcommands) {
   const std::array<const char*, 3> plugins_list_args = {"manim-cpp", "plugins", "list"};
   EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(plugins_list_args.size()),
                                     plugins_list_args.data()),
-            0);
+            2);
 }
 
 TEST(Cli, CfgShowAndWriteOperateOnFiles) {
@@ -63,6 +63,30 @@ TEST(Cli, CfgShowAndWriteOperateOnFiles) {
                                     write_args.data()),
             0);
   EXPECT_TRUE(std::filesystem::exists(generated_cfg_path));
+
+  std::filesystem::remove_all(temp_root);
+}
+
+TEST(Cli, PluginsListReadsDirectory) {
+  const auto temp_root = std::filesystem::temp_directory_path() / "manim_cpp_cli_plugins";
+  std::filesystem::remove_all(temp_root);
+  std::filesystem::create_directories(temp_root);
+
+#ifdef _WIN32
+  const auto plugin_path = temp_root / "sample.dll";
+#elif __APPLE__
+  const auto plugin_path = temp_root / "sample.dylib";
+#else
+  const auto plugin_path = temp_root / "sample.so";
+#endif
+  std::ofstream plugin_file(plugin_path);
+  plugin_file << "x";
+  plugin_file.close();
+
+  const auto path_string = temp_root.string();
+  const std::array<const char*, 4> args = {
+      "manim-cpp", "plugins", "list", path_string.c_str()};
+  EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data()), 0);
 
   std::filesystem::remove_all(temp_root);
 }

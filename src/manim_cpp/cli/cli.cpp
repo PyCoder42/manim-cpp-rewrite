@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "manim_cpp/config/config.hpp"
+#include "manim_cpp/plugin/loader.hpp"
 #include "manim_cpp/version.hpp"
 
 namespace manim_cpp::cli {
@@ -187,8 +188,23 @@ int handle_plugins(const int argc, const char* const argv[]) {
     return 2;
   }
 
-  std::cout << "Command 'plugins " << subcommand
-            << "' is scaffolded and pending parity implementation.\n";
+  if (subcommand == "path") {
+    std::cout << (std::filesystem::current_path() / "plugins") << "\n";
+    return 0;
+  }
+
+  if (argc < 4) {
+    std::cerr << "Usage: manim-cpp plugins list <directory>\n";
+    return 2;
+  }
+
+  const std::filesystem::path root = argv[3];
+  const auto discovered = manim_cpp::plugin::PluginLoader::discover(root, false);
+  std::cout << "Discovered " << discovered.size() << " plugin library/libraries in "
+            << root << "\n";
+  for (const auto& path : discovered) {
+    std::cout << path << "\n";
+  }
   return 0;
 }
 
