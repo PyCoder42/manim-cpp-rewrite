@@ -43,6 +43,33 @@ bool is_member(const std::vector<std::string>& values, const std::string& target
   return std::find(values.begin(), values.end(), target) != values.end();
 }
 
+struct PluginLoadContext {
+  std::vector<std::string> logs;
+  std::vector<std::string> scene_registrations;
+};
+
+PluginLoadContext* g_plugin_load_context = nullptr;
+
+void plugin_log_callback(const int level, const char* message) {
+  if (g_plugin_load_context == nullptr) {
+    return;
+  }
+  std::ostringstream stream;
+  stream << "[" << level << "] " << (message != nullptr ? message : "");
+  g_plugin_load_context->logs.push_back(stream.str());
+}
+
+int plugin_register_scene_callback(const char* scene_name, const char* symbol_name) {
+  if (g_plugin_load_context == nullptr) {
+    return 1;
+  }
+  std::ostringstream stream;
+  stream << (scene_name != nullptr ? scene_name : "") << " -> "
+         << (symbol_name != nullptr ? symbol_name : "");
+  g_plugin_load_context->scene_registrations.push_back(stream.str());
+  return 0;
+}
+
 bool command_on_path(const std::string& command) {
   const char* raw_path = std::getenv("PATH");
   if (raw_path == nullptr) {
@@ -448,14 +475,16 @@ int handle_plugins(const int argc, const char* const argv[]) {
     return 0;
   }
 
-  const manim_plugin_host_api_v1 host_api = {
-      .abi_version = MANIM_PLUGIN_ABI_VERSION_V1,
-      .log_message = nullptr,
-      .register_scene_symbol = nullptr,
-  };
+  PluginLoadContext plugin_context;
+  g_plugin_load_context = &plugin_context;
+  const manim_plugin_host_api_v1 host_api = {.abi_version = MANIM_PLUGIN_ABI_VERSION_V1,
+                                             .log_message = &plugin_log_callback,
+                                             .register_scene_symbol =
+                                                 &plugin_register_scene_callback};
   std::vector<std::string> errors;
   const auto loaded = manim_cpp::plugin::PluginLoader::load_from_directory(
       root, recursive, host_api, &errors);
+  g_plugin_load_context = nullptr;
   if (!errors.empty()) {
     std::cerr << "Failed to load one or more plugins:\n";
     for (const auto& error : errors) {
@@ -465,6 +494,12 @@ int handle_plugins(const int argc, const char* const argv[]) {
   }
 
   std::cout << "Loaded " << loaded.size() << " plugin(s) from " << root << "\n";
+  for (const auto& log_line : plugin_context.logs) {
+    std::cout << "Plugin log " << log_line << "\n";
+  }
+  for (const auto& registration : plugin_context.scene_registrations) {
+    std::cout << "Registered scene symbol " << registration << "\n";
+  }
   return 0;
 }
 

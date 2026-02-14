@@ -71,6 +71,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone G.8: Config loader supports deterministic multi-file precedence layering with reset-safe `load_from_file`
 - [x] Milestone G.9: `render` validates `--renderer <cairo|opengl>` and reports selected backend in scaffold output
 - [x] Milestone G.10: `checkhealth --json` includes explicit supported renderer metadata
+- [x] Milestone G.11: `plugins load` emits plugin log lines and registered scene symbols from host callback wiring
 - [x] Milestone H: Plugin system parity
 - [x] Milestone H.1: Plugin discovery by shared-library extension + host ABI version gate
 - [x] Milestone H.2: Batch plugin loading API with deterministic failure aggregation

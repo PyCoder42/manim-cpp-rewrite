@@ -119,6 +119,35 @@ TEST(Cli, PluginsLoadAcceptsEmptyDirectory) {
   std::filesystem::remove_all(temp_root);
 }
 
+TEST(Cli, PluginsLoadReportsSceneRegistrationsFromPluginInit) {
+  const auto temp_root =
+      std::filesystem::temp_directory_path() / "manim_cpp_cli_plugins_load_real";
+  std::filesystem::remove_all(temp_root);
+  std::filesystem::create_directories(temp_root);
+
+  const std::filesystem::path fixture_path = MANIM_CPP_TEST_PLUGIN_FIXTURE_PATH;
+  ASSERT_TRUE(std::filesystem::exists(fixture_path));
+
+  const auto copied_plugin = temp_root / fixture_path.filename();
+  ASSERT_TRUE(std::filesystem::copy_file(
+      fixture_path, copied_plugin, std::filesystem::copy_options::overwrite_existing));
+
+  const auto path_string = temp_root.string();
+  const std::array<const char*, 4> args = {
+      "manim-cpp", "plugins", "load", path_string.c_str()};
+
+  std::ostringstream out_capture;
+  std::streambuf* old_cout = std::cout.rdbuf(out_capture.rdbuf());
+  const int exit_code = manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data());
+  std::cout.rdbuf(old_cout);
+
+  EXPECT_EQ(exit_code, 0);
+  EXPECT_NE(out_capture.str().find("Loaded 1 plugin(s)"), std::string::npos);
+  EXPECT_NE(out_capture.str().find("FixtureScene"), std::string::npos);
+
+  std::filesystem::remove_all(temp_root);
+}
+
 TEST(Cli, CheckhealthJsonModeIsAccepted) {
   const std::array<const char*, 3> args = {"manim-cpp", "checkhealth", "--json"};
   std::ostringstream out_capture;
