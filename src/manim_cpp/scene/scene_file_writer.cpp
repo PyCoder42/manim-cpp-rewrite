@@ -28,6 +28,11 @@ SceneFileWriter::SceneFileWriter(std::string scene_name)
   sections_.emplace_back("autocreated", false);
 }
 
+void SceneFileWriter::begin_section(const std::string& name,
+                                    const bool skip_animations) {
+  sections_.emplace_back(name, skip_animations);
+}
+
 void SceneFileWriter::begin_animation(bool /*write_frames*/) {}
 
 void SceneFileWriter::end_animation(bool /*write_frames*/) {}

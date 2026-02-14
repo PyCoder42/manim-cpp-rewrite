@@ -47,3 +47,22 @@ TEST(SceneFileWriter, RejectsInvalidSubcaptionRanges) {
   writer.add_subcaption("AlsoInvalid", 2.0, 2.0);
   EXPECT_TRUE(writer.subcaptions().empty());
 }
+
+TEST(SceneFileWriter, TracksExplicitSectionsAndPartialFiles) {
+  manim_cpp::scene::SceneFileWriter writer("TestScene");
+  writer.begin_section("Intro", false);
+  writer.add_partial_movie_file("intro_0001.mp4");
+  writer.begin_section("Outro", true);
+  writer.add_partial_movie_file("outro_0001.mp4");
+
+  ASSERT_EQ(writer.sections().size(), static_cast<size_t>(3));
+  EXPECT_EQ(writer.sections()[1].name(), std::string("Intro"));
+  EXPECT_FALSE(writer.sections()[1].skip_animations());
+  ASSERT_EQ(writer.sections()[1].partial_movie_files().size(), static_cast<size_t>(1));
+  EXPECT_EQ(writer.sections()[1].partial_movie_files()[0], std::string("intro_0001.mp4"));
+
+  EXPECT_EQ(writer.sections()[2].name(), std::string("Outro"));
+  EXPECT_TRUE(writer.sections()[2].skip_animations());
+  ASSERT_EQ(writer.sections()[2].partial_movie_files().size(), static_cast<size_t>(1));
+  EXPECT_EQ(writer.sections()[2].partial_movie_files()[0], std::string("outro_0001.mp4"));
+}

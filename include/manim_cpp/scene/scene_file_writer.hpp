@@ -18,6 +18,8 @@ class SceneFileWriter {
  public:
   explicit SceneFileWriter(std::string scene_name);
 
+  void begin_section(const std::string& name, bool skip_animations);
+
   void begin_animation(bool write_frames);
   void end_animation(bool write_frames);
 
