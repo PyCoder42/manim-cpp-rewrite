@@ -418,7 +418,8 @@ int handle_checkhealth(const int argc, const char* const argv[]) {
     std::cout << "{"
               << "\"ffmpeg\":" << (ffmpeg_found ? "true" : "false") << ","
               << "\"plugin_dir\":\"" << plugin_dir.string() << "\","
-              << "\"renderers\":[\"cairo\",\"opengl\"]"
+              << "\"renderers\":[\"cairo\",\"opengl\"],"
+              << "\"formats\":[\"png\",\"gif\",\"mp4\",\"webm\",\"mov\"]"
               << "}\n";
     return 0;
   }

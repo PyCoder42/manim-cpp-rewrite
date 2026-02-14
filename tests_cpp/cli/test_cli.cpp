@@ -201,6 +201,8 @@ TEST(Cli, CheckhealthJsonModeIsAccepted) {
   EXPECT_EQ(exit_code, 0);
   EXPECT_NE(out_capture.str().find("\"renderers\":[\"cairo\",\"opengl\"]"),
             std::string::npos);
+  EXPECT_NE(out_capture.str().find("\"formats\":[\"png\",\"gif\",\"mp4\",\"webm\",\"mov\"]"),
+            std::string::npos);
 }
 
 TEST(Cli, InitSceneGeneratesTemplateFile) {

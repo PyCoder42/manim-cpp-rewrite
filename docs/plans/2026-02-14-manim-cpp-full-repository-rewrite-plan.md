@@ -77,6 +77,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone G.10: `checkhealth --json` includes explicit supported renderer metadata
 - [x] Milestone G.11: `plugins load` emits plugin log lines and registered scene symbols from host callback wiring
 - [x] Milestone G.12: `render` validates `--format` and reports resolved media format in scaffold output
+- [x] Milestone G.13: `checkhealth --json` emits supported output format metadata for automation clients
 - [x] Milestone H: Plugin system parity
 - [x] Milestone H.1: Plugin discovery by shared-library extension + host ABI version gate
 - [x] Milestone H.2: Batch plugin loading API with deterministic failure aggregation
