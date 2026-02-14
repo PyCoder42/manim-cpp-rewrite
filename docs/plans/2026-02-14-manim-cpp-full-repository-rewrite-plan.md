@@ -39,6 +39,8 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone B.3.b.2: Convex polygon intersection via Sutherland-Hodgman clipping
 - [ ] Milestone B.3.c: Graph layouts, isocurve extraction, and combinatorics helpers
 - [x] Milestone B.3.c.1: Deterministic circular graph layout helper
+- [x] Milestone B.3.c.2: Marching-squares isocurve extraction helper
+- [ ] Milestone B.3.c.3: Combinatorics helpers parity
 - [ ] Milestone C: Scene graph and animation engine parity
 - [x] Milestone C.1: Scene lifecycle runner (`setup` -> `construct` -> `tear_down`)
 - [x] Milestone C.2: Basic animation playback timeline with updater ticks and elapsed-time tracking
@@ -56,6 +58,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [ ] Milestone I: Migration utility parity
 - [x] Milestone I.1: Detect `Scene`-family base classes + preserve original `self.*(...)` calls as TODO annotations
 - [ ] Milestone J: Test suite full port
+- [x] Milestone J.1: Added C++ unit/integration coverage for core math/scene/cli/plugin/migrate scaffolds
 - [ ] Milestone K: Docs and i18n migration parity
 - [ ] Milestone L: Release engineering and cutover
 
@@ -105,5 +108,6 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 
 ## Notes
 - Existing implementation commits already landed for the foundation and shader migration scaffolds.
+- Ongoing execution style: strict TDD slices with checkpoint commits after each verified green batch.
 - Current local verification command:
   `cmake --preset debug --fresh -D CMAKE_CXX_COMPILER=/opt/homebrew/opt/llvm/bin/clang++ -D CMAKE_CXX_FLAGS='-stdlib=libc++ -I/opt/homebrew/opt/llvm/include/c++/v1' -D CMAKE_EXE_LINKER_FLAGS='-L/opt/homebrew/opt/llvm/lib/c++ -Wl,-rpath,/opt/homebrew/opt/llvm/lib/c++ -stdlib=libc++' -D CMAKE_SHARED_LINKER_FLAGS='-L/opt/homebrew/opt/llvm/lib/c++ -Wl,-rpath,/opt/homebrew/opt/llvm/lib/c++ -stdlib=libc++' && cmake --build --preset debug -j4 && ctest --preset debug --output-on-failure`

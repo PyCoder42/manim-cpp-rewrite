@@ -9,6 +9,7 @@ add_library(
   manim_cpp/math/core.cpp
   manim_cpp/math/eigen_adapter.cpp
   manim_cpp/math/graph_layout.cpp
+  manim_cpp/math/isocurve.cpp
   manim_cpp/math/path_ops.cpp
   manim_cpp/math/triangulation.cpp
   manim_cpp/migrate/migrate.cpp
