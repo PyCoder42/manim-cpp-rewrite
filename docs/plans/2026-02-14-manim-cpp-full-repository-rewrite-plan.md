@@ -34,10 +34,11 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone B.2: Introduce Eigen-backed vector/matrix adapters for kernel usage
 - [ ] Milestone B.3: Port geometry algorithms (triangulation variants, boolean path ops, graph layouts, isocurve extraction)
 - [x] Milestone B.3.a: Ear-clipping triangulation for simple concave/convex polygons
-- [ ] Milestone B.3.b: Boolean path operations
+- [x] Milestone B.3.b: Boolean path operations
 - [x] Milestone B.3.b.1: Foundational path predicates (`segments_intersect`, `point_in_polygon`, `has_self_intersections`)
 - [x] Milestone B.3.b.2: Convex polygon intersection via Sutherland-Hodgman clipping
 - [x] Milestone B.3.b.3: Public polygon signed-area/area helpers for winding-sensitive path operations
+- [x] Milestone B.3.b.4: Convex union/difference area helpers (`union_area_convex_polygons`, `difference_area_convex_polygons`)
 - [x] Milestone B.3.c: Graph layouts, isocurve extraction, and combinatorics helpers
 - [x] Milestone B.3.c.1: Deterministic circular graph layout helper
 - [x] Milestone B.3.c.2: Marching-squares isocurve extraction helper

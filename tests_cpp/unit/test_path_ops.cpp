@@ -60,3 +60,22 @@ TEST(PathOps, ReportsSignedAreaByVertexWinding) {
   EXPECT_DOUBLE_EQ(manim_cpp::math::polygon_area(ccw),
                    manim_cpp::math::polygon_area(cw));
 }
+
+TEST(PathOps, ComputesConvexUnionAreaUsingInclusionExclusion) {
+  const std::vector<manim_cpp::math::Vec2> a = {
+      {0.0, 0.0}, {2.0, 0.0}, {2.0, 2.0}, {0.0, 2.0}};
+  const std::vector<manim_cpp::math::Vec2> b = {
+      {1.0, 1.0}, {3.0, 1.0}, {3.0, 3.0}, {1.0, 3.0}};
+
+  EXPECT_NEAR(manim_cpp::math::union_area_convex_polygons(a, b), 7.0, 1e-9);
+}
+
+TEST(PathOps, ComputesConvexDifferenceAreaByRemovingOverlap) {
+  const std::vector<manim_cpp::math::Vec2> subject = {
+      {0.0, 0.0}, {2.0, 0.0}, {2.0, 2.0}, {0.0, 2.0}};
+  const std::vector<manim_cpp::math::Vec2> clip = {
+      {1.0, 1.0}, {3.0, 1.0}, {3.0, 3.0}, {1.0, 3.0}};
+
+  EXPECT_NEAR(manim_cpp::math::difference_area_convex_polygons(subject, clip), 3.0,
+              1e-9);
+}

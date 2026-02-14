@@ -18,4 +18,10 @@ double polygon_area(const std::vector<Vec2>& polygon);
 std::vector<Vec2> intersect_convex_polygons(const std::vector<Vec2>& subject,
                                             const std::vector<Vec2>& clip);
 
+double union_area_convex_polygons(const std::vector<Vec2>& subject,
+                                  const std::vector<Vec2>& clip);
+
+double difference_area_convex_polygons(const std::vector<Vec2>& subject,
+                                       const std::vector<Vec2>& clip);
+
 }  // namespace manim_cpp::math

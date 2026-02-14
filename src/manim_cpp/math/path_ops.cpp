@@ -188,4 +188,35 @@ std::vector<Vec2> intersect_convex_polygons(const std::vector<Vec2>& subject,
   return output;
 }
 
+double union_area_convex_polygons(const std::vector<Vec2>& subject,
+                                  const std::vector<Vec2>& clip) {
+  const double subject_area = polygon_area(subject);
+  const double clip_area = polygon_area(clip);
+  if (subject_area <= kEpsilon) {
+    return clip_area;
+  }
+  if (clip_area <= kEpsilon) {
+    return subject_area;
+  }
+
+  const auto intersection = intersect_convex_polygons(subject, clip);
+  const double intersection_area = polygon_area(intersection);
+  return subject_area + clip_area - intersection_area;
+}
+
+double difference_area_convex_polygons(const std::vector<Vec2>& subject,
+                                       const std::vector<Vec2>& clip) {
+  const double subject_area = polygon_area(subject);
+  if (subject_area <= kEpsilon) {
+    return 0.0;
+  }
+
+  const auto intersection = intersect_convex_polygons(subject, clip);
+  const double remaining_area = subject_area - polygon_area(intersection);
+  if (remaining_area <= kEpsilon) {
+    return 0.0;
+  }
+  return remaining_area;
+}
+
 }  // namespace manim_cpp::math
