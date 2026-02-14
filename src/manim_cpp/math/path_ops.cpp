@@ -23,20 +23,6 @@ bool on_segment(const Vec2& a, const Vec2& b, const Vec2& point) {
          point[1] <= std::max(a[1], b[1]) + kEpsilon;
 }
 
-double signed_area(const std::vector<Vec2>& polygon) {
-  if (polygon.size() < 3) {
-    return 0.0;
-  }
-
-  double sum = 0.0;
-  for (size_t i = 0; i < polygon.size(); ++i) {
-    const auto& a = polygon[i];
-    const auto& b = polygon[(i + 1) % polygon.size()];
-    sum += (a[0] * b[1]) - (b[0] * a[1]);
-  }
-  return 0.5 * sum;
-}
-
 bool is_inside_clip_edge(const Vec2& point,
                          const Vec2& edge_start,
                          const Vec2& edge_end,
@@ -142,6 +128,24 @@ bool has_self_intersections(const std::vector<Vec2>& polygon) {
   return false;
 }
 
+double polygon_signed_area(const std::vector<Vec2>& polygon) {
+  if (polygon.size() < 3) {
+    return 0.0;
+  }
+
+  double sum = 0.0;
+  for (size_t i = 0; i < polygon.size(); ++i) {
+    const auto& a = polygon[i];
+    const auto& b = polygon[(i + 1) % polygon.size()];
+    sum += (a[0] * b[1]) - (b[0] * a[1]);
+  }
+  return 0.5 * sum;
+}
+
+double polygon_area(const std::vector<Vec2>& polygon) {
+  return std::abs(polygon_signed_area(polygon));
+}
+
 std::vector<Vec2> intersect_convex_polygons(const std::vector<Vec2>& subject,
                                             const std::vector<Vec2>& clip) {
   if (subject.size() < 3 || clip.size() < 3) {
@@ -149,7 +153,7 @@ std::vector<Vec2> intersect_convex_polygons(const std::vector<Vec2>& subject,
   }
 
   std::vector<Vec2> output = subject;
-  const double orientation_sign = signed_area(clip) >= 0.0 ? 1.0 : -1.0;
+  const double orientation_sign = polygon_signed_area(clip) >= 0.0 ? 1.0 : -1.0;
 
   for (size_t i = 0; i < clip.size(); ++i) {
     const auto& edge_start = clip[i];

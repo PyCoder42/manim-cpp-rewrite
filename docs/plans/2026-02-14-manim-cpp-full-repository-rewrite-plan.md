@@ -37,6 +37,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [ ] Milestone B.3.b: Boolean path operations
 - [x] Milestone B.3.b.1: Foundational path predicates (`segments_intersect`, `point_in_polygon`, `has_self_intersections`)
 - [x] Milestone B.3.b.2: Convex polygon intersection via Sutherland-Hodgman clipping
+- [x] Milestone B.3.b.3: Public polygon signed-area/area helpers for winding-sensitive path operations
 - [x] Milestone B.3.c: Graph layouts, isocurve extraction, and combinatorics helpers
 - [x] Milestone B.3.c.1: Deterministic circular graph layout helper
 - [x] Milestone B.3.c.2: Marching-squares isocurve extraction helper

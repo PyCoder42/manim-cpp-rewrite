@@ -12,6 +12,9 @@ bool point_in_polygon(const std::vector<Vec2>& polygon, const Vec2& point);
 
 bool has_self_intersections(const std::vector<Vec2>& polygon);
 
+double polygon_signed_area(const std::vector<Vec2>& polygon);
+double polygon_area(const std::vector<Vec2>& polygon);
+
 std::vector<Vec2> intersect_convex_polygons(const std::vector<Vec2>& subject,
                                             const std::vector<Vec2>& clip);
 
