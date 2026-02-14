@@ -46,6 +46,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [ ] Milestone D: Cairo backend parity
 - [ ] Milestone E: OpenGL backend + interaction parity
 - [ ] Milestone F: Media/file writer + subtitles/audio parity
+- [x] Milestone F.1: Subcaption collection + `.srt` file emission scaffold
 - [ ] Milestone G: CLI/config parity
 - [x] Milestone G.1: Command/subcommand validation scaffolding with deterministic exit codes
 - [ ] Milestone H: Plugin system parity
