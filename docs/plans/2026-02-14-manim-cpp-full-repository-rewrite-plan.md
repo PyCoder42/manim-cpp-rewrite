@@ -106,6 +106,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone L.1: Added transitional Python inventory allowlist gate (`PythonInventoryAllowlistCheck`) to track and shrink legacy Python footprint
 - [x] Milestone L.2: Updated GitHub Python gate workflow to enforce allowlist inventory now and strict zero-Python automatically when allowlist is empty
 - [x] Milestone L.3: Transitioned legacy Python workflows (`ci.yml`, `python-publish.yml`, `release-publish-documentation.yml`) to manual-only triggers with CTest enforcement (`LegacyPythonWorkflowModeCheck`)
+- [x] Milestone L.4: Removed `.github/scripts/ci_build_cairo.py` and tightened transitional allowlist scope by dropping `.github/scripts/*`
 
 ### Detailed Subsystem Mapping (Source-to-Source Intent)
 - [ ] `manim/mobject` -> `src/manim_cpp/mobject`
