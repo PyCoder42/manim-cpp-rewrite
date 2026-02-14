@@ -1,10 +1,13 @@
 #include "manim_cpp/cli/cli.hpp"
 
 #include <algorithm>
+#include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
 
+#include "manim_cpp/config/config.hpp"
 #include "manim_cpp/version.hpp"
 
 namespace manim_cpp::cli {
@@ -36,6 +39,75 @@ bool is_member(const std::vector<std::string>& values, const std::string& target
   return std::find(values.begin(), values.end(), target) != values.end();
 }
 
+std::filesystem::path default_cfg_template_path() {
+  auto probe = std::filesystem::current_path();
+  for (int depth = 0; depth < 10; ++depth) {
+    const auto candidate = probe / "config" / "manim.cfg.default";
+    if (std::filesystem::exists(candidate)) {
+      return candidate;
+    }
+    if (!probe.has_parent_path()) {
+      break;
+    }
+    probe = probe.parent_path();
+  }
+  return {};
+}
+
+int handle_cfg_show(const int argc, const char* const argv[]) {
+  const std::filesystem::path input_path =
+      argc >= 4 ? std::filesystem::path(argv[3]) : default_cfg_template_path();
+  if (input_path.empty()) {
+    std::cerr << "Unable to locate default config template (config/manim.cfg.default).\n";
+    return 2;
+  }
+
+  manim_cpp::config::ManimConfig config;
+  if (!config.load_from_file(input_path)) {
+    std::cerr << "Unable to read config file: " << input_path << "\n";
+    return 2;
+  }
+
+  std::cout << "Loaded config: " << input_path << "\n";
+  std::cout << "Sections: " << config.data().size() << "\n";
+  return 0;
+}
+
+int handle_cfg_write(const int argc, const char* const argv[]) {
+  if (argc < 4) {
+    std::cerr << "Usage: manim-cpp cfg write <output.cfg>\n";
+    return 2;
+  }
+
+  const std::filesystem::path output_path = argv[3];
+  if (std::filesystem::exists(output_path)) {
+    std::cerr << "Refusing to overwrite existing file: " << output_path << "\n";
+    return 2;
+  }
+
+  const auto template_path = default_cfg_template_path();
+  if (template_path.empty()) {
+    std::cerr << "Unable to locate default config template (config/manim.cfg.default).\n";
+    return 2;
+  }
+  std::ifstream input(template_path);
+  if (!input.is_open()) {
+    std::cerr << "Unable to read default template: " << template_path << "\n";
+    return 2;
+  }
+
+  std::filesystem::create_directories(output_path.parent_path());
+  std::ofstream output(output_path);
+  if (!output.is_open()) {
+    std::cerr << "Unable to write config file: " << output_path << "\n";
+    return 2;
+  }
+
+  output << input.rdbuf();
+  std::cout << "Wrote config template to " << output_path << "\n";
+  return 0;
+}
+
 int handle_render(const int argc, const char* const argv[]) {
   if (argc <= 2 || is_help_flag(argv[2])) {
     print_subcommand_help("render");
@@ -53,6 +125,12 @@ int handle_cfg(const int argc, const char* const argv[]) {
   }
 
   const std::string subcommand = argv[2];
+  if (subcommand == "show") {
+    return handle_cfg_show(argc, argv);
+  }
+  if (subcommand == "write") {
+    return handle_cfg_write(argc, argv);
+  }
   if (!is_member({"show", "write"}, subcommand)) {
     std::cerr << "Unknown cfg subcommand: " << subcommand << "\n";
     std::cerr << "Try 'manim-cpp cfg --help'.\n";

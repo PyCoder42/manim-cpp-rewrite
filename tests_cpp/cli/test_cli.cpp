@@ -1,4 +1,6 @@
 #include <array>
+#include <filesystem>
+#include <fstream>
 
 #include <gtest/gtest.h>
 
@@ -34,4 +36,33 @@ TEST(Cli, AcceptsKnownScaffoldedSubcommands) {
   EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(plugins_list_args.size()),
                                     plugins_list_args.data()),
             0);
+}
+
+TEST(Cli, CfgShowAndWriteOperateOnFiles) {
+  const auto temp_root = std::filesystem::temp_directory_path() / "manim_cpp_cli_cfg";
+  std::filesystem::remove_all(temp_root);
+  std::filesystem::create_directories(temp_root);
+
+  const auto source_cfg_path = temp_root / "source.cfg";
+  std::ofstream source_cfg(source_cfg_path);
+  source_cfg << "[CLI]\nrenderer = cairo\n";
+  source_cfg.close();
+
+  const auto source_cfg_string = source_cfg_path.string();
+  const std::array<const char*, 4> show_args = {
+      "manim-cpp", "cfg", "show", source_cfg_string.c_str()};
+  EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(show_args.size()),
+                                    show_args.data()),
+            0);
+
+  const auto generated_cfg_path = temp_root / "generated.cfg";
+  const auto generated_cfg_string = generated_cfg_path.string();
+  const std::array<const char*, 4> write_args = {
+      "manim-cpp", "cfg", "write", generated_cfg_string.c_str()};
+  EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(write_args.size()),
+                                    write_args.data()),
+            0);
+  EXPECT_TRUE(std::filesystem::exists(generated_cfg_path));
+
+  std::filesystem::remove_all(temp_root);
 }
