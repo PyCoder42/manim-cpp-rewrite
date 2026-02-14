@@ -55,7 +55,7 @@ At the moment there are three types of tests:
    Because ``manim`` is a graphics library, we test frames. To do so, we create test scenes that render a specific feature.
    When pytest runs, it compares the result of the test to the control data, either at 6 fps or just the last frame. If it matches, the tests
    pass. If the test and control data differ, the tests fail. You can use ``--show_diff`` flag with ``pytest`` to visually
-   see the differences. The ``extract_frames.py`` script lets you see all the frames of a test.
+   see the differences. The ``extract_frames.sh`` helper lets you see all the frames of a test.
 
 #. Videos format tests:
 
@@ -240,12 +240,12 @@ For the example above, it would be
 (``-s`` is here to see manim logs, so you can see what's going on).
 
 If you want to see all the control data frames (e.g. to make sure your test is doing what you want), use the
-``extract_frames.py`` script. The first parameter is the path to a ``.npz`` file and the second parameter is the
-directory you want the frames created. The frames will be named ``frame0.png``, ``frame1.png``, etc.
+``extract_frames.sh`` script. The first parameter is the path to a ``.npz`` file and the second parameter is the
+directory you want the frames created. The frames will be named ``frame0.ppm``, ``frame1.ppm``, etc.
 
 .. code-block:: bash
 
-    python scripts/extract_frames.py tests/test_graphical_units/control_data/plot/axes.npz output
+    scripts/extract_frames.sh tests/test_graphical_units/control_data/plot/axes.npz output
 
 
 Please make sure to add the control data to git as soon as it is produced with ``git add <your-control-data.npz>``.

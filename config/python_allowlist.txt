@@ -3,5 +3,4 @@
 
 manim/*
 scripts/dev_changelog.py
-scripts/extract_frames.py
 tests/*

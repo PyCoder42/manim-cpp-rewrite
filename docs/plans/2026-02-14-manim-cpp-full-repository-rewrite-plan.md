@@ -113,6 +113,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone L.6: Removed legacy Sphinx `docs/source/conf.py` from tracked Python inventory after docs toolchain migration to mdBook + Doxygen
 - [x] Milestone L.7: Converted `example_scenes/basic.py`, `advanced_tex_fonts.py`, and `customtex.py` to compiled C++ scene stubs and narrowed Python allowlist to `example_scenes/opengl.py`
 - [x] Milestone L.8: Converted `example_scenes/opengl.py` to compiled C++ scene stubs; `example_scenes/` is now Python-free
+- [x] Milestone L.9: Replaced `scripts/extract_frames.py` with `manim-cpp-extract-frames` (C++) + `scripts/extract_frames.sh`, reducing allowlist to `manim/*`, `tests/*`, and `scripts/dev_changelog.py`
 
 ### Detailed Subsystem Mapping (Source-to-Source Intent)
 - [ ] `manim/mobject` -> `src/manim_cpp/mobject`
