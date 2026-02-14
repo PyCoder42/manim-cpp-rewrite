@@ -15,7 +15,9 @@ namespace {
 struct MigrateArgs {
   std::filesystem::path input_path;
   std::filesystem::path output_path;
+  std::filesystem::path report_path;
   bool write_output = false;
+  bool write_report = false;
 };
 
 std::string trim(const std::string& text) {
@@ -38,6 +40,11 @@ bool parse_args(int argc, const char* const argv[], MigrateArgs* out_args) {
     if (token == "--out" && i + 1 < argc) {
       out_args->output_path = argv[++i];
       out_args->write_output = true;
+      continue;
+    }
+    if (token == "--report" && i + 1 < argc) {
+      out_args->report_path = argv[++i];
+      out_args->write_report = true;
       continue;
     }
   }
@@ -189,6 +196,15 @@ int run_migrate(int argc, const char* const argv[]) {
     std::cout << "Wrote translated C++ scaffold to " << args.output_path << "\n";
   } else {
     std::cout << output;
+  }
+
+  if (args.write_report) {
+    std::ofstream report_file(args.report_path);
+    if (!report_file.is_open()) {
+      std::cerr << "Unable to write report file: " << args.report_path << "\n";
+      return 2;
+    }
+    report_file << report << "\n";
   }
 
   std::cout << "Migration report: " << report << "\n";
