@@ -27,6 +27,7 @@ add_executable(
   unit/test_scene_file_writer.cpp
   cli/test_cli.cpp
   plugin/test_plugin_abi.cpp
+  plugin/test_plugin_loader.cpp
   migrate/test_migrate.cpp
 )
 

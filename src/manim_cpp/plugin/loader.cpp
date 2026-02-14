@@ -1,6 +1,10 @@
 #include "manim_cpp/plugin/loader.hpp"
 
+#include <algorithm>
+#include <cctype>
+#include <string>
 #include <utility>
+#include <vector>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -9,6 +13,29 @@
 #endif
 
 namespace manim_cpp::plugin {
+namespace {
+
+#ifdef _WIN32
+std::string lowercase(std::string value) {
+  std::transform(value.begin(), value.end(), value.begin(),
+                 [](const unsigned char c) {
+                   return static_cast<char>(std::tolower(c));
+                 });
+  return value;
+}
+#endif
+
+bool has_library_extension(const std::filesystem::path& path) {
+#ifdef _WIN32
+  return lowercase(path.extension().string()) == ".dll";
+#elif __APPLE__
+  return path.extension().string() == ".dylib";
+#else
+  return path.extension().string() == ".so";
+#endif
+}
+
+}  // namespace
 
 LoadedPlugin::LoadedPlugin(void* handle, std::filesystem::path path)
     : handle_(handle), path_(std::move(path)) {}
@@ -43,10 +70,46 @@ void LoadedPlugin::reset() {
   handle_ = nullptr;
 }
 
+std::vector<std::filesystem::path> PluginLoader::discover(
+    const std::filesystem::path& root,
+    const bool recursive) {
+  std::vector<std::filesystem::path> libraries;
+  if (!std::filesystem::exists(root) || !std::filesystem::is_directory(root)) {
+    return libraries;
+  }
+
+  if (recursive) {
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(root)) {
+      if (!entry.is_regular_file() || !has_library_extension(entry.path())) {
+        continue;
+      }
+      libraries.push_back(entry.path());
+    }
+  } else {
+    for (const auto& entry : std::filesystem::directory_iterator(root)) {
+      if (!entry.is_regular_file() || !has_library_extension(entry.path())) {
+        continue;
+      }
+      libraries.push_back(entry.path());
+    }
+  }
+
+  std::sort(libraries.begin(), libraries.end());
+  return libraries;
+}
+
 std::unique_ptr<LoadedPlugin> PluginLoader::load(
     const std::filesystem::path& library_path,
     const manim_plugin_host_api_v1& host_api,
     std::string* error_message) {
+  if (host_api.abi_version != MANIM_PLUGIN_ABI_VERSION_V1) {
+    if (error_message != nullptr) {
+      *error_message =
+          "Unsupported host ABI version: " + std::to_string(host_api.abi_version);
+    }
+    return nullptr;
+  }
+
 #ifdef _WIN32
   HMODULE handle = LoadLibraryW(library_path.wstring().c_str());
   if (handle == nullptr) {

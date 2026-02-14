@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "manim_cpp/plugin/plugin_abi_v1.h"
 
@@ -32,6 +33,10 @@ class LoadedPlugin {
 
 class PluginLoader {
  public:
+  static std::vector<std::filesystem::path> discover(
+      const std::filesystem::path& root,
+      bool recursive);
+
   static std::unique_ptr<LoadedPlugin> load(
       const std::filesystem::path& library_path,
       const manim_plugin_host_api_v1& host_api,

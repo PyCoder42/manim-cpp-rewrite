@@ -1,0 +1,58 @@
+#include <filesystem>
+#include <fstream>
+#include <string>
+
+#include <gtest/gtest.h>
+
+#include "manim_cpp/plugin/loader.hpp"
+
+namespace {
+
+#ifdef _WIN32
+constexpr const char* kLibraryExtension = ".dll";
+#elif __APPLE__
+constexpr const char* kLibraryExtension = ".dylib";
+#else
+constexpr const char* kLibraryExtension = ".so";
+#endif
+
+manim_plugin_host_api_v1 make_host_api(const uint32_t abi_version) {
+  return manim_plugin_host_api_v1{
+      .abi_version = abi_version,
+      .log_message = nullptr,
+      .register_scene_symbol = nullptr,
+  };
+}
+
+}  // namespace
+
+TEST(PluginLoader, DiscoversSharedLibrariesByPlatformExtension) {
+  const auto root = std::filesystem::temp_directory_path() / "manim_cpp_plugin_discovery";
+  std::filesystem::remove_all(root);
+  std::filesystem::create_directories(root);
+
+  const auto plugin_path = root / ("sample_plugin" + std::string(kLibraryExtension));
+  const auto text_path = root / "readme.txt";
+
+  std::ofstream plugin_file(plugin_path);
+  plugin_file << "binary";
+  plugin_file.close();
+
+  std::ofstream text_file(text_path);
+  text_file << "not-a-plugin";
+  text_file.close();
+
+  const auto libraries = manim_cpp::plugin::PluginLoader::discover(root, false);
+  ASSERT_EQ(libraries.size(), static_cast<size_t>(1));
+  EXPECT_EQ(libraries[0].filename(), plugin_path.filename());
+  std::filesystem::remove_all(root);
+}
+
+TEST(PluginLoader, RejectsUnsupportedHostAbiVersion) {
+  std::string error;
+  auto plugin = manim_cpp::plugin::PluginLoader::load(
+      "/tmp/should-not-open", make_host_api(999), &error);
+
+  EXPECT_EQ(plugin, nullptr);
+  EXPECT_NE(error.find("Unsupported host ABI version"), std::string::npos);
+}
