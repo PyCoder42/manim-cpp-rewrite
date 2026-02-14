@@ -241,6 +241,11 @@ int run_migrate(int argc, const char* const argv[]) {
     }
 
     const auto python_files = discover_python_files(args.input_path, args.recursive);
+    if (python_files.empty()) {
+      std::cerr << "No Python files found in input directory: " << args.input_path
+                << "\n";
+      return 2;
+    }
     std::vector<std::string> report_lines;
     report_lines.reserve(python_files.size());
 

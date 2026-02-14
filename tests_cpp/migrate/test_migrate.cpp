@@ -175,3 +175,26 @@ TEST(MigrateTool, SupportsRecursiveDirectoryConversion) {
 
   std::filesystem::remove_all(temp_root);
 }
+
+TEST(MigrateTool, DirectoryMigrationFailsWhenNoPythonFilesAreFound) {
+  const auto temp_root =
+      std::filesystem::temp_directory_path() / "manim_cpp_migrate_empty_dir";
+  std::filesystem::remove_all(temp_root);
+  const auto input_dir = temp_root / "input";
+  const auto output_dir = temp_root / "output";
+  std::filesystem::create_directories(input_dir);
+
+  const auto input_dir_str = input_dir.string();
+  const auto output_dir_str = output_dir.string();
+  const std::array<const char*, 4> args = {
+      "manim-cpp-migrate",
+      input_dir_str.c_str(),
+      "--out-dir",
+      output_dir_str.c_str(),
+  };
+
+  EXPECT_EQ(manim_cpp::migrate::run_migrate(static_cast<int>(args.size()), args.data()), 2);
+  EXPECT_FALSE(std::filesystem::exists(output_dir));
+
+  std::filesystem::remove_all(temp_root);
+}

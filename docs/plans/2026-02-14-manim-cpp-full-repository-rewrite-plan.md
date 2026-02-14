@@ -96,6 +96,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone I.2: `manim-cpp-migrate --report <file>` writes deterministic migration summaries
 - [x] Milestone I.3: `manim-cpp-migrate <dir> --out-dir <dir>` batch-converts `.py` scenes to deterministic `.cpp` outputs
 - [x] Milestone I.4: `manim-cpp-migrate --recursive` discovers nested scene files and preserves relative output paths
+- [x] Milestone I.5: Directory migration fails fast with deterministic error when no Python scene files are discovered
 - [ ] Milestone J: Test suite full port
 - [x] Milestone J.1: Added C++ unit/integration coverage for core math/scene/cli/plugin/migrate scaffolds
 - [x] Milestone J.2: Added shared-library plugin integration fixture coverage in `ctest`
@@ -128,7 +129,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [ ] Scene API parity on example scenes
 - [ ] Interaction parity (GLFW/ImGui)
 - [ ] Plugin ABI integration tests (all platforms)
-- [ ] Migration utility integration tests
+- [x] Migration utility integration tests
 - [x] Docs/i18n build and catalog continuity checks
 - [ ] Strict zero-Python gate passing on mainline
 
