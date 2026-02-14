@@ -15,6 +15,7 @@ add_library(
   manim_cpp/migrate/migrate.cpp
   manim_cpp/mobject/mobject.cpp
   manim_cpp/plugin/loader.cpp
+  manim_cpp/renderer/cairo_renderer.cpp
   manim_cpp/renderer/renderer.cpp
   manim_cpp/renderer/shader_paths.cpp
   manim_cpp/scene/registry.cpp

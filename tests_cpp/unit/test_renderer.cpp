@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "manim_cpp/renderer/cairo_renderer.hpp"
 #include "manim_cpp/renderer/renderer.hpp"
 
 TEST(Renderer, ParsesKnownRendererNames) {
@@ -34,4 +35,24 @@ TEST(Renderer, ConvertsRendererTypeToString) {
   EXPECT_EQ(
       manim_cpp::renderer::to_string(manim_cpp::renderer::RendererType::kOpenGL),
       std::string("opengl"));
+}
+
+TEST(Renderer, CairoRendererGeneratesDeterministicFrameFileNames) {
+  manim_cpp::renderer::CairoRenderer renderer;
+
+  EXPECT_EQ(renderer.frame_file_name("DemoScene", 1),
+            std::string("DemoScene_000001.png"));
+  EXPECT_EQ(renderer.frame_file_name("DemoScene", 42),
+            std::string("DemoScene_000042.png"));
+}
+
+TEST(Renderer, CairoRendererSkipsDuplicateStaticFrameSignatures) {
+  manim_cpp::renderer::CairoRenderer renderer;
+
+  EXPECT_TRUE(renderer.should_render_for_signature("frame-hash-a"));
+  EXPECT_FALSE(renderer.should_render_for_signature("frame-hash-a"));
+  EXPECT_TRUE(renderer.should_render_for_signature("frame-hash-b"));
+
+  renderer.reset_frame_cache();
+  EXPECT_TRUE(renderer.should_render_for_signature("frame-hash-a"));
 }

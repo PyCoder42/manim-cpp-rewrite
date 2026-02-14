@@ -52,6 +52,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone C.6: `Scene` tracks unique mobject instances with add/remove/clear semantics
 - [ ] Milestone D: Cairo backend parity
 - [x] Milestone D.1: Renderer type parsing, string conversion, and factory creation for Cairo/OpenGL backends
+- [x] Milestone D.2: Cairo renderer deterministic frame naming + static-frame signature dedupe scaffold
 - [ ] Milestone E: OpenGL backend + interaction parity
 - [ ] Milestone F: Media/file writer + subtitles/audio parity
 - [x] Milestone F.1: Subcaption collection + `.srt` file emission scaffold
