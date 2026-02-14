@@ -85,3 +85,9 @@ add_test(
           ${PROJECT_SOURCE_DIR}/config/python_allowlist.txt
           ${PROJECT_SOURCE_DIR}
 )
+
+add_test(
+  NAME LegacyPythonWorkflowModeCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_legacy_python_workflows.sh
+          ${PROJECT_SOURCE_DIR}
+)

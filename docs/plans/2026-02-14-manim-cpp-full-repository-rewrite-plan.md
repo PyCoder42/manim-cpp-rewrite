@@ -100,6 +100,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [ ] Milestone L: Release engineering and cutover
 - [x] Milestone L.1: Added transitional Python inventory allowlist gate (`PythonInventoryAllowlistCheck`) to track and shrink legacy Python footprint
 - [x] Milestone L.2: Updated GitHub Python gate workflow to enforce allowlist inventory now and strict zero-Python automatically when allowlist is empty
+- [x] Milestone L.3: Transitioned legacy Python workflows (`ci.yml`, `python-publish.yml`, `release-publish-documentation.yml`) to manual-only triggers with CTest enforcement (`LegacyPythonWorkflowModeCheck`)
 
 ### Detailed Subsystem Mapping (Source-to-Source Intent)
 - [ ] `manim/mobject` -> `src/manim_cpp/mobject`
@@ -119,7 +120,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [ ] Interaction parity (GLFW/ImGui)
 - [ ] Plugin ABI integration tests (all platforms)
 - [ ] Migration utility integration tests
-- [ ] Docs/i18n build and catalog continuity checks
+- [x] Docs/i18n build and catalog continuity checks
 - [ ] Strict zero-Python gate passing on mainline
 
 ### Rollout and Branching Strategy
