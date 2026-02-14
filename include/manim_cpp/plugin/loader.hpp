@@ -37,6 +37,12 @@ class PluginLoader {
       const std::filesystem::path& root,
       bool recursive);
 
+  static std::vector<std::unique_ptr<LoadedPlugin>> load_from_directory(
+      const std::filesystem::path& root,
+      bool recursive,
+      const manim_plugin_host_api_v1& host_api,
+      std::vector<std::string>* errors);
+
   static std::vector<std::unique_ptr<LoadedPlugin>> load_discovered(
       const std::vector<std::filesystem::path>& library_paths,
       const manim_plugin_host_api_v1& host_api,

@@ -85,3 +85,29 @@ TEST(PluginLoader, BatchLoadCollectsFailuresFromDiscoveredLibraries) {
 
   std::filesystem::remove_all(root);
 }
+
+TEST(PluginLoader, LoadFromDirectoryComposesDiscoveryAndBatchLoad) {
+  const auto root = std::filesystem::temp_directory_path() / "manim_cpp_plugin_load_from_dir";
+  std::filesystem::remove_all(root);
+  std::filesystem::create_directories(root);
+
+#ifdef _WIN32
+  const auto bad_library = root / "broken.dll";
+#elif __APPLE__
+  const auto bad_library = root / "broken.dylib";
+#else
+  const auto bad_library = root / "broken.so";
+#endif
+  std::ofstream out(bad_library);
+  out << "still-not-a-real-library";
+  out.close();
+
+  std::vector<std::string> errors;
+  const auto loaded = manim_cpp::plugin::PluginLoader::load_from_directory(
+      root, false, make_host_api(MANIM_PLUGIN_ABI_VERSION_V1), &errors);
+
+  EXPECT_TRUE(loaded.empty());
+  EXPECT_EQ(errors.size(), static_cast<size_t>(1));
+
+  std::filesystem::remove_all(root);
+}

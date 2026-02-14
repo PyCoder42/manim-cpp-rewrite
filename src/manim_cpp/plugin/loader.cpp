@@ -98,6 +98,14 @@ std::vector<std::filesystem::path> PluginLoader::discover(
   return libraries;
 }
 
+std::vector<std::unique_ptr<LoadedPlugin>> PluginLoader::load_from_directory(
+    const std::filesystem::path& root,
+    const bool recursive,
+    const manim_plugin_host_api_v1& host_api,
+    std::vector<std::string>* errors) {
+  return load_discovered(discover(root, recursive), host_api, errors);
+}
+
 std::vector<std::unique_ptr<LoadedPlugin>> PluginLoader::load_discovered(
     const std::vector<std::filesystem::path>& library_paths,
     const manim_plugin_host_api_v1& host_api,
