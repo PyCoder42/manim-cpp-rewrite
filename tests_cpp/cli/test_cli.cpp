@@ -60,6 +60,34 @@ TEST(Cli, RenderAcceptsWatchAndInteractiveFlags) {
   EXPECT_NE(out_capture.str().find("interactive=true"), std::string::npos);
 }
 
+TEST(Cli, RenderValidatesFormatOption) {
+  const std::array<const char*, 7> valid_args = {"manim-cpp",
+                                                  "render",
+                                                  "example_scene.cpp",
+                                                  "--renderer",
+                                                  "cairo",
+                                                  "--format",
+                                                  "webm"};
+  std::ostringstream valid_out_capture;
+  std::streambuf* old_cout = std::cout.rdbuf(valid_out_capture.rdbuf());
+  const int valid_exit_code =
+      manim_cpp::cli::run_cli(static_cast<int>(valid_args.size()), valid_args.data());
+  std::cout.rdbuf(old_cout);
+  EXPECT_EQ(valid_exit_code, 0);
+  EXPECT_NE(valid_out_capture.str().find("format=webm"), std::string::npos);
+
+  const std::array<const char*, 7> invalid_args = {"manim-cpp",
+                                                    "render",
+                                                    "example_scene.cpp",
+                                                    "--renderer",
+                                                    "cairo",
+                                                    "--format",
+                                                    "avi"};
+  EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(invalid_args.size()),
+                                    invalid_args.data()),
+            2);
+}
+
 TEST(Cli, AcceptsKnownScaffoldedSubcommands) {
   const std::array<const char*, 3> plugins_list_args = {"manim-cpp", "plugins", "list"};
   EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(plugins_list_args.size()),

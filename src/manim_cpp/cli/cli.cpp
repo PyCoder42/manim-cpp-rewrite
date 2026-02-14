@@ -12,6 +12,7 @@
 #include "manim_cpp/config/config.hpp"
 #include "manim_cpp/plugin/loader.hpp"
 #include "manim_cpp/renderer/renderer.hpp"
+#include "manim_cpp/scene/media_format.hpp"
 #include "manim_cpp/version.hpp"
 
 namespace manim_cpp::cli {
@@ -307,6 +308,7 @@ int handle_render(const int argc, const char* const argv[]) {
 
   std::filesystem::path input_file;
   auto renderer_type = manim_cpp::renderer::RendererType::kCairo;
+  auto media_format = manim_cpp::scene::MediaFormat::kMp4;
   bool watch = false;
   bool interactive = false;
   for (int i = 2; i < argc; ++i) {
@@ -326,6 +328,19 @@ int handle_render(const int argc, const char* const argv[]) {
         return 2;
       }
       renderer_type = parsed.value();
+      continue;
+    }
+    if (token == "--format") {
+      if (i + 1 >= argc) {
+        std::cerr << "Missing value for --format.\n";
+        return 2;
+      }
+      const auto parsed = manim_cpp::scene::parse_media_format(argv[++i]);
+      if (!parsed.has_value()) {
+        std::cerr << "Unknown output format: " << argv[i] << "\n";
+        return 2;
+      }
+      media_format = parsed.value();
       continue;
     }
     if (token == "--watch" || token == "-w") {
@@ -355,6 +370,7 @@ int handle_render(const int argc, const char* const argv[]) {
 
   std::cout << "Command 'render' scaffold received input file: " << input_file
             << " renderer=" << manim_cpp::renderer::to_string(renderer_type)
+            << " format=" << manim_cpp::scene::to_string(media_format)
             << " watch=" << (watch ? "true" : "false")
             << " interactive=" << (interactive ? "true" : "false") << "\n";
   return 0;

@@ -63,6 +63,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone F.3: Audio segment layering scaffold (`path`, start offset, gain) with input validation
 - [x] Milestone F.4: Deterministic animation-driven partial movie caching with section skip handling
 - [x] Milestone F.5: Scene media manifest JSON writer captures sections, subcaptions, and audio segment metadata
+- [x] Milestone F.6: Typed media-format parser/stringifier covers `png`, `gif`, `mp4`, `webm`, and `mov`
 - [x] Milestone G: CLI/config parity
 - [x] Milestone G.1: Command/subcommand validation scaffolding with deterministic exit codes
 - [x] Milestone G.2: `cfg show` and `cfg write` operate on real config files/templates
@@ -75,6 +76,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone G.9: `render` validates `--renderer <cairo|opengl>` and reports selected backend in scaffold output
 - [x] Milestone G.10: `checkhealth --json` includes explicit supported renderer metadata
 - [x] Milestone G.11: `plugins load` emits plugin log lines and registered scene symbols from host callback wiring
+- [x] Milestone G.12: `render` validates `--format` and reports resolved media format in scaffold output
 - [x] Milestone H: Plugin system parity
 - [x] Milestone H.1: Plugin discovery by shared-library extension + host ABI version gate
 - [x] Milestone H.2: Batch plugin loading API with deterministic failure aggregation
