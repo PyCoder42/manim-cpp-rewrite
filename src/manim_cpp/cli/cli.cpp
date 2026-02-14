@@ -405,7 +405,7 @@ int handle_plugins(const int argc, const char* const argv[]) {
   }
 
   const std::string subcommand = argv[2];
-  if (!is_member({"list", "path"}, subcommand)) {
+  if (!is_member({"list", "path", "load"}, subcommand)) {
     std::cerr << "Unknown plugins subcommand: " << subcommand << "\n";
     std::cerr << "Try 'manim-cpp plugins --help'.\n";
     return 2;
@@ -428,20 +428,42 @@ int handle_plugins(const int argc, const char* const argv[]) {
       root = token;
       continue;
     }
-    std::cerr << "Unexpected plugins list argument: " << token << "\n";
+    std::cerr << "Unexpected plugins " << subcommand << " argument: " << token << "\n";
     return 2;
   }
   if (root.empty()) {
-    std::cerr << "Usage: manim-cpp plugins list [--recursive] <directory>\n";
+    std::cerr << "Usage: manim-cpp plugins " << subcommand
+              << " [--recursive] <directory>\n";
     return 2;
   }
 
-  const auto discovered = manim_cpp::plugin::PluginLoader::discover(root, recursive);
-  std::cout << "Discovered " << discovered.size() << " plugin library/libraries in "
-            << root << "\n";
-  for (const auto& path : discovered) {
-    std::cout << path << "\n";
+  if (subcommand == "list") {
+    const auto discovered = manim_cpp::plugin::PluginLoader::discover(root, recursive);
+    std::cout << "Discovered " << discovered.size() << " plugin library/libraries in "
+              << root << "\n";
+    for (const auto& path : discovered) {
+      std::cout << path << "\n";
+    }
+    return 0;
   }
+
+  const manim_plugin_host_api_v1 host_api = {
+      .abi_version = MANIM_PLUGIN_ABI_VERSION_V1,
+      .log_message = nullptr,
+      .register_scene_symbol = nullptr,
+  };
+  std::vector<std::string> errors;
+  const auto loaded = manim_cpp::plugin::PluginLoader::load_from_directory(
+      root, recursive, host_api, &errors);
+  if (!errors.empty()) {
+    std::cerr << "Failed to load one or more plugins:\n";
+    for (const auto& error : errors) {
+      std::cerr << "  " << error << "\n";
+    }
+    return 2;
+  }
+
+  std::cout << "Loaded " << loaded.size() << " plugin(s) from " << root << "\n";
   return 0;
 }
 

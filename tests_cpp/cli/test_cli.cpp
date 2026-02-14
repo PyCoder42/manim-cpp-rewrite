@@ -105,6 +105,20 @@ TEST(Cli, PluginsListReadsDirectory) {
   std::filesystem::remove_all(temp_root);
 }
 
+TEST(Cli, PluginsLoadAcceptsEmptyDirectory) {
+  const auto temp_root =
+      std::filesystem::temp_directory_path() / "manim_cpp_cli_plugins_load_empty";
+  std::filesystem::remove_all(temp_root);
+  std::filesystem::create_directories(temp_root);
+
+  const auto path_string = temp_root.string();
+  const std::array<const char*, 4> args = {
+      "manim-cpp", "plugins", "load", path_string.c_str()};
+  EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data()), 0);
+
+  std::filesystem::remove_all(temp_root);
+}
+
 TEST(Cli, CheckhealthJsonModeIsAccepted) {
   const std::array<const char*, 3> args = {"manim-cpp", "checkhealth", "--json"};
   EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data()), 0);
