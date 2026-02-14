@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <filesystem>
 #include <string>
 #include <vector>
@@ -48,6 +49,11 @@ class SceneFileWriter {
   std::vector<Section> sections_;
   std::vector<Subcaption> subcaptions_;
   std::vector<AudioSegment> audio_segments_;
+  bool animation_active_ = false;
+  bool active_animation_writes_frames_ = false;
+  std::size_t rendered_animation_count_ = 0;
+
+  std::string make_partial_movie_file_name(std::size_t index) const;
 };
 
 }  // namespace manim_cpp::scene

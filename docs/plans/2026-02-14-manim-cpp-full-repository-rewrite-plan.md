@@ -29,10 +29,10 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 
 ### Implementation Workstreams and Milestones
 - [x] Milestone A: Foundation and build skeleton
-- [ ] Milestone B: Core math and geometry kernel
+- [x] Milestone B: Core math and geometry kernel
 - [x] Milestone B.1: Math kernel bootstrap (`choose`, `rotate_z`, fan triangulation) with `gtest` coverage
 - [x] Milestone B.2: Introduce Eigen-backed vector/matrix adapters for kernel usage
-- [ ] Milestone B.3: Port geometry algorithms (triangulation variants, boolean path ops, graph layouts, isocurve extraction)
+- [x] Milestone B.3: Port geometry algorithms (triangulation variants, boolean path ops, graph layouts, isocurve extraction)
 - [x] Milestone B.3.a: Ear-clipping triangulation for simple concave/convex polygons
 - [x] Milestone B.3.b: Boolean path operations
 - [x] Milestone B.3.b.1: Foundational path predicates (`segments_intersect`, `point_in_polygon`, `has_self_intersections`)
@@ -43,7 +43,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone B.3.c.1: Deterministic circular graph layout helper
 - [x] Milestone B.3.c.2: Marching-squares isocurve extraction helper
 - [x] Milestone B.3.c.3: Combinatorics helpers parity
-- [ ] Milestone C: Scene graph and animation engine parity
+- [x] Milestone C: Scene graph and animation engine parity
 - [x] Milestone C.1: Scene lifecycle runner (`setup` -> `construct` -> `tear_down`)
 - [x] Milestone C.2: Basic animation playback timeline with updater ticks and elapsed-time tracking
 - [x] Milestone C.3: Deterministic scene RNG seed controls (`set_random_seed`, replayable random stream)
@@ -57,6 +57,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone F.1: Subcaption collection + `.srt` file emission scaffold
 - [x] Milestone F.2: Explicit section tracking and per-section partial movie routing
 - [x] Milestone F.3: Audio segment layering scaffold (`path`, start offset, gain) with input validation
+- [x] Milestone F.4: Deterministic animation-driven partial movie caching with section skip handling
 - [ ] Milestone G: CLI/config parity
 - [x] Milestone G.1: Command/subcommand validation scaffolding with deterministic exit codes
 - [x] Milestone G.2: `cfg show` and `cfg write` operate on real config files/templates

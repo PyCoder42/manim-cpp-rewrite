@@ -89,3 +89,31 @@ TEST(SceneFileWriter, RejectsInvalidAudioSegments) {
 
   EXPECT_TRUE(writer.audio_segments().empty());
 }
+
+TEST(SceneFileWriter, AutoTracksDeterministicPartialMovieFilesFromAnimations) {
+  manim_cpp::scene::SceneFileWriter writer("DemoScene");
+  writer.begin_animation(true);
+  writer.end_animation(true);
+  writer.begin_animation(true);
+  writer.end_animation(true);
+
+  ASSERT_EQ(writer.sections().size(), static_cast<size_t>(1));
+  const auto& files = writer.sections()[0].partial_movie_files();
+  ASSERT_EQ(files.size(), static_cast<size_t>(2));
+  EXPECT_EQ(files[0], std::string("DemoScene_partial_0001.mp4"));
+  EXPECT_EQ(files[1], std::string("DemoScene_partial_0002.mp4"));
+}
+
+TEST(SceneFileWriter, SkipsAutoPartialMovieFilesWhenFramesAreDisabledOrSkipped) {
+  manim_cpp::scene::SceneFileWriter writer("DemoScene");
+  writer.begin_animation(false);
+  writer.end_animation(false);
+
+  writer.begin_section("SkipAnimations", true);
+  writer.begin_animation(true);
+  writer.end_animation(true);
+
+  ASSERT_EQ(writer.sections().size(), static_cast<size_t>(2));
+  EXPECT_TRUE(writer.sections()[0].partial_movie_files().empty());
+  EXPECT_TRUE(writer.sections()[1].partial_movie_files().empty());
+}

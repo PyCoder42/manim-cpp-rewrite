@@ -33,9 +33,29 @@ void SceneFileWriter::begin_section(const std::string& name,
   sections_.emplace_back(name, skip_animations);
 }
 
-void SceneFileWriter::begin_animation(bool /*write_frames*/) {}
+void SceneFileWriter::begin_animation(const bool write_frames) {
+  animation_active_ = true;
+  active_animation_writes_frames_ = write_frames;
+}
 
-void SceneFileWriter::end_animation(bool /*write_frames*/) {}
+void SceneFileWriter::end_animation(const bool write_frames) {
+  if (!animation_active_) {
+    return;
+  }
+
+  const bool section_skips_animations =
+      !sections_.empty() && sections_.back().skip_animations();
+  const bool should_write_partial_movie = active_animation_writes_frames_ &&
+                                          write_frames &&
+                                          !section_skips_animations;
+  if (should_write_partial_movie) {
+    ++rendered_animation_count_;
+    add_partial_movie_file(make_partial_movie_file_name(rendered_animation_count_));
+  }
+
+  animation_active_ = false;
+  active_animation_writes_frames_ = false;
+}
 
 void SceneFileWriter::add_partial_movie_file(const std::string& path) {
   if (sections_.empty()) {
@@ -84,6 +104,14 @@ bool SceneFileWriter::write_subcaptions_srt(const std::filesystem::path& output_
   }
 
   return output.good();
+}
+
+std::string SceneFileWriter::make_partial_movie_file_name(
+    const std::size_t index) const {
+  std::ostringstream stream;
+  stream << scene_name_ << "_partial_" << std::setfill('0') << std::setw(4)
+         << index << ".mp4";
+  return stream.str();
 }
 
 }  // namespace manim_cpp::scene
