@@ -67,12 +67,13 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone G.8: Config loader supports deterministic multi-file precedence layering with reset-safe `load_from_file`
 - [x] Milestone G.9: `render` validates `--renderer <cairo|opengl>` and reports selected backend in scaffold output
 - [x] Milestone G.10: `checkhealth --json` includes explicit supported renderer metadata
-- [ ] Milestone H: Plugin system parity
+- [x] Milestone H: Plugin system parity
 - [x] Milestone H.1: Plugin discovery by shared-library extension + host ABI version gate
 - [x] Milestone H.2: Batch plugin loading API with deterministic failure aggregation
 - [x] Milestone H.3: Directory-first plugin load convenience API (discover + batch load)
 - [x] Milestone H.4: CLI `plugins load [--recursive] <dir>` bridges discovery/loading APIs with deterministic host ABI wiring
 - [x] Milestone H.5: C++ plugin SDK `HostApiView` wraps ABI callbacks with compatibility checks and dispatch helpers
+- [x] Milestone H.6: Plugin SDK `initialize_plugin` helper enforces ABI gate and standard handler dispatch
 - [x] Milestone I: Migration utility parity
 - [x] Milestone I.1: Detect `Scene`-family base classes + preserve original `self.*(...)` calls as TODO annotations
 - [x] Milestone I.2: `manim-cpp-migrate --report <file>` writes deterministic migration summaries
