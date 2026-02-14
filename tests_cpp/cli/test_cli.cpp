@@ -90,3 +90,8 @@ TEST(Cli, PluginsListReadsDirectory) {
 
   std::filesystem::remove_all(temp_root);
 }
+
+TEST(Cli, CheckhealthJsonModeIsAccepted) {
+  const std::array<const char*, 3> args = {"manim-cpp", "checkhealth", "--json"};
+  EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data()), 0);
+}

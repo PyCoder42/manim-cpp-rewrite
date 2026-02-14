@@ -1,9 +1,11 @@
 #include "manim_cpp/cli/cli.hpp"
 
 #include <algorithm>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -38,6 +40,34 @@ bool is_help_flag(const std::string& token) {
 
 bool is_member(const std::vector<std::string>& values, const std::string& target) {
   return std::find(values.begin(), values.end(), target) != values.end();
+}
+
+bool command_on_path(const std::string& command) {
+  const char* raw_path = std::getenv("PATH");
+  if (raw_path == nullptr) {
+    return false;
+  }
+
+#ifdef _WIN32
+  constexpr char kPathSeparator = ';';
+#else
+  constexpr char kPathSeparator = ':';
+#endif
+
+  std::stringstream stream(raw_path);
+  std::string dir;
+  while (std::getline(stream, dir, kPathSeparator)) {
+    const auto candidate = std::filesystem::path(dir) / command;
+    if (std::filesystem::exists(candidate)) {
+      return true;
+    }
+#ifdef _WIN32
+    if (std::filesystem::exists(candidate.string() + ".exe")) {
+      return true;
+    }
+#endif
+  }
+  return false;
 }
 
 std::filesystem::path default_cfg_template_path() {
@@ -148,12 +178,26 @@ int handle_checkhealth(const int argc, const char* const argv[]) {
     print_subcommand_help("checkhealth");
     return 0;
   }
-  if (argc > 2) {
-    std::cerr << "checkhealth does not accept positional arguments yet.\n";
+
+  const bool json = argc >= 3 && std::string(argv[2]) == "--json";
+  if (argc > 2 && !json) {
+    std::cerr << "Unknown checkhealth option: " << argv[2] << "\n";
     return 2;
   }
 
-  std::cout << "Command 'checkhealth' is scaffolded and pending parity implementation.\n";
+  const bool ffmpeg_found = command_on_path("ffmpeg");
+  const auto plugin_dir = std::filesystem::current_path() / "plugins";
+  if (json) {
+    std::cout << "{"
+              << "\"ffmpeg\":" << (ffmpeg_found ? "true" : "false") << ","
+              << "\"plugin_dir\":\"" << plugin_dir.string() << "\""
+              << "}\n";
+    return 0;
+  }
+
+  std::cout << "checkhealth results:\n";
+  std::cout << "  ffmpeg: " << (ffmpeg_found ? "found" : "missing") << "\n";
+  std::cout << "  plugin_dir: " << plugin_dir << "\n";
   return 0;
 }
 

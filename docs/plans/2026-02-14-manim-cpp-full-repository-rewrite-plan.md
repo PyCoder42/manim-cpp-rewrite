@@ -55,6 +55,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone G.1: Command/subcommand validation scaffolding with deterministic exit codes
 - [x] Milestone G.2: `cfg show` and `cfg write` operate on real config files/templates
 - [x] Milestone G.3: `plugins list <dir>` validates input and reports discovered shared libraries
+- [x] Milestone G.4: `checkhealth --json` emits machine-readable dependency status
 - [ ] Milestone H: Plugin system parity
 - [x] Milestone H.1: Plugin discovery by shared-library extension + host ABI version gate
 - [x] Milestone H.2: Batch plugin loading API with deterministic failure aggregation
