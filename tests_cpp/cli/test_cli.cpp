@@ -121,7 +121,14 @@ TEST(Cli, PluginsLoadAcceptsEmptyDirectory) {
 
 TEST(Cli, CheckhealthJsonModeIsAccepted) {
   const std::array<const char*, 3> args = {"manim-cpp", "checkhealth", "--json"};
-  EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data()), 0);
+  std::ostringstream out_capture;
+  std::streambuf* old_cout = std::cout.rdbuf(out_capture.rdbuf());
+  const int exit_code = manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data());
+  std::cout.rdbuf(old_cout);
+
+  EXPECT_EQ(exit_code, 0);
+  EXPECT_NE(out_capture.str().find("\"renderers\":[\"cairo\",\"opengl\"]"),
+            std::string::npos);
 }
 
 TEST(Cli, InitSceneGeneratesTemplateFile) {

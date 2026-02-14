@@ -362,7 +362,8 @@ int handle_checkhealth(const int argc, const char* const argv[]) {
   if (json) {
     std::cout << "{"
               << "\"ffmpeg\":" << (ffmpeg_found ? "true" : "false") << ","
-              << "\"plugin_dir\":\"" << plugin_dir.string() << "\""
+              << "\"plugin_dir\":\"" << plugin_dir.string() << "\","
+              << "\"renderers\":[\"cairo\",\"opengl\"]"
               << "}\n";
     return 0;
   }
