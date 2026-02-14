@@ -4,5 +4,6 @@
 docs/source/*
 example_scenes/*
 manim/*
-scripts/*
+scripts/dev_changelog.py
+scripts/extract_frames.py
 tests/*
