@@ -1,5 +1,6 @@
 #include "manim_cpp/scene/scene.hpp"
 
+#include <algorithm>
 #include <utility>
 
 #include "manim_cpp/animation/animation.hpp"
@@ -44,6 +45,33 @@ void Scene::add_updater(SceneUpdater updater) {
 
 void Scene::clear_updaters() {
   updaters_.clear();
+}
+
+void Scene::add(const std::shared_ptr<mobject::Mobject>& mobject) {
+  if (mobject == nullptr) {
+    return;
+  }
+  if (std::find(mobjects_.begin(), mobjects_.end(), mobject) != mobjects_.end()) {
+    return;
+  }
+  mobjects_.push_back(mobject);
+}
+
+bool Scene::remove(const std::shared_ptr<mobject::Mobject>& mobject) {
+  const auto it = std::find(mobjects_.begin(), mobjects_.end(), mobject);
+  if (it == mobjects_.end()) {
+    return false;
+  }
+  mobjects_.erase(it);
+  return true;
+}
+
+void Scene::clear() {
+  mobjects_.clear();
+}
+
+const std::vector<std::shared_ptr<mobject::Mobject>>& Scene::mobjects() const {
+  return mobjects_;
 }
 
 double Scene::time_seconds() const {

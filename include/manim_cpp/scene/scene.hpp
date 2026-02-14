@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
+#include <memory>
 #include <random>
 #include <string>
 #include <vector>
@@ -10,6 +11,10 @@
 namespace manim_cpp::animation {
 class Animation;
 }  // namespace manim_cpp::animation
+
+namespace manim_cpp::mobject {
+class Mobject;
+}  // namespace manim_cpp::mobject
 
 namespace manim_cpp::scene {
 
@@ -30,6 +35,11 @@ class Scene {
   void add_updater(SceneUpdater updater);
   void clear_updaters();
 
+  void add(const std::shared_ptr<mobject::Mobject>& mobject);
+  bool remove(const std::shared_ptr<mobject::Mobject>& mobject);
+  void clear();
+  [[nodiscard]] const std::vector<std::shared_ptr<mobject::Mobject>>& mobjects() const;
+
   [[nodiscard]] double time_seconds() const;
   void set_random_seed(std::uint64_t seed);
   [[nodiscard]] std::uint64_t random_seed() const;
@@ -39,6 +49,7 @@ class Scene {
 
  private:
   std::vector<SceneUpdater> updaters_;
+  std::vector<std::shared_ptr<mobject::Mobject>> mobjects_;
   double elapsed_seconds_ = 0.0;
   std::uint64_t random_seed_ = 0;
   std::mt19937_64 rng_{0};

@@ -1,9 +1,11 @@
+#include <memory>
 #include <string>
 #include <vector>
 
 #include <gtest/gtest.h>
 
 #include "manim_cpp/animation/animation.hpp"
+#include "manim_cpp/mobject/mobject.hpp"
 #include "manim_cpp/scene/scene.hpp"
 
 namespace {
@@ -70,4 +72,26 @@ TEST(SceneLifecycle, PlayDrivesAnimationAndUpdaters) {
   EXPECT_EQ(updater_calls, static_cast<size_t>(5));
   EXPECT_NEAR(total_delta, 1.25, 1e-9);
   EXPECT_NEAR(scene.time_seconds(), 1.25, 1e-9);
+}
+
+TEST(SceneLifecycle, TracksUniqueMobjectsAndSupportsRemoval) {
+  EmptyScene scene;
+  auto first = std::make_shared<manim_cpp::mobject::Mobject>();
+  auto second = std::make_shared<manim_cpp::mobject::Mobject>();
+
+  scene.add(first);
+  scene.add(second);
+  scene.add(first);
+
+  ASSERT_EQ(scene.mobjects().size(), static_cast<size_t>(2));
+  EXPECT_EQ(scene.mobjects()[0], first);
+  EXPECT_EQ(scene.mobjects()[1], second);
+
+  EXPECT_TRUE(scene.remove(first));
+  EXPECT_FALSE(scene.remove(first));
+  ASSERT_EQ(scene.mobjects().size(), static_cast<size_t>(1));
+  EXPECT_EQ(scene.mobjects()[0], second);
+
+  scene.clear();
+  EXPECT_TRUE(scene.mobjects().empty());
 }
