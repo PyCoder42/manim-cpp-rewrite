@@ -307,6 +307,8 @@ int handle_render(const int argc, const char* const argv[]) {
 
   std::filesystem::path input_file;
   auto renderer_type = manim_cpp::renderer::RendererType::kCairo;
+  bool watch = false;
+  bool interactive = false;
   for (int i = 2; i < argc; ++i) {
     const std::string token = argv[i];
     if (is_help_flag(token)) {
@@ -324,6 +326,14 @@ int handle_render(const int argc, const char* const argv[]) {
         return 2;
       }
       renderer_type = parsed.value();
+      continue;
+    }
+    if (token == "--watch" || token == "-w") {
+      watch = true;
+      continue;
+    }
+    if (token == "--interactive" || token == "-i") {
+      interactive = true;
       continue;
     }
     if (token.rfind("-", 0) == 0) {
@@ -344,7 +354,9 @@ int handle_render(const int argc, const char* const argv[]) {
   }
 
   std::cout << "Command 'render' scaffold received input file: " << input_file
-            << " renderer=" << manim_cpp::renderer::to_string(renderer_type) << "\n";
+            << " renderer=" << manim_cpp::renderer::to_string(renderer_type)
+            << " watch=" << (watch ? "true" : "false")
+            << " interactive=" << (interactive ? "true" : "false") << "\n";
   return 0;
 }
 
