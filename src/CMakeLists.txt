@@ -23,6 +23,7 @@ add_library(
   manim_cpp/scene/registry.cpp
   manim_cpp/scene/scene_file_writer.cpp
   manim_cpp/scene/scene.cpp
+  manim_cpp/testing/npz_archive.cpp
 )
 
 target_include_directories(

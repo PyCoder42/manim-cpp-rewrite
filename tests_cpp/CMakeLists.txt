@@ -44,6 +44,7 @@ add_executable(
   plugin/test_plugin_loader.cpp
   plugin/test_plugin_sdk.cpp
   migrate/test_migrate.cpp
+  render_regression/test_control_data_npz.cpp
 )
 
 target_link_libraries(

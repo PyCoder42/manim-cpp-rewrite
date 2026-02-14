@@ -95,6 +95,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [ ] Milestone J: Test suite full port
 - [x] Milestone J.1: Added C++ unit/integration coverage for core math/scene/cli/plugin/migrate scaffolds
 - [x] Milestone J.2: Added shared-library plugin integration fixture coverage in `ctest`
+- [x] Milestone J.3: Added C++ `.npz` control-data regression harness (`NpzArchive`) that validates graphical baseline archives without Python
 - [ ] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers
@@ -111,7 +112,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [ ] `manim/_config` and `manim/cli` -> `src/manim_cpp/config` + `apps/manim_cpp_cli`
 - [ ] `manim/plugins` -> `src/manim_cpp/plugin` + `plugins/sdk`
 - [ ] `docs/source` and `docs/i18n` -> `docs/book` and `docs/api` while preserving locale catalogs
-- [ ] `tests/control_data` and `tests/test_graphical_units/control_data` consumed by C++ regression harness
+- [x] `tests/control_data` and `tests/test_graphical_units/control_data` consumed by C++ regression harness
 
 ### Test Cases and Acceptance Scenarios
 - [ ] CLI compatibility snapshots
