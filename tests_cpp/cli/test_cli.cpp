@@ -21,6 +21,27 @@ TEST(Cli, HelpAndSubcommandDispatchSmoke) {
             0);
 }
 
+TEST(Cli, RenderHelpIncludesCoreOptions) {
+  const std::array<const char*, 3> render_help_args = {
+      "manim-cpp", "render", "--help"};
+
+  std::ostringstream out_capture;
+  std::streambuf* old_cout = std::cout.rdbuf(out_capture.rdbuf());
+  const int exit_code =
+      manim_cpp::cli::run_cli(static_cast<int>(render_help_args.size()),
+                              render_help_args.data());
+  std::cout.rdbuf(old_cout);
+
+  EXPECT_EQ(exit_code, 0);
+  EXPECT_NE(out_capture.str().find("--renderer <cairo|opengl>"), std::string::npos);
+  EXPECT_NE(out_capture.str().find("--format <png|gif|mp4|webm|mov>"),
+            std::string::npos);
+  EXPECT_NE(out_capture.str().find("--watch"), std::string::npos);
+  EXPECT_NE(out_capture.str().find("--interactive"), std::string::npos);
+  EXPECT_NE(out_capture.str().find("--enable_gui"), std::string::npos);
+  EXPECT_NE(out_capture.str().find("--window_position"), std::string::npos);
+}
+
 TEST(Cli, ReturnsNonZeroForInvalidSubcommandUsage) {
   const std::array<const char*, 3> cfg_invalid_args = {"manim-cpp", "cfg", "bogus"};
   EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(cfg_invalid_args.size()),

@@ -35,6 +35,38 @@ void print_root_help() {
 }
 
 void print_subcommand_help(const std::string& command) {
+  if (command == "render") {
+    std::cout << "Usage: manim-cpp render <input.cpp> [OPTIONS]\n\n";
+    std::cout << "Options:\n";
+    std::cout << "  --renderer <cairo|opengl>       Select render backend.\n";
+    std::cout << "  --format <png|gif|mp4|webm|mov> Select output media format.\n";
+    std::cout << "  --watch, -w                     Enable watch mode.\n";
+    std::cout << "  --interactive, -i               Enable interactive controls.\n";
+    std::cout << "  --enable_gui                    Enable GUI window output.\n";
+    std::cout << "  --fullscreen                    Start in fullscreen mode.\n";
+    std::cout << "  --force_window                  Force creation of a window.\n";
+    std::cout << "  --window_position <value>       Set window position (e.g. UR, 960,540).\n";
+    std::cout << "  --window_size <value>           Set window size (e.g. 1280,720).\n";
+    std::cout << "  --window_monitor <int>          Select monitor index.\n";
+    return;
+  }
+  if (command == "cfg") {
+    std::cout << "Usage: manim-cpp cfg <show|write> [ARGS]\n";
+    return;
+  }
+  if (command == "checkhealth") {
+    std::cout << "Usage: manim-cpp checkhealth [--json]\n";
+    return;
+  }
+  if (command == "init") {
+    std::cout << "Usage: manim-cpp init <project|scene> <path>\n";
+    return;
+  }
+  if (command == "plugins") {
+    std::cout << "Usage: manim-cpp plugins <list|load|path> [ARGS]\n";
+    return;
+  }
+
   std::cout << "Usage: manim-cpp " << command << " [OPTIONS]\n";
 }
 
