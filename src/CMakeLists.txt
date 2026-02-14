@@ -8,6 +8,7 @@ add_library(
   manim_cpp/config/config.cpp
   manim_cpp/math/core.cpp
   manim_cpp/math/eigen_adapter.cpp
+  manim_cpp/math/triangulation.cpp
   manim_cpp/migrate/migrate.cpp
   manim_cpp/mobject/mobject.cpp
   manim_cpp/plugin/loader.cpp

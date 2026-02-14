@@ -18,6 +18,7 @@ add_executable(
   unit/test_config.cpp
   unit/test_math_core.cpp
   unit/test_eigen_adapter.cpp
+  unit/test_triangulation.cpp
   cli/test_cli.cpp
   plugin/test_plugin_abi.cpp
   migrate/test_migrate.cpp

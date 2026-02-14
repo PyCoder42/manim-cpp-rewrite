@@ -33,6 +33,9 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone B.1: Math kernel bootstrap (`choose`, `rotate_z`, fan triangulation) with `gtest` coverage
 - [x] Milestone B.2: Introduce Eigen-backed vector/matrix adapters for kernel usage
 - [ ] Milestone B.3: Port geometry algorithms (triangulation variants, boolean path ops, graph layouts, isocurve extraction)
+- [x] Milestone B.3.a: Ear-clipping triangulation for simple concave/convex polygons
+- [ ] Milestone B.3.b: Boolean path operations
+- [ ] Milestone B.3.c: Graph layouts, isocurve extraction, and combinatorics helpers
 - [ ] Milestone C: Scene graph and animation engine parity
 - [ ] Milestone D: Cairo backend parity
 - [ ] Milestone E: OpenGL backend + interaction parity
