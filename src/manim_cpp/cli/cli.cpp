@@ -11,6 +11,7 @@
 
 #include "manim_cpp/config/config.hpp"
 #include "manim_cpp/plugin/loader.hpp"
+#include "manim_cpp/renderer/renderer.hpp"
 #include "manim_cpp/version.hpp"
 
 namespace manim_cpp::cli {
@@ -277,7 +278,46 @@ int handle_render(const int argc, const char* const argv[]) {
     return argc <= 2 ? 2 : 0;
   }
 
-  std::cout << "Command 'render' scaffold received input file: " << argv[2] << "\n";
+  std::filesystem::path input_file;
+  auto renderer_type = manim_cpp::renderer::RendererType::kCairo;
+  for (int i = 2; i < argc; ++i) {
+    const std::string token = argv[i];
+    if (is_help_flag(token)) {
+      print_subcommand_help("render");
+      return 0;
+    }
+    if (token == "--renderer") {
+      if (i + 1 >= argc) {
+        std::cerr << "Missing value for --renderer.\n";
+        return 2;
+      }
+      const auto parsed = manim_cpp::renderer::parse_renderer_type(argv[++i]);
+      if (!parsed.has_value()) {
+        std::cerr << "Unknown renderer: " << argv[i] << "\n";
+        return 2;
+      }
+      renderer_type = parsed.value();
+      continue;
+    }
+    if (token.rfind("-", 0) == 0) {
+      std::cerr << "Unknown render option: " << token << "\n";
+      return 2;
+    }
+    if (input_file.empty()) {
+      input_file = token;
+      continue;
+    }
+    std::cerr << "Unexpected render argument: " << token << "\n";
+    return 2;
+  }
+
+  if (input_file.empty()) {
+    std::cerr << "Usage: manim-cpp render <input.cpp> [--renderer <cairo|opengl>]\n";
+    return 2;
+  }
+
+  std::cout << "Command 'render' scaffold received input file: " << input_file
+            << " renderer=" << manim_cpp::renderer::to_string(renderer_type) << "\n";
   return 0;
 }
 

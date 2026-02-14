@@ -33,6 +33,18 @@ TEST(Cli, ReturnsNonZeroForInvalidSubcommandUsage) {
             2);
 }
 
+TEST(Cli, RenderValidatesRendererOption) {
+  const std::array<const char*, 5> valid_args = {
+      "manim-cpp", "render", "example_scene.cpp", "--renderer", "opengl"};
+  EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(valid_args.size()), valid_args.data()),
+            0);
+
+  const std::array<const char*, 5> invalid_args = {
+      "manim-cpp", "render", "example_scene.cpp", "--renderer", "metal"};
+  EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(invalid_args.size()), invalid_args.data()),
+            2);
+}
+
 TEST(Cli, AcceptsKnownScaffoldedSubcommands) {
   const std::array<const char*, 3> plugins_list_args = {"manim-cpp", "plugins", "list"};
   EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(plugins_list_args.size()),
