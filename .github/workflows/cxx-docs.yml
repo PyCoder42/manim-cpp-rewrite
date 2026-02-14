@@ -1,0 +1,26 @@
+name: C++ Docs
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, "codex/**" ]
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install docs deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen
+          curl -fsSL https://github.com/rust-lang/mdBook/releases/download/v0.4.43/mdbook-v0.4.43-x86_64-unknown-linux-gnu.tar.gz | tar -xz
+          sudo mv mdbook /usr/local/bin/mdbook
+
+      - name: Build API docs
+        run: doxygen docs/api/Doxyfile
+
+      - name: Build book
+        run: mdbook build docs/book
