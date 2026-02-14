@@ -49,4 +49,18 @@ double Scene::time_seconds() const {
   return elapsed_seconds_;
 }
 
+void Scene::set_random_seed(const std::uint64_t seed) {
+  random_seed_ = seed;
+  rng_.seed(seed);
+}
+
+std::uint64_t Scene::random_seed() const {
+  return random_seed_;
+}
+
+double Scene::random_unit() {
+  static std::uniform_real_distribution<double> distribution(0.0, 1.0);
+  return distribution(rng_);
+}
+
 }  // namespace manim_cpp::scene

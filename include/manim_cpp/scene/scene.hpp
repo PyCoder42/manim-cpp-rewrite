@@ -1,7 +1,9 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <functional>
+#include <random>
 #include <string>
 #include <vector>
 
@@ -29,11 +31,17 @@ class Scene {
   void clear_updaters();
 
   [[nodiscard]] double time_seconds() const;
+  void set_random_seed(std::uint64_t seed);
+  [[nodiscard]] std::uint64_t random_seed() const;
+  double random_unit();
+
   virtual std::string scene_name() const { return "Scene"; }
 
  private:
   std::vector<SceneUpdater> updaters_;
   double elapsed_seconds_ = 0.0;
+  std::uint64_t random_seed_ = 0;
+  std::mt19937_64 rng_{0};
 };
 
 }  // namespace manim_cpp::scene
