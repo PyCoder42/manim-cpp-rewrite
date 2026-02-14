@@ -20,6 +20,7 @@ struct MigrateArgs {
   bool write_output = false;
   bool write_output_dir = false;
   bool write_report = false;
+  bool recursive = false;
 };
 
 std::string trim(const std::string& text) {
@@ -52,6 +53,10 @@ bool parse_args(int argc, const char* const argv[], MigrateArgs* out_args) {
     if (token == "--report" && i + 1 < argc) {
       out_args->report_path = argv[++i];
       out_args->write_report = true;
+      continue;
+    }
+    if (token == "--recursive") {
+      out_args->recursive = true;
       continue;
     }
   }
@@ -137,13 +142,23 @@ bool write_text_file(const std::filesystem::path& output_path,
 }
 
 std::vector<std::filesystem::path> discover_python_files(
-    const std::filesystem::path& input_dir) {
+    const std::filesystem::path& input_dir,
+    const bool recursive) {
   std::vector<std::filesystem::path> files;
-  for (const auto& entry : std::filesystem::directory_iterator(input_dir)) {
-    if (!entry.is_regular_file() || entry.path().extension() != ".py") {
-      continue;
+  if (recursive) {
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(input_dir)) {
+      if (!entry.is_regular_file() || entry.path().extension() != ".py") {
+        continue;
+      }
+      files.push_back(entry.path());
     }
-    files.push_back(entry.path());
+  } else {
+    for (const auto& entry : std::filesystem::directory_iterator(input_dir)) {
+      if (!entry.is_regular_file() || entry.path().extension() != ".py") {
+        continue;
+      }
+      files.push_back(entry.path());
+    }
   }
   std::sort(files.begin(), files.end());
   return files;
@@ -208,7 +223,7 @@ int run_migrate(int argc, const char* const argv[]) {
   if (argc <= 1 || std::string(argv[1]) == "--help" ||
       std::string(argv[1]) == "-h") {
     std::cout << "Usage: manim-cpp-migrate <python_scene.py|directory> "
-                 "[--out <file.cpp>] [--out-dir <directory>]\n";
+                 "[--out <file.cpp>] [--out-dir <directory>] [--recursive]\n";
     std::cout << "Deterministic Python-to-C++ migration scaffolder.\n";
     return 0;
   }
@@ -225,7 +240,7 @@ int run_migrate(int argc, const char* const argv[]) {
       return 2;
     }
 
-    const auto python_files = discover_python_files(args.input_path);
+    const auto python_files = discover_python_files(args.input_path, args.recursive);
     std::vector<std::string> report_lines;
     report_lines.reserve(python_files.size());
 
@@ -238,12 +253,14 @@ int run_migrate(int argc, const char* const argv[]) {
 
       std::string report;
       const std::string output = translate_python_scene_to_cpp(source_text, &report);
-      const auto output_path = args.output_dir / (input_path.stem().string() + ".cpp");
+      const auto relative_path = std::filesystem::relative(input_path, args.input_path);
+      auto output_path = args.output_dir / relative_path;
+      output_path.replace_extension(".cpp");
       if (!write_text_file(output_path, output)) {
         std::cerr << "Unable to write output file: " << output_path << "\n";
         return 2;
       }
-      report_lines.push_back(input_path.filename().string() + ": " + report);
+      report_lines.push_back(relative_path.string() + ": " + report);
       std::cout << "Wrote translated C++ scaffold to " << output_path << "\n";
     }
 

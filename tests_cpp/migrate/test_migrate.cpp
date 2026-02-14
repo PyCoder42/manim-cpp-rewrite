@@ -135,3 +135,43 @@ TEST(MigrateTool, ConvertsDirectoryInputWhenOutDirIsProvided) {
 
   std::filesystem::remove_all(temp_root);
 }
+
+TEST(MigrateTool, SupportsRecursiveDirectoryConversion) {
+  const auto temp_root =
+      std::filesystem::temp_directory_path() / "manim_cpp_migrate_recursive";
+  std::filesystem::remove_all(temp_root);
+  std::filesystem::create_directories(temp_root);
+
+  const auto input_dir = temp_root / "input";
+  const auto nested_dir = input_dir / "nested";
+  const auto output_dir = temp_root / "output";
+  std::filesystem::create_directories(nested_dir);
+
+  {
+    std::ofstream nested_scene(nested_dir / "gamma.py");
+    nested_scene << "from manim import *\n"
+                    "class Gamma(Scene):\n"
+                    "    def construct(self):\n"
+                    "        self.wait(1)\n";
+  }
+
+  const auto input_dir_str = input_dir.string();
+  const auto output_dir_str = output_dir.string();
+  const std::array<const char*, 5> args = {
+      "manim-cpp-migrate",
+      input_dir_str.c_str(),
+      "--out-dir",
+      output_dir_str.c_str(),
+      "--recursive",
+  };
+
+  EXPECT_EQ(manim_cpp::migrate::run_migrate(static_cast<int>(args.size()), args.data()), 0);
+  EXPECT_TRUE(std::filesystem::exists(output_dir / "nested" / "gamma.cpp"));
+
+  std::ifstream gamma_file(output_dir / "nested" / "gamma.cpp");
+  const std::string gamma_contents((std::istreambuf_iterator<char>(gamma_file)),
+                                   std::istreambuf_iterator<char>());
+  EXPECT_NE(gamma_contents.find("MANIM_REGISTER_SCENE(Gamma);"), std::string::npos);
+
+  std::filesystem::remove_all(temp_root);
+}
