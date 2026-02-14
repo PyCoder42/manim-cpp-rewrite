@@ -53,6 +53,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [ ] Milestone D: Cairo backend parity
 - [x] Milestone D.1: Renderer type parsing, string conversion, and factory creation for Cairo/OpenGL backends
 - [x] Milestone D.2: Cairo renderer deterministic frame naming + static-frame signature dedupe scaffold
+- [x] Milestone D.3: Scene output directory planning resolves deterministic image/video/partial paths from `manim.cfg` templates (`module_name`, `quality`, `scene_name`)
 - [ ] Milestone E: OpenGL backend + interaction parity
 - [x] Milestone E.1: Shader root discovery supports `MANIM_CPP_SHADER_ROOT` override for runtime/packaged deployments
 - [x] Milestone E.2: OpenGL renderer shader root/path helpers for deterministic program-stage shader resolution
@@ -65,6 +66,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone F.4: Deterministic animation-driven partial movie caching with section skip handling
 - [x] Milestone F.5: Scene media manifest JSON writer captures sections, subcaptions, and audio segment metadata
 - [x] Milestone F.6: Typed media-format parser/stringifier covers `png`, `gif`, `mp4`, `webm`, and `mov`
+- [x] Milestone F.7: `SceneFileWriter::resolve_output_paths` provides config-driven media path contract with nullopt on unresolved placeholders
 - [x] Milestone G: CLI/config parity
 - [x] Milestone G.1: Command/subcommand validation scaffolding with deterministic exit codes
 - [x] Milestone G.2: `cfg show` and `cfg write` operate on real config files/templates

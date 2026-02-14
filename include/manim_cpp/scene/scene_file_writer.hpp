@@ -2,9 +2,11 @@
 
 #include <cstddef>
 #include <filesystem>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "manim_cpp/config/config.hpp"
 #include "manim_cpp/scene/section.hpp"
 
 namespace manim_cpp::scene {
@@ -19,6 +21,12 @@ struct AudioSegment {
   std::string path;
   double start_seconds = 0.0;
   double gain_db = 0.0;
+};
+
+struct SceneOutputPaths {
+  std::filesystem::path images_dir;
+  std::filesystem::path video_dir;
+  std::filesystem::path partial_movie_dir;
 };
 
 class SceneFileWriter {
@@ -37,6 +45,10 @@ class SceneFileWriter {
   void add_audio_segment(const std::string& path,
                          double start_seconds,
                          double gain_db);
+  std::optional<SceneOutputPaths> resolve_output_paths(
+      const manim_cpp::config::ManimConfig& config,
+      const std::string& module_name,
+      const std::string& quality) const;
   bool write_subcaptions_srt(const std::filesystem::path& output_path) const;
   bool write_media_manifest(const std::filesystem::path& output_path) const;
 

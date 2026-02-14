@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iomanip>
 #include <sstream>
+#include <unordered_map>
 
 namespace manim_cpp::scene {
 namespace {
@@ -114,6 +115,32 @@ void SceneFileWriter::add_audio_segment(const std::string& path,
       .start_seconds = start_seconds,
       .gain_db = gain_db,
   });
+}
+
+std::optional<SceneOutputPaths> SceneFileWriter::resolve_output_paths(
+    const manim_cpp::config::ManimConfig& config,
+    const std::string& module_name,
+    const std::string& quality) const {
+  const std::unordered_map<std::string, std::string> substitutions = {
+      {"module_name", module_name},
+      {"quality", quality},
+      {"scene_name", scene_name_},
+  };
+
+  auto images_dir = config.resolve_path("CLI", "images_dir", substitutions);
+  auto video_dir = config.resolve_path("CLI", "video_dir", substitutions);
+  auto partial_movie_dir =
+      config.resolve_path("CLI", "partial_movie_dir", substitutions);
+  if (!images_dir.has_value() || !video_dir.has_value() ||
+      !partial_movie_dir.has_value()) {
+    return std::nullopt;
+  }
+
+  return SceneOutputPaths{
+      .images_dir = images_dir.value(),
+      .video_dir = video_dir.value(),
+      .partial_movie_dir = partial_movie_dir.value(),
+  };
 }
 
 bool SceneFileWriter::write_subcaptions_srt(const std::filesystem::path& output_path) const {

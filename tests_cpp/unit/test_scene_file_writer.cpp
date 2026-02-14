@@ -4,6 +4,7 @@
 
 #include <gtest/gtest.h>
 
+#include "manim_cpp/config/config.hpp"
 #include "manim_cpp/scene/scene_file_writer.hpp"
 
 namespace {
@@ -12,6 +13,20 @@ std::string read_file(const std::filesystem::path& path) {
   std::ifstream input(path);
   return std::string((std::istreambuf_iterator<char>(input)),
                      std::istreambuf_iterator<char>());
+}
+
+std::filesystem::path find_repo_root() {
+  auto probe = std::filesystem::current_path();
+  for (int depth = 0; depth < 12; ++depth) {
+    if (std::filesystem::exists(probe / "config" / "manim.cfg.default")) {
+      return probe;
+    }
+    if (!probe.has_parent_path()) {
+      break;
+    }
+    probe = probe.parent_path();
+  }
+  return {};
 }
 
 }  // namespace
@@ -142,4 +157,45 @@ TEST(SceneFileWriter, WritesMediaManifestJson) {
   EXPECT_NE(content.find("intro.wav"), std::string::npos);
 
   std::filesystem::remove(output_path);
+}
+
+TEST(SceneFileWriter, ResolvesOutputDirectoriesFromConfigTemplates) {
+  const auto repo_root = find_repo_root();
+  ASSERT_FALSE(repo_root.empty());
+
+  manim_cpp::config::ManimConfig config;
+  ASSERT_TRUE(config.load_from_file(repo_root / "config" / "manim.cfg.default"));
+
+  manim_cpp::scene::SceneFileWriter writer("DemoScene");
+  const auto paths =
+      writer.resolve_output_paths(config, "demo_module", "1080p60");
+  ASSERT_TRUE(paths.has_value());
+  EXPECT_EQ(paths->images_dir.generic_string(),
+            std::string("./media/images/demo_module"));
+  EXPECT_EQ(paths->video_dir.generic_string(),
+            std::string("./media/videos/demo_module/1080p60"));
+  EXPECT_EQ(
+      paths->partial_movie_dir.generic_string(),
+      std::string("./media/videos/demo_module/1080p60/partial_movie_files/DemoScene"));
+}
+
+TEST(SceneFileWriter, ReturnsNulloptWhenOutputTemplateCannotBeResolved) {
+  const auto temp_dir =
+      std::filesystem::temp_directory_path() / "manim_cpp_scene_writer_paths";
+  std::filesystem::create_directories(temp_dir);
+  const auto cfg_path = temp_dir / "broken.cfg";
+  std::ofstream cfg(cfg_path);
+  cfg << "[CLI]\n";
+  cfg << "images_dir = ./media/images/{module_name}\n";
+  cfg << "video_dir = ./media/videos/{module_name}/{quality}\n";
+  cfg << "partial_movie_dir = {video_dir}/partial_movie_files/{missing_key}\n";
+  cfg.close();
+
+  manim_cpp::config::ManimConfig config;
+  ASSERT_TRUE(config.load_from_file(cfg_path));
+
+  manim_cpp::scene::SceneFileWriter writer("DemoScene");
+  const auto paths =
+      writer.resolve_output_paths(config, "demo_module", "1080p60");
+  EXPECT_FALSE(paths.has_value());
 }
