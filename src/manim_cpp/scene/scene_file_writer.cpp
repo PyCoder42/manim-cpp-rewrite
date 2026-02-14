@@ -55,6 +55,19 @@ void SceneFileWriter::add_subcaption(const std::string& content,
                                     .end_seconds = end_seconds});
 }
 
+void SceneFileWriter::add_audio_segment(const std::string& path,
+                                        const double start_seconds,
+                                        const double gain_db) {
+  if (path.empty() || start_seconds < 0.0) {
+    return;
+  }
+  audio_segments_.push_back(AudioSegment{
+      .path = path,
+      .start_seconds = start_seconds,
+      .gain_db = gain_db,
+  });
+}
+
 bool SceneFileWriter::write_subcaptions_srt(const std::filesystem::path& output_path) const {
   std::ofstream output(output_path);
   if (!output.is_open()) {

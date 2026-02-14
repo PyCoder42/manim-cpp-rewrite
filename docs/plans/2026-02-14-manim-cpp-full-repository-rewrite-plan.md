@@ -55,6 +55,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [ ] Milestone F: Media/file writer + subtitles/audio parity
 - [x] Milestone F.1: Subcaption collection + `.srt` file emission scaffold
 - [x] Milestone F.2: Explicit section tracking and per-section partial movie routing
+- [x] Milestone F.3: Audio segment layering scaffold (`path`, start offset, gain) with input validation
 - [ ] Milestone G: CLI/config parity
 - [x] Milestone G.1: Command/subcommand validation scaffolding with deterministic exit codes
 - [x] Milestone G.2: `cfg show` and `cfg write` operate on real config files/templates

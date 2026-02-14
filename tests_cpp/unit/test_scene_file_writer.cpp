@@ -66,3 +66,26 @@ TEST(SceneFileWriter, TracksExplicitSectionsAndPartialFiles) {
   ASSERT_EQ(writer.sections()[2].partial_movie_files().size(), static_cast<size_t>(1));
   EXPECT_EQ(writer.sections()[2].partial_movie_files()[0], std::string("outro_0001.mp4"));
 }
+
+TEST(SceneFileWriter, TracksAudioSegmentsForLayeredMixing) {
+  manim_cpp::scene::SceneFileWriter writer("TestScene");
+  writer.add_audio_segment("narration.wav", 0.0, 0.0);
+  writer.add_audio_segment("music.wav", 1.25, -6.0);
+
+  ASSERT_EQ(writer.audio_segments().size(), static_cast<size_t>(2));
+  EXPECT_EQ(writer.audio_segments()[0].path, std::string("narration.wav"));
+  EXPECT_DOUBLE_EQ(writer.audio_segments()[0].start_seconds, 0.0);
+  EXPECT_DOUBLE_EQ(writer.audio_segments()[0].gain_db, 0.0);
+
+  EXPECT_EQ(writer.audio_segments()[1].path, std::string("music.wav"));
+  EXPECT_DOUBLE_EQ(writer.audio_segments()[1].start_seconds, 1.25);
+  EXPECT_DOUBLE_EQ(writer.audio_segments()[1].gain_db, -6.0);
+}
+
+TEST(SceneFileWriter, RejectsInvalidAudioSegments) {
+  manim_cpp::scene::SceneFileWriter writer("TestScene");
+  writer.add_audio_segment("", 0.0, 0.0);
+  writer.add_audio_segment("track.wav", -0.1, 0.0);
+
+  EXPECT_TRUE(writer.audio_segments().empty());
+}
