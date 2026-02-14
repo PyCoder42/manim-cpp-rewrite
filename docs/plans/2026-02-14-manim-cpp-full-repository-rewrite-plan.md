@@ -87,6 +87,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.2: Added shared-library plugin integration fixture coverage in `ctest`
 - [ ] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
+- [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers
 - [ ] Milestone L: Release engineering and cutover
 
 ### Detailed Subsystem Mapping (Source-to-Source Intent)

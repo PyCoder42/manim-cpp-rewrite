@@ -68,3 +68,10 @@ add_test(
   COMMAND ${PROJECT_SOURCE_DIR}/tools/docs/check_i18n_catalogs.sh
           ${PROJECT_SOURCE_DIR}
 )
+
+add_test(
+  NAME DocsToolingCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/docs/build_docs.sh
+          --check-only
+          ${PROJECT_SOURCE_DIR}
+)

@@ -1,37 +1,43 @@
 @ECHO OFF
+setlocal
 
-pushd %~dp0\source
+set REPO_ROOT=%~dp0..
+set DOCS_TOOL=%REPO_ROOT%\tools\docs\build_docs.sh
+set I18N_TOOL=%REPO_ROOT%\tools\docs\check_i18n_catalogs.sh
 
-REM Command file for Sphinx documentation
+if "%1"=="" goto help
+if "%1"=="help" goto help
+if "%1"=="check" goto check
+if "%1"=="check-i18n" goto check_i18n
+if "%1"=="build" goto build
+if "%1"=="html" goto build
+if "%1"=="clean" goto clean
 
-if "%SPHINXBUILD%" == "" (
-	set SPHINXBUILD=sphinx-build
-)
+echo Unknown target: %1
+goto help
 
-REM The paths are taken from the source directory
-set SOURCEDIR=.
-set BUILDDIR=..\build
+:check
+bash "%DOCS_TOOL%" --check-only "%REPO_ROOT%"
+exit /b %ERRORLEVEL%
 
-if "%1" == "" goto help
+:check_i18n
+bash "%I18N_TOOL%" "%REPO_ROOT%"
+exit /b %ERRORLEVEL%
 
-%SPHINXBUILD% >NUL 2>NUL
-if errorlevel 9009 (
-	echo.
-	echo.The 'sphinx-build' command was not found. Make sure you have Sphinx
-	echo.installed, then set the SPHINXBUILD environment variable to point
-	echo.to the full path of the 'sphinx-build' executable. Alternatively you
-	echo.may add the Sphinx directory to PATH.
-	echo.
-	echo.If you don't have Sphinx installed, grab it from
-	echo.http://sphinx-doc.org/
-	exit /b 1
-)
+:build
+bash "%DOCS_TOOL%" "%REPO_ROOT%"
+exit /b %ERRORLEVEL%
 
-%SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
-goto end
+:clean
+if exist "%REPO_ROOT%\docs\book\book" rmdir /s /q "%REPO_ROOT%\docs\book\book"
+if exist "%REPO_ROOT%\docs\api\build" rmdir /s /q "%REPO_ROOT%\docs\api\build"
+exit /b 0
 
 :help
-%SPHINXBUILD% -M help %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
-
-:end
-popd
+echo Documentation targets:
+echo   make.bat check       - verify docs configs exist
+echo   make.bat check-i18n  - verify locale catalogs/templates are present
+echo   make.bat build       - build mdBook and Doxygen docs
+echo   make.bat html        - alias for build
+echo   make.bat clean       - remove generated docs output
+exit /b 0
