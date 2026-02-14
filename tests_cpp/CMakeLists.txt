@@ -21,6 +21,7 @@ add_executable(
   unit/test_triangulation.cpp
   unit/test_path_ops.cpp
   unit/test_graph_layout.cpp
+  unit/test_scene_lifecycle.cpp
   cli/test_cli.cpp
   plugin/test_plugin_abi.cpp
   migrate/test_migrate.cpp
