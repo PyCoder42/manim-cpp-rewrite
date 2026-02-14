@@ -1,6 +1,8 @@
 #include <array>
 #include <filesystem>
 #include <fstream>
+#include <iostream>
+#include <sstream>
 
 #include <gtest/gtest.h>
 
@@ -136,6 +138,39 @@ TEST(Cli, InitProjectGeneratesProjectScaffold) {
   const std::string contents((std::istreambuf_iterator<char>(scene_file)),
                              std::istreambuf_iterator<char>());
   EXPECT_NE(contents.find("MANIM_REGISTER_SCENE"), std::string::npos);
+
+  std::filesystem::remove_all(temp_root);
+}
+
+TEST(Cli, PluginsListSupportsRecursiveDiscoveryFlag) {
+  const auto temp_root =
+      std::filesystem::temp_directory_path() / "manim_cpp_cli_plugins_recursive";
+  std::filesystem::remove_all(temp_root);
+  const auto nested_dir = temp_root / "nested";
+  std::filesystem::create_directories(nested_dir);
+
+#ifdef _WIN32
+  const auto plugin_path = nested_dir / "sample.dll";
+#elif __APPLE__
+  const auto plugin_path = nested_dir / "sample.dylib";
+#else
+  const auto plugin_path = nested_dir / "sample.so";
+#endif
+  std::ofstream plugin_file(plugin_path);
+  plugin_file << "x";
+  plugin_file.close();
+
+  const auto path_string = temp_root.string();
+  const std::array<const char*, 5> args = {
+      "manim-cpp", "plugins", "list", "--recursive", path_string.c_str()};
+
+  std::ostringstream out_capture;
+  std::streambuf* old_cout = std::cout.rdbuf(out_capture.rdbuf());
+  const int exit_code = manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data());
+  std::cout.rdbuf(old_cout);
+
+  EXPECT_EQ(exit_code, 0);
+  EXPECT_NE(out_capture.str().find("sample"), std::string::npos);
 
   std::filesystem::remove_all(temp_root);
 }

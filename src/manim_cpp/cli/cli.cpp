@@ -376,13 +376,27 @@ int handle_plugins(const int argc, const char* const argv[]) {
     return 0;
   }
 
-  if (argc < 4) {
-    std::cerr << "Usage: manim-cpp plugins list <directory>\n";
+  bool recursive = false;
+  std::filesystem::path root;
+  for (int i = 3; i < argc; ++i) {
+    const std::string token = argv[i];
+    if (token == "--recursive" || token == "-r") {
+      recursive = true;
+      continue;
+    }
+    if (root.empty()) {
+      root = token;
+      continue;
+    }
+    std::cerr << "Unexpected plugins list argument: " << token << "\n";
+    return 2;
+  }
+  if (root.empty()) {
+    std::cerr << "Usage: manim-cpp plugins list [--recursive] <directory>\n";
     return 2;
   }
 
-  const std::filesystem::path root = argv[3];
-  const auto discovered = manim_cpp::plugin::PluginLoader::discover(root, false);
+  const auto discovered = manim_cpp::plugin::PluginLoader::discover(root, recursive);
   std::cout << "Discovered " << discovered.size() << " plugin library/libraries in "
             << root << "\n";
   for (const auto& path : discovered) {

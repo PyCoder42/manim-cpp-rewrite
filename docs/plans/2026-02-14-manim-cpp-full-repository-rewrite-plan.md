@@ -58,6 +58,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone G.4: `checkhealth --json` emits machine-readable dependency status
 - [x] Milestone G.5: `init scene <output.cpp>` generates a compilable C++ scene template with `MANIM_REGISTER_SCENE`
 - [x] Milestone G.6: `init project <dir>` generates `manim.cfg` + `scenes/main_scene.cpp` scaffold
+- [x] Milestone G.7: `plugins list --recursive <dir>` supports nested plugin discovery
 - [ ] Milestone H: Plugin system parity
 - [x] Milestone H.1: Plugin discovery by shared-library extension + host ABI version gate
 - [x] Milestone H.2: Batch plugin loading API with deterministic failure aggregation
