@@ -26,6 +26,7 @@ add_executable(
   unit/test_scene_random.cpp
   unit/test_animation_timeline.cpp
   unit/test_scene_file_writer.cpp
+  unit/test_mobject.cpp
   cli/test_cli.cpp
   plugin/test_plugin_abi.cpp
   plugin/test_plugin_loader.cpp
