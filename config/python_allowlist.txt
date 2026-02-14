@@ -1,7 +1,6 @@
 # Transitional Python allowlist during C++ rewrite.
 # Goal: shrink this file to empty and then enforce zero Python in CI.
 
-docs/source/*
 example_scenes/*
 manim/*
 scripts/dev_changelog.py
