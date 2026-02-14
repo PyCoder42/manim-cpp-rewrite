@@ -95,3 +95,23 @@ TEST(Cli, CheckhealthJsonModeIsAccepted) {
   const std::array<const char*, 3> args = {"manim-cpp", "checkhealth", "--json"};
   EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data()), 0);
 }
+
+TEST(Cli, InitSceneGeneratesTemplateFile) {
+  const auto temp_root = std::filesystem::temp_directory_path() / "manim_cpp_cli_init";
+  std::filesystem::remove_all(temp_root);
+  std::filesystem::create_directories(temp_root);
+
+  const auto scene_path = temp_root / "my_scene.cpp";
+  const auto scene_path_string = scene_path.string();
+  const std::array<const char*, 4> args = {
+      "manim-cpp", "init", "scene", scene_path_string.c_str()};
+  EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data()), 0);
+  EXPECT_TRUE(std::filesystem::exists(scene_path));
+
+  std::ifstream scene_file(scene_path);
+  const std::string contents((std::istreambuf_iterator<char>(scene_file)),
+                             std::istreambuf_iterator<char>());
+  EXPECT_NE(contents.find("MANIM_REGISTER_SCENE"), std::string::npos);
+
+  std::filesystem::remove_all(temp_root);
+}

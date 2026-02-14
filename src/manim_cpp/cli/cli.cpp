@@ -85,6 +85,75 @@ std::filesystem::path default_cfg_template_path() {
   return {};
 }
 
+std::string to_scene_identifier(const std::filesystem::path& output_path) {
+  std::string stem = output_path.stem().string();
+  if (stem.empty()) {
+    return "MyScene";
+  }
+
+  std::string identifier;
+  identifier.reserve(stem.size() + 8);
+  for (const char ch : stem) {
+    if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') ||
+        (ch >= '0' && ch <= '9') || ch == '_') {
+      identifier.push_back(ch);
+    } else {
+      identifier.push_back('_');
+    }
+  }
+
+  if (identifier.empty()) {
+    identifier = "MyScene";
+  }
+  if (identifier.front() >= '0' && identifier.front() <= '9') {
+    identifier.insert(identifier.begin(), '_');
+  }
+  if (identifier.size() < 5 || identifier.substr(identifier.size() - 5) != "Scene") {
+    identifier += "Scene";
+  }
+  return identifier;
+}
+
+int handle_init_scene(const int argc, const char* const argv[]) {
+  if (argc < 4) {
+    std::cerr << "Usage: manim-cpp init scene <output.cpp>\n";
+    return 2;
+  }
+
+  const std::filesystem::path output_path = argv[3];
+  if (std::filesystem::exists(output_path)) {
+    std::cerr << "Refusing to overwrite existing file: " << output_path << "\n";
+    return 2;
+  }
+
+  if (output_path.has_parent_path()) {
+    std::filesystem::create_directories(output_path.parent_path());
+  }
+
+  std::ofstream output(output_path);
+  if (!output.is_open()) {
+    std::cerr << "Unable to write scene template: " << output_path << "\n";
+    return 2;
+  }
+
+  const std::string scene_identifier = to_scene_identifier(output_path);
+  output << "#include \"manim_cpp/scene/registry.hpp\"\n";
+  output << "#include \"manim_cpp/scene/scene.hpp\"\n\n";
+  output << "using namespace manim_cpp::scene;\n\n";
+  output << "class " << scene_identifier << " : public Scene {\n";
+  output << " public:\n";
+  output << "  std::string scene_name() const override { return \"" << scene_identifier
+         << "\"; }\n";
+  output << "  void construct() override {\n";
+  output << "    // TODO: author scene animations.\n";
+  output << "  }\n";
+  output << "};\n\n";
+  output << "MANIM_REGISTER_SCENE(" << scene_identifier << ");\n";
+
+  std::cout << "Wrote scene template to " << output_path << "\n";
+  return 0;
+}
+
 int handle_cfg_show(const int argc, const char* const argv[]) {
   const std::filesystem::path input_path =
       argc >= 4 ? std::filesystem::path(argv[3]) : default_cfg_template_path();
@@ -212,6 +281,10 @@ int handle_init(const int argc, const char* const argv[]) {
     std::cerr << "Unknown init subcommand: " << subcommand << "\n";
     std::cerr << "Try 'manim-cpp init --help'.\n";
     return 2;
+  }
+
+  if (subcommand == "scene") {
+    return handle_init_scene(argc, argv);
   }
 
   std::cout << "Command 'init " << subcommand
