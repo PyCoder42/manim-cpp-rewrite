@@ -12,6 +12,13 @@ TEST(MathCore, BinomialChooseComputesExpectedValues) {
   EXPECT_EQ(manim_cpp::math::choose(10, 10), 1ULL);
 }
 
+TEST(MathCore, CombinatoricsHelpersComputeExpectedValues) {
+  EXPECT_EQ(manim_cpp::math::factorial(0), 1ULL);
+  EXPECT_EQ(manim_cpp::math::factorial(5), 120ULL);
+  EXPECT_EQ(manim_cpp::math::permutations(5, 2), 20ULL);
+  EXPECT_EQ(manim_cpp::math::permutations(4, 4), 24ULL);
+}
+
 TEST(MathCore, RotateZAroundNinetyDegrees) {
   const manim_cpp::math::Vec3 point{1.0, 0.0, 0.0};
   const auto rotated = manim_cpp::math::rotate_z(point, manim_cpp::math::kPi / 2.0);

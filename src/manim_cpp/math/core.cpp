@@ -24,6 +24,26 @@ uint64_t choose(uint64_t n, uint64_t k) {
   return result;
 }
 
+uint64_t factorial(uint64_t n) {
+  uint64_t result = 1;
+  for (uint64_t i = 2; i <= n; ++i) {
+    result *= i;
+  }
+  return result;
+}
+
+uint64_t permutations(uint64_t n, uint64_t k) {
+  if (k > n) {
+    return 0;
+  }
+
+  uint64_t result = 1;
+  for (uint64_t i = 0; i < k; ++i) {
+    result *= (n - i);
+  }
+  return result;
+}
+
 Vec3 rotate_z(const Vec3& point, double radians) {
   const double c = std::cos(radians);
   const double s = std::sin(radians);
