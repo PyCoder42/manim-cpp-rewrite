@@ -134,3 +134,6 @@ dist/
 
 # Ignore the built dependencies
 third_party/*
+
+# Local git worktrees used for isolated development
+.worktrees/
