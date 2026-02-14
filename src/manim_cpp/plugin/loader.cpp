@@ -98,6 +98,28 @@ std::vector<std::filesystem::path> PluginLoader::discover(
   return libraries;
 }
 
+std::vector<std::unique_ptr<LoadedPlugin>> PluginLoader::load_discovered(
+    const std::vector<std::filesystem::path>& library_paths,
+    const manim_plugin_host_api_v1& host_api,
+    std::vector<std::string>* errors) {
+  std::vector<std::unique_ptr<LoadedPlugin>> loaded;
+  loaded.reserve(library_paths.size());
+
+  for (const auto& path : library_paths) {
+    std::string error;
+    auto plugin = load(path, host_api, &error);
+    if (plugin == nullptr) {
+      if (errors != nullptr) {
+        errors->push_back(path.string() + ": " + error);
+      }
+      continue;
+    }
+    loaded.push_back(std::move(plugin));
+  }
+
+  return loaded;
+}
+
 std::unique_ptr<LoadedPlugin> PluginLoader::load(
     const std::filesystem::path& library_path,
     const manim_plugin_host_api_v1& host_api,
