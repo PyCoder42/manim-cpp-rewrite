@@ -14,17 +14,18 @@ void Scene::run() {
 
 void Scene::play(animation::Animation& animation, const std::size_t steps) {
   animation.begin();
+  const double run_time_seconds = animation.run_time_seconds();
   if (steps == 0) {
-    animation.interpolate(1.0);
-    tick(1.0);
+    animation.interpolate_with_rate(1.0);
+    tick(run_time_seconds);
     animation.finish();
     return;
   }
 
-  const double delta_seconds = 1.0 / static_cast<double>(steps);
+  const double delta_seconds = run_time_seconds / static_cast<double>(steps);
   for (std::size_t frame = 0; frame <= steps; ++frame) {
     const double alpha = static_cast<double>(frame) / static_cast<double>(steps);
-    animation.interpolate(alpha);
+    animation.interpolate_with_rate(alpha);
     tick(delta_seconds);
   }
   animation.finish();

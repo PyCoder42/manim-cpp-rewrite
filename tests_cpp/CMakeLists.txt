@@ -23,6 +23,7 @@ add_executable(
   unit/test_graph_layout.cpp
   unit/test_scene_lifecycle.cpp
   unit/test_scene_random.cpp
+  unit/test_animation_timeline.cpp
   cli/test_cli.cpp
   plugin/test_plugin_abi.cpp
   migrate/test_migrate.cpp

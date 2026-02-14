@@ -42,6 +42,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone C.1: Scene lifecycle runner (`setup` -> `construct` -> `tear_down`)
 - [x] Milestone C.2: Basic animation playback timeline with updater ticks and elapsed-time tracking
 - [x] Milestone C.3: Deterministic scene RNG seed controls (`set_random_seed`, replayable random stream)
+- [x] Milestone C.4: Animation run-time and rate-function support integrated into `Scene::play`
 - [ ] Milestone D: Cairo backend parity
 - [ ] Milestone E: OpenGL backend + interaction parity
 - [ ] Milestone F: Media/file writer + subtitles/audio parity
