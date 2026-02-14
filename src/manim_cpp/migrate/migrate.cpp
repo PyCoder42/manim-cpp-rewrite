@@ -1,5 +1,6 @@
 #include "manim_cpp/migrate/migrate.hpp"
 
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -45,14 +46,28 @@ bool parse_args(int argc, const char* const argv[], MigrateArgs* out_args) {
 
 std::vector<std::string> detect_scene_classes(const std::string& source_text) {
   std::vector<std::string> classes;
-  std::regex scene_class_pattern(
-      R"(^\s*class\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*Scene\s*\)\s*:)",
-      std::regex_constants::ECMAScript | std::regex_constants::multiline);
+  std::regex scene_class_pattern(R"(^\s*class\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)\s*:)",
+                                 std::regex_constants::ECMAScript |
+                                     std::regex_constants::multiline);
+  const std::vector<std::string> kSupportedBases = {
+      "Scene", "ThreeDScene", "MovingCameraScene"};
 
   for (std::sregex_iterator it(source_text.begin(), source_text.end(),
                                scene_class_pattern);
        it != std::sregex_iterator(); ++it) {
-    classes.push_back((*it)[1].str());
+    const std::string class_name = (*it)[1].str();
+    const std::string bases = (*it)[2].str();
+
+    std::stringstream base_stream(bases);
+    std::string base;
+    while (std::getline(base_stream, base, ',')) {
+      if (std::find(kSupportedBases.begin(), kSupportedBases.end(), trim(base)) ==
+          kSupportedBases.end()) {
+        continue;
+      }
+      classes.push_back(class_name);
+      break;
+    }
   }
   return classes;
 }
@@ -69,12 +84,27 @@ std::vector<std::string> detect_dynamic_hazards(const std::string& source_text) 
   return hazards;
 }
 
+std::vector<std::string> detect_construct_calls(const std::string& source_text) {
+  std::vector<std::string> calls;
+  std::regex call_pattern(R"(^\s*self\.[A-Za-z_][A-Za-z0-9_]*\s*\(.*\)\s*$)",
+                          std::regex_constants::ECMAScript |
+                              std::regex_constants::multiline);
+
+  for (std::sregex_iterator it(source_text.begin(), source_text.end(),
+                               call_pattern);
+       it != std::sregex_iterator(); ++it) {
+    calls.push_back(trim(it->str()));
+  }
+  return calls;
+}
+
 }  // namespace
 
 std::string translate_python_scene_to_cpp(const std::string& source_text,
                                           std::string* report) {
   const auto scene_classes = detect_scene_classes(source_text);
   const auto hazards = detect_dynamic_hazards(source_text);
+  const auto calls = detect_construct_calls(source_text);
 
   std::ostringstream converted;
   converted << "#include \"manim_cpp/scene/scene.hpp\"\n";
@@ -93,6 +123,9 @@ std::string translate_python_scene_to_cpp(const std::string& source_text,
     converted << "  void construct() override {\n";
     converted
         << "    // TODO(migrate): port Python construct() body manually.\n";
+    for (const auto& call : calls) {
+      converted << "    // TODO(migrate): original call -> " << call << "\n";
+    }
     converted << "  }\n";
     converted << "};\n\n";
     converted << "MANIM_REGISTER_SCENE(" << class_name << ");\n\n";
@@ -112,7 +145,8 @@ std::string translate_python_scene_to_cpp(const std::string& source_text,
   if (report != nullptr) {
     std::ostringstream summary;
     summary << "scenes_detected=" << scene_classes.size()
-            << " hazards_detected=" << hazards.size();
+            << " hazards_detected=" << hazards.size()
+            << " calls_detected=" << calls.size();
     *report = summary.str();
   }
 
