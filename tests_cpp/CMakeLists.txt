@@ -31,6 +31,7 @@ add_executable(
   cli/test_cli.cpp
   plugin/test_plugin_abi.cpp
   plugin/test_plugin_loader.cpp
+  plugin/test_plugin_sdk.cpp
   migrate/test_migrate.cpp
 )
 
