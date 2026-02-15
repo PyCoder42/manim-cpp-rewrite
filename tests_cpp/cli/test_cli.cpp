@@ -7,6 +7,22 @@
 #include <gtest/gtest.h>
 
 #include "manim_cpp/cli/cli.hpp"
+#include "manim_cpp/scene/registry.hpp"
+#include "manim_cpp/scene/scene.hpp"
+
+namespace {
+
+int g_cli_render_scene_runs = 0;
+
+class CliRenderSmokeScene : public manim_cpp::scene::Scene {
+ public:
+  std::string scene_name() const override { return "CliRenderSmokeScene"; }
+  void construct() override { ++g_cli_render_scene_runs; }
+};
+
+MANIM_REGISTER_SCENE(CliRenderSmokeScene);
+
+}  // namespace
 
 TEST(Cli, HelpAndSubcommandDispatchSmoke) {
   const std::array<const char*, 2> help_args = {"manim-cpp", "--help"};
@@ -36,6 +52,7 @@ TEST(Cli, RenderHelpIncludesCoreOptions) {
   EXPECT_NE(out_capture.str().find("--renderer <cairo|opengl>"), std::string::npos);
   EXPECT_NE(out_capture.str().find("--format <png|gif|mp4|webm|mov>"),
             std::string::npos);
+  EXPECT_NE(out_capture.str().find("--scene <SceneName>"), std::string::npos);
   EXPECT_NE(out_capture.str().find("--watch"), std::string::npos);
   EXPECT_NE(out_capture.str().find("--interactive"), std::string::npos);
   EXPECT_NE(out_capture.str().find("--enable_gui"), std::string::npos);
@@ -64,6 +81,33 @@ TEST(Cli, RenderValidatesRendererOption) {
       "manim-cpp", "render", "example_scene.cpp", "--renderer", "metal"};
   EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(invalid_args.size()), invalid_args.data()),
             2);
+}
+
+TEST(Cli, RenderRunsRegisteredSceneWhenRequested) {
+  g_cli_render_scene_runs = 0;
+  const std::array<const char*, 7> args = {"manim-cpp",
+                                            "render",
+                                            "example_scene.cpp",
+                                            "--scene",
+                                            "CliRenderSmokeScene",
+                                            "--renderer",
+                                            "cairo"};
+
+  std::ostringstream out_capture;
+  std::streambuf* old_cout = std::cout.rdbuf(out_capture.rdbuf());
+  const int exit_code = manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data());
+  std::cout.rdbuf(old_cout);
+
+  EXPECT_EQ(exit_code, 0);
+  EXPECT_EQ(g_cli_render_scene_runs, 1);
+  EXPECT_NE(out_capture.str().find("Rendered registered scene: CliRenderSmokeScene"),
+            std::string::npos);
+}
+
+TEST(Cli, RenderFailsForUnknownSceneWhenSceneFlagIsProvided) {
+  const std::array<const char*, 5> args = {
+      "manim-cpp", "render", "example_scene.cpp", "--scene", "MissingScene"};
+  EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data()), 2);
 }
 
 TEST(Cli, RenderAcceptsWatchAndInteractiveFlags) {

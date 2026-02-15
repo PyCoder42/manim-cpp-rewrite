@@ -87,6 +87,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone G.13: `checkhealth --json` emits supported output format metadata for automation clients
 - [x] Milestone G.14: `ManimConfig::resolve_path` expands nested `{...}` directory templates (CLI/custom_folders) with explicit substitution inputs
 - [x] Milestone G.15: `render --help` now emits detailed option contract (renderer/format/watch/interactive/window flags) with CLI compatibility test coverage
+- [x] Milestone G.16: `render --scene <SceneName>` now resolves and executes registered C++ scenes via `SceneRegistry`, with explicit unknown-scene failure coverage
 - [x] Milestone H: Plugin system parity
 - [x] Milestone H.1: Plugin discovery by shared-library extension + host ABI version gate
 - [x] Milestone H.2: Batch plugin loading API with deterministic failure aggregation

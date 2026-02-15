@@ -15,6 +15,7 @@
 #include "manim_cpp/plugin/loader.hpp"
 #include "manim_cpp/renderer/renderer.hpp"
 #include "manim_cpp/scene/media_format.hpp"
+#include "manim_cpp/scene/registry.hpp"
 #include "manim_cpp/version.hpp"
 
 namespace manim_cpp::cli {
@@ -40,6 +41,7 @@ void print_subcommand_help(const std::string& command) {
     std::cout << "Options:\n";
     std::cout << "  --renderer <cairo|opengl>       Select render backend.\n";
     std::cout << "  --format <png|gif|mp4|webm|mov> Select output media format.\n";
+    std::cout << "  --scene <SceneName>             Run a registered C++ scene.\n";
     std::cout << "  --watch, -w                     Enable watch mode.\n";
     std::cout << "  --interactive, -i               Enable interactive controls.\n";
     std::cout << "  --enable_gui                    Enable GUI window output.\n";
@@ -359,6 +361,7 @@ int handle_render(const int argc, const char* const argv[]) {
   std::filesystem::path input_file;
   auto renderer_type = manim_cpp::renderer::RendererType::kCairo;
   auto media_format = manim_cpp::scene::MediaFormat::kMp4;
+  std::string scene_name;
   bool watch = false;
   bool interactive = false;
   bool enable_gui = false;
@@ -397,6 +400,14 @@ int handle_render(const int argc, const char* const argv[]) {
         return 2;
       }
       media_format = parsed.value();
+      continue;
+    }
+    if (token == "--scene") {
+      if (i + 1 >= argc) {
+        std::cerr << "Missing value for --scene.\n";
+        return 2;
+      }
+      scene_name = argv[++i];
       continue;
     }
     if (token == "--watch" || token == "-w") {
@@ -462,6 +473,28 @@ int handle_render(const int argc, const char* const argv[]) {
   if (input_file.empty()) {
     std::cerr << "Usage: manim-cpp render <input.cpp> [--renderer <cairo|opengl>]\n";
     return 2;
+  }
+
+  if (!scene_name.empty()) {
+    auto scene = manim_cpp::scene::SceneRegistry::instance().create(scene_name);
+    if (!scene) {
+      std::cerr << "Unknown scene: " << scene_name << "\n";
+      return 2;
+    }
+    scene->run();
+    std::cout << "Rendered registered scene: " << scene->scene_name()
+              << " elapsed=" << scene->time_seconds() << "s"
+              << " renderer=" << manim_cpp::renderer::to_string(renderer_type)
+              << " format=" << manim_cpp::scene::to_string(media_format)
+              << " watch=" << (watch ? "true" : "false")
+              << " interactive=" << (interactive ? "true" : "false")
+              << " gui=" << (enable_gui ? "true" : "false")
+              << " fullscreen=" << (fullscreen ? "true" : "false")
+              << " force_window=" << (force_window ? "true" : "false")
+              << " window_position=" << window_position
+              << " window_size=" << window_size
+              << " window_monitor=" << window_monitor << "\n";
+    return 0;
   }
 
   std::cout << "Command 'render' scaffold received input file: " << input_file
