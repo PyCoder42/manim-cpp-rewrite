@@ -115,6 +115,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.3: Added C++ `.npz` control-data regression harness (`NpzArchive`) that validates graphical baseline archives without Python
 - [x] Milestone J.4: Added example-scene registry/run integration coverage by linking converted C++ `example_scenes` into `manim_cpp_tests`
 - [x] Milestone J.5: Expanded example-scene integration coverage so every converted C++ scene registration executes `run()` without throwing
+- [x] Milestone J.6: Replaced TODO-only bodies in converted advanced/custom/OpenGL example scenes with deterministic runnable C++ animation scaffolds
 - [ ] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers
