@@ -1,0 +1,10 @@
+[book]
+title = "Manim-Cpp"
+authors = ["Manim Community", "Manim-Cpp Contributors"]
+language = "en"
+multilingual = false
+src = "src"
+
+[output.html]
+default-theme = "light"
+preferred-dark-theme = "navy"

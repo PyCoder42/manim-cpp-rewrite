@@ -1,0 +1,16 @@
+PROJECT_NAME           = "Manim-Cpp"
+PROJECT_NUMBER         = "0.1.0-dev"
+OUTPUT_DIRECTORY       = docs/api/build
+CREATE_SUBDIRS         = NO
+OUTPUT_LANGUAGE        = English
+INPUT                  = include src
+RECURSIVE              = YES
+FILE_PATTERNS          = *.hpp *.h *.cpp
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+QUIET                  = YES
+WARN_IF_UNDOCUMENTED   = NO
+EXTRACT_ALL            = YES
+JAVADOC_AUTOBRIEF      = YES
+FULL_PATH_NAMES        = NO
+STRIP_FROM_PATH        = .
