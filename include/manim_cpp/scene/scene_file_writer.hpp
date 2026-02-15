@@ -50,6 +50,7 @@ class SceneFileWriter {
   void end_animation(bool write_frames);
 
   void add_partial_movie_file(const std::string& path);
+  void set_section_timeline(double start_seconds, double end_seconds);
   void add_subcaption(const std::string& content,
                       double start_seconds,
                       double end_seconds);

@@ -112,6 +112,14 @@ void SceneFileWriter::add_partial_movie_file(const std::string& path) {
   sections_.back().add_partial_movie_file(path);
 }
 
+void SceneFileWriter::set_section_timeline(const double start_seconds,
+                                           const double end_seconds) {
+  if (sections_.empty()) {
+    sections_.emplace_back("autocreated", false);
+  }
+  sections_.back().set_timeline(start_seconds, end_seconds);
+}
+
 void SceneFileWriter::add_subcaption(const std::string& content,
                                      const double start_seconds,
                                      const double end_seconds) {
@@ -222,6 +230,16 @@ bool SceneFileWriter::write_media_manifest(
     output << "\"name\":\"" << escape_json(section.name()) << "\",";
     output << "\"skip_animations\":"
            << (section.skip_animations() ? "true" : "false") << ",";
+    if (section.start_seconds().has_value()) {
+      output << "\"start_seconds\":" << section.start_seconds().value() << ",";
+    } else {
+      output << "\"start_seconds\":null,";
+    }
+    if (section.end_seconds().has_value()) {
+      output << "\"end_seconds\":" << section.end_seconds().value() << ",";
+    } else {
+      output << "\"end_seconds\":null,";
+    }
     output << "\"partial_movie_files\":[";
     for (std::size_t j = 0; j < section.partial_movie_files().size(); ++j) {
       if (j > 0) {

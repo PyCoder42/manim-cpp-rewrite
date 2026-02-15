@@ -77,6 +77,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone F.7: `SceneFileWriter::resolve_output_paths` provides config-driven media path contract with nullopt on unresolved placeholders
 - [x] Milestone F.8: `SceneFileWriter` manifest now carries deterministic render summary metadata (frame count, resolution, fps, format, codec hint, duration, output file)
 - [x] Milestone F.9: `render --scene` now emits config-resolved media artifacts (output media file, manifest JSON, `.srt`) with deterministic metadata contract
+- [x] Milestone F.10: Section timeline metadata (`start_seconds`, `end_seconds`) now validates and serializes into media manifests for deterministic section timing parity
 - [x] Milestone G: CLI/config parity
 - [x] Milestone G.1: Command/subcommand validation scaffolding with deterministic exit codes
 - [x] Milestone G.2: `cfg show` and `cfg write` operate on real config files/templates

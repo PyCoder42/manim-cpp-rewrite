@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -22,10 +23,23 @@ class Section {
     return partial_movie_files_;
   }
 
+  void set_timeline(double start_seconds, double end_seconds) {
+    if (end_seconds <= start_seconds || start_seconds < 0.0) {
+      return;
+    }
+    start_seconds_ = start_seconds;
+    end_seconds_ = end_seconds;
+  }
+
+  const std::optional<double>& start_seconds() const { return start_seconds_; }
+  const std::optional<double>& end_seconds() const { return end_seconds_; }
+
  private:
   std::string name_;
   bool skip_animations_ = false;
   std::vector<std::string> partial_movie_files_;
+  std::optional<double> start_seconds_;
+  std::optional<double> end_seconds_;
 };
 
 }  // namespace manim_cpp::scene

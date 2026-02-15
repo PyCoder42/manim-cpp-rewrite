@@ -67,20 +67,40 @@ TEST(SceneFileWriter, RejectsInvalidSubcaptionRanges) {
 TEST(SceneFileWriter, TracksExplicitSectionsAndPartialFiles) {
   manim_cpp::scene::SceneFileWriter writer("TestScene");
   writer.begin_section("Intro", false);
+  writer.set_section_timeline(0.0, 4.5);
   writer.add_partial_movie_file("intro_0001.mp4");
   writer.begin_section("Outro", true);
+  writer.set_section_timeline(4.5, 6.0);
   writer.add_partial_movie_file("outro_0001.mp4");
 
   ASSERT_EQ(writer.sections().size(), static_cast<size_t>(3));
   EXPECT_EQ(writer.sections()[1].name(), std::string("Intro"));
   EXPECT_FALSE(writer.sections()[1].skip_animations());
+  ASSERT_TRUE(writer.sections()[1].start_seconds().has_value());
+  ASSERT_TRUE(writer.sections()[1].end_seconds().has_value());
+  EXPECT_DOUBLE_EQ(writer.sections()[1].start_seconds().value(), 0.0);
+  EXPECT_DOUBLE_EQ(writer.sections()[1].end_seconds().value(), 4.5);
   ASSERT_EQ(writer.sections()[1].partial_movie_files().size(), static_cast<size_t>(1));
   EXPECT_EQ(writer.sections()[1].partial_movie_files()[0], std::string("intro_0001.mp4"));
 
   EXPECT_EQ(writer.sections()[2].name(), std::string("Outro"));
   EXPECT_TRUE(writer.sections()[2].skip_animations());
+  ASSERT_TRUE(writer.sections()[2].start_seconds().has_value());
+  ASSERT_TRUE(writer.sections()[2].end_seconds().has_value());
+  EXPECT_DOUBLE_EQ(writer.sections()[2].start_seconds().value(), 4.5);
+  EXPECT_DOUBLE_EQ(writer.sections()[2].end_seconds().value(), 6.0);
   ASSERT_EQ(writer.sections()[2].partial_movie_files().size(), static_cast<size_t>(1));
   EXPECT_EQ(writer.sections()[2].partial_movie_files()[0], std::string("outro_0001.mp4"));
+}
+
+TEST(SceneFileWriter, RejectsInvalidSectionTimelineRanges) {
+  manim_cpp::scene::SceneFileWriter writer("TestScene");
+  writer.set_section_timeline(3.0, 2.0);
+  writer.set_section_timeline(-1.0, 2.0);
+
+  ASSERT_EQ(writer.sections().size(), static_cast<size_t>(1));
+  EXPECT_FALSE(writer.sections()[0].start_seconds().has_value());
+  EXPECT_FALSE(writer.sections()[0].end_seconds().has_value());
 }
 
 TEST(SceneFileWriter, TracksAudioSegmentsForLayeredMixing) {
@@ -137,6 +157,7 @@ TEST(SceneFileWriter, SkipsAutoPartialMovieFilesWhenFramesAreDisabledOrSkipped) 
 TEST(SceneFileWriter, WritesMediaManifestJson) {
   manim_cpp::scene::SceneFileWriter writer("TestScene");
   writer.begin_section("Intro", false);
+  writer.set_section_timeline(0.0, 1.0);
   writer.begin_animation(true);
   writer.end_animation(true);
   writer.add_subcaption("Intro subtitle", 0.0, 1.0);
@@ -153,6 +174,8 @@ TEST(SceneFileWriter, WritesMediaManifestJson) {
   EXPECT_NE(content.find("\"scene\":\"TestScene\""), std::string::npos);
   EXPECT_NE(content.find("\"sections\":"), std::string::npos);
   EXPECT_NE(content.find("\"name\":\"Intro\""), std::string::npos);
+  EXPECT_NE(content.find("\"start_seconds\":0"), std::string::npos);
+  EXPECT_NE(content.find("\"end_seconds\":1"), std::string::npos);
   EXPECT_NE(content.find("\"subcaptions\":"), std::string::npos);
   EXPECT_NE(content.find("Intro subtitle"), std::string::npos);
   EXPECT_NE(content.find("\"audio_segments\":"), std::string::npos);
