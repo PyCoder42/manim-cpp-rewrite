@@ -87,6 +87,13 @@ add_test(
 )
 
 add_test(
+  NAME DocsGettextTemplateCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/i18n/extract_gettext.sh
+          --check-only
+          ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
   NAME DocsToolingCheck
   COMMAND ${PROJECT_SOURCE_DIR}/tools/docs/build_docs.sh
           --check-only

@@ -15,6 +15,7 @@ fi
 book_root="${repo_root}/docs/book"
 book_config="${book_root}/book.toml"
 api_doxyfile="${repo_root}/docs/api/Doxyfile"
+gettext_script="${repo_root}/tools/i18n/extract_gettext.sh"
 
 if [[ ! -f "${book_config}" ]]; then
   echo "Missing mdBook config: ${book_config}" >&2
@@ -24,9 +25,14 @@ if [[ ! -f "${api_doxyfile}" ]]; then
   echo "Missing Doxygen config: ${api_doxyfile}" >&2
   exit 1
 fi
+if [[ ! -x "${gettext_script}" ]]; then
+  echo "Missing gettext extraction script: ${gettext_script}" >&2
+  exit 1
+fi
 
 if [[ "${check_only}" -eq 1 ]]; then
-  echo "Docs tooling config verified: mdBook + Doxygen inputs present."
+  "${gettext_script}" --check-only "${repo_root}"
+  echo "Docs tooling config verified: mdBook + Doxygen + gettext templates."
   exit 0
 fi
 
@@ -41,6 +47,7 @@ fi
 
 (
   cd "${repo_root}"
+  "${gettext_script}" "${repo_root}"
   mdbook build docs/book
   doxygen docs/api/Doxyfile
 )

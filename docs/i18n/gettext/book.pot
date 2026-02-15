@@ -1,0 +1,123 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: manim-cpp book\n"
+"POT-Creation-Date: 1970-01-01 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: SUMMARY.md:4 architecture.md:1
+msgid "Architecture"
+msgstr ""
+
+#: index.md:10
+msgid "C ABI plugin boundary."
+msgstr ""
+
+#: i18n.md:5
+msgid "C++ docs extraction pipeline is fully switched."
+msgstr ""
+
+#: index.md:7
+msgid "C++ scene authoring via static registration."
+msgstr ""
+
+#: architecture.md:13
+msgid "CLI and migration binaries live in `apps/` and link `manim_cpp_core`."
+msgstr ""
+
+#: index.md:9
+msgid "Config compatibility with `manim.cfg` semantics."
+msgstr ""
+
+#: index.md:8
+msgid "Dual Cairo/OpenGL backend architecture."
+msgstr ""
+
+#: SUMMARY.md:6 i18n.md:1
+msgid "Internationalization"
+msgstr ""
+
+#: i18n.md:3
+msgid "Locale catalog continuity is preserved from existing `docs/i18n` assets (`fr`, `hi`,"
+msgstr ""
+
+#: index.md:1
+msgid "Manim-Cpp"
+msgstr ""
+
+#: index.md:3
+msgid "Manim-Cpp is the C++23 rewrite of Manim CE with a parity-focused migration path."
+msgstr ""
+
+#: SUMMARY.md:5
+msgid "Migration"
+msgstr ""
+
+#: migration.md:1
+msgid "Migration Notes"
+msgstr ""
+
+#: SUMMARY.md:3
+msgid "Overview"
+msgstr ""
+
+#: index.md:5
+msgid "Scope"
+msgstr ""
+
+#: SUMMARY.md:1
+msgid "Summary"
+msgstr ""
+
+#: architecture.md:3
+msgid "The runtime is organized under `manim_cpp` namespaces:"
+msgstr ""
+
+#: architecture.md:7
+msgid "`animation`"
+msgstr ""
+
+#: architecture.md:9
+msgid "`camera`"
+msgstr ""
+
+#: architecture.md:10
+msgid "`config`"
+msgstr ""
+
+#: migration.md:3
+msgid "`manim-cpp-migrate` is a dedicated conversion tool that targets deterministic"
+msgstr ""
+
+#: architecture.md:6
+msgid "`mobject`"
+msgstr ""
+
+#: architecture.md:11
+msgid "`plugin`"
+msgstr ""
+
+#: i18n.md:4
+msgid "`pt`, `sv`). During migration, gettext artifacts remain source-of-truth until"
+msgstr ""
+
+#: architecture.md:8
+msgid "`renderer`"
+msgstr ""
+
+#: architecture.md:5
+msgid "`scene`"
+msgstr ""
+
+#: migration.md:4
+msgid "translation for supported Python scene constructs and explicit TODO markers for"
+msgstr ""
+
+#: migration.md:5
+msgid "unsupported dynamic patterns."
+msgstr ""
+
