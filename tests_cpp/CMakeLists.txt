@@ -34,6 +34,7 @@ add_executable(
   unit/test_scene_lifecycle.cpp
   unit/test_scene_random.cpp
   unit/test_animation_timeline.cpp
+  unit/test_basic_animations.cpp
   unit/test_scene_file_writer.cpp
   unit/test_media_format.cpp
   unit/test_mobject.cpp

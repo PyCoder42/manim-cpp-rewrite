@@ -3,6 +3,7 @@ find_package(Eigen3 QUIET CONFIG)
 add_library(
   manim_cpp_core
   manim_cpp/animation/animation.cpp
+  manim_cpp/animation/basic_animations.cpp
   manim_cpp/camera/camera.cpp
   manim_cpp/cli/cli.cpp
   manim_cpp/config/config.cpp
