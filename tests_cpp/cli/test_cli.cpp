@@ -210,6 +210,7 @@ TEST(Cli, RenderAcceptsWatchAndInteractiveFlags) {
   EXPECT_EQ(exit_code, 0);
   EXPECT_NE(out_capture.str().find("watch=true"), std::string::npos);
   EXPECT_NE(out_capture.str().find("interactive=true"), std::string::npos);
+  EXPECT_NE(out_capture.str().find("window_open=true"), std::string::npos);
 }
 
 TEST(Cli, RenderValidatesFormatOption) {
@@ -280,6 +281,42 @@ TEST(Cli, RenderRejectsInvalidWindowMonitorValue) {
                                             "--window_monitor",
                                             "display-1"};
   EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data()), 2);
+}
+
+TEST(Cli, RenderRejectsInvalidWindowPositionValue) {
+  const std::array<const char*, 7> args = {"manim-cpp",
+                                            "render",
+                                            "example_scene.cpp",
+                                            "--renderer",
+                                            "opengl",
+                                            "--window_position",
+                                            "north-east"};
+  EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data()), 2);
+}
+
+TEST(Cli, RenderRejectsInvalidWindowSizeValue) {
+  const std::array<const char*, 7> args = {"manim-cpp",
+                                            "render",
+                                            "example_scene.cpp",
+                                            "--renderer",
+                                            "opengl",
+                                            "--window_size",
+                                            "1280x720"};
+  EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data()), 2);
+}
+
+TEST(Cli, RenderWatchOnlyKeepsWindowClosedByDefault) {
+  const std::array<const char*, 6> args = {
+      "manim-cpp", "render", "example_scene.cpp", "--renderer", "opengl", "--watch"};
+
+  std::ostringstream out_capture;
+  std::streambuf* old_cout = std::cout.rdbuf(out_capture.rdbuf());
+  const int exit_code = manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data());
+  std::cout.rdbuf(old_cout);
+
+  EXPECT_EQ(exit_code, 0);
+  EXPECT_NE(out_capture.str().find("watch=true"), std::string::npos);
+  EXPECT_NE(out_capture.str().find("window_open=false"), std::string::npos);
 }
 
 TEST(Cli, AcceptsKnownScaffoldedSubcommands) {

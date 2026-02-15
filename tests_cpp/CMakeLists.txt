@@ -45,6 +45,7 @@ add_executable(
   unit/test_geometry_mobjects.cpp
   unit/test_value_tracker.cpp
   unit/test_renderer.cpp
+  unit/test_interaction.cpp
   unit/test_shader_paths.cpp
   cli/test_cli.cpp
   plugin/test_plugin_abi.cpp

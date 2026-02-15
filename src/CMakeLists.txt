@@ -21,6 +21,7 @@ add_library(
   manim_cpp/mobject/value_tracker.cpp
   manim_cpp/plugin/loader.cpp
   manim_cpp/renderer/cairo_renderer.cpp
+  manim_cpp/renderer/interaction.cpp
   manim_cpp/renderer/opengl_renderer.cpp
   manim_cpp/renderer/renderer.cpp
   manim_cpp/renderer/shader_paths.cpp

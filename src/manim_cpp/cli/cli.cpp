@@ -14,6 +14,7 @@
 
 #include "manim_cpp/config/config.hpp"
 #include "manim_cpp/plugin/loader.hpp"
+#include "manim_cpp/renderer/interaction.hpp"
 #include "manim_cpp/renderer/renderer.hpp"
 #include "manim_cpp/scene/media_format.hpp"
 #include "manim_cpp/scene/scene_file_writer.hpp"
@@ -384,8 +385,8 @@ int handle_render(const int argc, const char* const argv[]) {
   bool enable_gui = false;
   bool fullscreen = false;
   bool force_window = false;
-  std::string window_position = "UR";
-  std::string window_size = "default";
+  auto window_position = manim_cpp::renderer::WindowPosition{};
+  auto window_size = manim_cpp::renderer::WindowSize{};
   int window_monitor = 0;
   for (int i = 2; i < argc; ++i) {
     const std::string token = argv[i];
@@ -452,7 +453,13 @@ int handle_render(const int argc, const char* const argv[]) {
         std::cerr << "Missing value for --window_position.\n";
         return 2;
       }
-      window_position = argv[++i];
+      const auto parsed_position =
+          manim_cpp::renderer::parse_window_position(argv[++i]);
+      if (!parsed_position.has_value()) {
+        std::cerr << "Invalid value for --window_position: " << argv[i] << "\n";
+        return 2;
+      }
+      window_position = parsed_position.value();
       continue;
     }
     if (token == "--window_size") {
@@ -460,7 +467,12 @@ int handle_render(const int argc, const char* const argv[]) {
         std::cerr << "Missing value for --window_size.\n";
         return 2;
       }
-      window_size = argv[++i];
+      const auto parsed_size = manim_cpp::renderer::parse_window_size(argv[++i]);
+      if (!parsed_size.has_value()) {
+        std::cerr << "Invalid value for --window_size: " << argv[i] << "\n";
+        return 2;
+      }
+      window_size = parsed_size.value();
       continue;
     }
     if (token == "--window_monitor") {
@@ -491,6 +503,18 @@ int handle_render(const int argc, const char* const argv[]) {
     std::cerr << "Usage: manim-cpp render <input.cpp> [--renderer <cairo|opengl>]\n";
     return 2;
   }
+
+  manim_cpp::renderer::InteractionConfig interaction_config;
+  interaction_config.watch = watch;
+  interaction_config.interactive = interactive;
+  interaction_config.enable_gui = enable_gui;
+  interaction_config.fullscreen = fullscreen;
+  interaction_config.force_window = force_window;
+  interaction_config.window_monitor = window_monitor;
+  interaction_config.window_position = window_position;
+  interaction_config.window_size = window_size;
+  manim_cpp::renderer::InteractionSession interaction_session(interaction_config);
+  const bool window_open = interaction_session.should_open_window();
 
   if (!scene_name.empty()) {
     auto scene = manim_cpp::scene::SceneRegistry::instance().create(scene_name);
@@ -600,8 +624,10 @@ int handle_render(const int argc, const char* const argv[]) {
               << " gui=" << (enable_gui ? "true" : "false")
               << " fullscreen=" << (fullscreen ? "true" : "false")
               << " force_window=" << (force_window ? "true" : "false")
-              << " window_position=" << window_position
-              << " window_size=" << window_size
+              << " window_open=" << (window_open ? "true" : "false")
+              << " window_position="
+              << manim_cpp::renderer::to_string(window_position)
+              << " window_size=" << manim_cpp::renderer::to_string(window_size)
               << " window_monitor=" << window_monitor;
     if (output_file.has_value()) {
       std::cout << " output=" << output_file->generic_string();
@@ -621,8 +647,10 @@ int handle_render(const int argc, const char* const argv[]) {
             << " gui=" << (enable_gui ? "true" : "false")
             << " fullscreen=" << (fullscreen ? "true" : "false")
             << " force_window=" << (force_window ? "true" : "false")
-            << " window_position=" << window_position
-            << " window_size=" << window_size
+            << " window_open=" << (window_open ? "true" : "false")
+            << " window_position="
+            << manim_cpp::renderer::to_string(window_position)
+            << " window_size=" << manim_cpp::renderer::to_string(window_size)
             << " window_monitor=" << window_monitor << "\n";
   return 0;
 }
