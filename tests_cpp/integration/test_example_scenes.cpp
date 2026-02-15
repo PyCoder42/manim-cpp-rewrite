@@ -8,8 +8,8 @@
 
 namespace {
 
-TEST(ExampleScenes, RegistryCanCreateConvertedExampleScenes) {
-  const std::vector<std::string> expected_scene_names{
+std::vector<std::string> expected_scene_names() {
+  return {
       "OpeningManim",
       "SquareToCircle",
       "WarpSquare",
@@ -33,26 +33,22 @@ TEST(ExampleScenes, RegistryCanCreateConvertedExampleScenes) {
       "InteractiveDevelopment",
       "SurfaceExample",
   };
+}
 
-  for (const auto& scene_name : expected_scene_names) {
+TEST(ExampleScenes, RegistryCanCreateConvertedExampleScenes) {
+  const auto scenes = expected_scene_names();
+
+  for (const auto& scene_name : scenes) {
     auto scene = manim_cpp::scene::SceneRegistry::instance().create(scene_name);
     ASSERT_NE(scene, nullptr) << "Missing scene registration: " << scene_name;
     EXPECT_EQ(scene->scene_name(), scene_name);
   }
 }
 
-TEST(ExampleScenes, ConvertedBasicScenesRunWithoutThrowing) {
-  const std::vector<std::string> runnable_scene_names{
-      "OpeningManim",
-      "SquareToCircle",
-      "WarpSquare",
-      "WriteStuff",
-      "UpdatersExample",
-      "SpiralInExample",
-      "LineJoints",
-  };
+TEST(ExampleScenes, ConvertedExampleScenesRunWithoutThrowing) {
+  const auto scenes = expected_scene_names();
 
-  for (const auto& scene_name : runnable_scene_names) {
+  for (const auto& scene_name : scenes) {
     auto scene = manim_cpp::scene::SceneRegistry::instance().create(scene_name);
     ASSERT_NE(scene, nullptr) << "Missing scene registration: " << scene_name;
     EXPECT_NO_THROW(scene->run()) << "Scene failed to run: " << scene_name;
