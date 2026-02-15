@@ -48,6 +48,13 @@ add_executable(
   plugin/test_plugin_sdk.cpp
   migrate/test_migrate.cpp
   render_regression/test_control_data_npz.cpp
+  integration/test_example_scenes.cpp
+)
+
+target_sources(
+  manim_cpp_tests
+  PRIVATE
+    $<TARGET_OBJECTS:manim_cpp_example_scenes>
 )
 
 target_link_libraries(
