@@ -39,6 +39,7 @@ add_executable(
   unit/test_scene_file_writer.cpp
   unit/test_media_format.cpp
   unit/test_mobject.cpp
+  unit/test_graph_mobject.cpp
   unit/test_geometry_mobjects.cpp
   unit/test_value_tracker.cpp
   unit/test_renderer.cpp

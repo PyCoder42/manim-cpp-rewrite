@@ -14,6 +14,7 @@ add_library(
   manim_cpp/math/path_ops.cpp
   manim_cpp/math/triangulation.cpp
   manim_cpp/migrate/migrate.cpp
+  manim_cpp/mobject/graph.cpp
   manim_cpp/mobject/geometry.cpp
   manim_cpp/mobject/mobject.cpp
   manim_cpp/mobject/value_tracker.cpp
