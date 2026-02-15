@@ -50,6 +50,25 @@ std::string escape_json(const std::string& value) {
   return escaped;
 }
 
+std::string codec_hint_for_format(const std::string& format) {
+  if (format == "png") {
+    return "image/png-sequence";
+  }
+  if (format == "gif") {
+    return "gif";
+  }
+  if (format == "mp4") {
+    return "h264+aac";
+  }
+  if (format == "webm") {
+    return "vp9+opus";
+  }
+  if (format == "mov") {
+    return "prores+pcm";
+  }
+  return "unknown";
+}
+
 }  // namespace
 
 SceneFileWriter::SceneFileWriter(std::string scene_name)
@@ -115,6 +134,28 @@ void SceneFileWriter::add_audio_segment(const std::string& path,
       .start_seconds = start_seconds,
       .gain_db = gain_db,
   });
+}
+
+void SceneFileWriter::set_render_summary(
+    const std::size_t frame_count,
+    const std::size_t pixel_width,
+    const std::size_t pixel_height,
+    const double frame_rate,
+    const std::string& format,
+    std::optional<std::filesystem::path> output_file) {
+  if (pixel_width == 0 || pixel_height == 0 || frame_rate <= 0.0 || format.empty()) {
+    return;
+  }
+
+  render_summary_.frame_count = frame_count;
+  render_summary_.pixel_width = pixel_width;
+  render_summary_.pixel_height = pixel_height;
+  render_summary_.frame_rate = frame_rate;
+  render_summary_.format = format;
+  render_summary_.codec_hint = codec_hint_for_format(format);
+  render_summary_.duration_seconds =
+      static_cast<double>(frame_count) / frame_rate;
+  render_summary_.output_file = std::move(output_file);
 }
 
 std::optional<SceneOutputPaths> SceneFileWriter::resolve_output_paths(
@@ -219,7 +260,23 @@ bool SceneFileWriter::write_media_manifest(
     output << "\"gain_db\":" << segment.gain_db;
     output << "}";
   }
-  output << "]";
+  output << "],";
+
+  output << "\"render_summary\":{";
+  output << "\"frame_count\":" << render_summary_.frame_count << ",";
+  output << "\"pixel_width\":" << render_summary_.pixel_width << ",";
+  output << "\"pixel_height\":" << render_summary_.pixel_height << ",";
+  output << "\"frame_rate\":" << render_summary_.frame_rate << ",";
+  output << "\"format\":\"" << escape_json(render_summary_.format) << "\",";
+  output << "\"codec_hint\":\"" << escape_json(render_summary_.codec_hint) << "\",";
+  output << "\"duration_seconds\":" << render_summary_.duration_seconds << ",";
+  if (render_summary_.output_file.has_value()) {
+    output << "\"output_file\":\""
+           << escape_json(render_summary_.output_file->generic_string()) << "\"";
+  } else {
+    output << "\"output_file\":null";
+  }
+  output << "}";
 
   output << "}";
   return output.good();

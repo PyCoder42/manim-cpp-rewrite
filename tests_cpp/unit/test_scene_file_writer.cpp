@@ -1,5 +1,6 @@
 #include <filesystem>
 #include <fstream>
+#include <optional>
 #include <string>
 
 #include <gtest/gtest.h>
@@ -140,6 +141,7 @@ TEST(SceneFileWriter, WritesMediaManifestJson) {
   writer.end_animation(true);
   writer.add_subcaption("Intro subtitle", 0.0, 1.0);
   writer.add_audio_segment("intro.wav", 0.25, -3.0);
+  writer.set_render_summary(120, 1920, 1080, 60.0, "mp4", "media/videos/TestScene.mp4");
 
   const auto output_path =
       std::filesystem::temp_directory_path() / "manim_cpp_scene_manifest_test.json";
@@ -155,8 +157,30 @@ TEST(SceneFileWriter, WritesMediaManifestJson) {
   EXPECT_NE(content.find("Intro subtitle"), std::string::npos);
   EXPECT_NE(content.find("\"audio_segments\":"), std::string::npos);
   EXPECT_NE(content.find("intro.wav"), std::string::npos);
+  EXPECT_NE(content.find("\"render_summary\":"), std::string::npos);
+  EXPECT_NE(content.find("\"frame_count\":120"), std::string::npos);
+  EXPECT_NE(content.find("\"pixel_width\":1920"), std::string::npos);
+  EXPECT_NE(content.find("\"pixel_height\":1080"), std::string::npos);
+  EXPECT_NE(content.find("\"frame_rate\":60"), std::string::npos);
+  EXPECT_NE(content.find("\"format\":\"mp4\""), std::string::npos);
+  EXPECT_NE(content.find("\"codec_hint\":\"h264+aac\""), std::string::npos);
+  EXPECT_NE(content.find("\"duration_seconds\":2"), std::string::npos);
+  EXPECT_NE(content.find("\"output_file\":\"media/videos/TestScene.mp4\""), std::string::npos);
 
   std::filesystem::remove(output_path);
+}
+
+TEST(SceneFileWriter, IgnoresInvalidRenderSummaryInputs) {
+  manim_cpp::scene::SceneFileWriter writer("TestScene");
+  writer.set_render_summary(100, 0, 1080, 60.0, "mp4", std::nullopt);
+
+  EXPECT_EQ(writer.render_summary().frame_count, static_cast<size_t>(0));
+  EXPECT_EQ(writer.render_summary().pixel_width, static_cast<size_t>(0));
+  EXPECT_EQ(writer.render_summary().pixel_height, static_cast<size_t>(0));
+  EXPECT_DOUBLE_EQ(writer.render_summary().frame_rate, 0.0);
+  EXPECT_EQ(writer.render_summary().format, std::string("mp4"));
+  EXPECT_EQ(writer.render_summary().codec_hint, std::string("unknown"));
+  EXPECT_DOUBLE_EQ(writer.render_summary().duration_seconds, 0.0);
 }
 
 TEST(SceneFileWriter, ResolvesOutputDirectoriesFromConfigTemplates) {

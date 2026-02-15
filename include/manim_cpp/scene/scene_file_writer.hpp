@@ -29,6 +29,17 @@ struct SceneOutputPaths {
   std::filesystem::path partial_movie_dir;
 };
 
+struct RenderSummary {
+  std::size_t frame_count = 0;
+  std::size_t pixel_width = 0;
+  std::size_t pixel_height = 0;
+  double frame_rate = 0.0;
+  std::string format = "mp4";
+  std::string codec_hint = "unknown";
+  double duration_seconds = 0.0;
+  std::optional<std::filesystem::path> output_file;
+};
+
 class SceneFileWriter {
  public:
   explicit SceneFileWriter(std::string scene_name);
@@ -45,6 +56,12 @@ class SceneFileWriter {
   void add_audio_segment(const std::string& path,
                          double start_seconds,
                          double gain_db);
+  void set_render_summary(std::size_t frame_count,
+                          std::size_t pixel_width,
+                          std::size_t pixel_height,
+                          double frame_rate,
+                          const std::string& format,
+                          std::optional<std::filesystem::path> output_file);
   std::optional<SceneOutputPaths> resolve_output_paths(
       const manim_cpp::config::ManimConfig& config,
       const std::string& module_name,
@@ -56,12 +73,14 @@ class SceneFileWriter {
   const std::vector<Section>& sections() const { return sections_; }
   const std::vector<Subcaption>& subcaptions() const { return subcaptions_; }
   const std::vector<AudioSegment>& audio_segments() const { return audio_segments_; }
+  const RenderSummary& render_summary() const { return render_summary_; }
 
  private:
   std::string scene_name_;
   std::vector<Section> sections_;
   std::vector<Subcaption> subcaptions_;
   std::vector<AudioSegment> audio_segments_;
+  RenderSummary render_summary_;
   bool animation_active_ = false;
   bool active_animation_writes_frames_ = false;
   std::size_t rendered_animation_count_ = 0;
