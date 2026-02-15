@@ -25,7 +25,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Docs scaffold in `docs/book/` and `docs/api/`
 - [x] Non-Python tooling scaffold in `tools/`
 - [x] Top-level CMake and presets added
-- [ ] Legacy Python removal (deferred to final cutover)
+- [x] Legacy Python removal (completed cutover; zero tracked Python files)
 
 ### Implementation Workstreams and Milestones
 - [x] Milestone A: Foundation and build skeleton
@@ -115,6 +115,8 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone L.8: Converted `example_scenes/opengl.py` to compiled C++ scene stubs; `example_scenes/` is now Python-free
 - [x] Milestone L.9: Replaced `scripts/extract_frames.py` with `manim-cpp-extract-frames` (C++) + `scripts/extract_frames.sh`, reducing allowlist to `manim/*`, `tests/*`, and `scripts/dev_changelog.py`
 - [x] Milestone L.10: Removed legacy `manim/` and `tests/` Python sources from the tracked tree; transitional allowlist now contains only `scripts/dev_changelog.py`
+- [x] Milestone L.11: Replaced `scripts/dev_changelog.py` with `scripts/dev_changelog.sh` (non-Python) and removed the final tracked Python source file
+- [x] Milestone L.12: Emptied `config/python_allowlist.txt` to transition CI from transitional allowlist mode to strict zero-Python enforcement mode
 
 ### Detailed Subsystem Mapping (Source-to-Source Intent)
 - [ ] `manim/mobject` -> `src/manim_cpp/mobject`
@@ -135,7 +137,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [ ] Plugin ABI integration tests (all platforms)
 - [x] Migration utility integration tests
 - [x] Docs/i18n build and catalog continuity checks
-- [ ] Strict zero-Python gate passing on mainline
+- [x] Strict zero-Python gate passing on mainline
 
 ### Rollout and Branching Strategy
 - [x] Use phased cutover via `codex/*` branch workflow
