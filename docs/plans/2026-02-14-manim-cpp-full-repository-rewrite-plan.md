@@ -57,6 +57,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone D.1: Renderer type parsing, string conversion, and factory creation for Cairo/OpenGL backends
 - [x] Milestone D.2: Cairo renderer deterministic frame naming + static-frame signature dedupe scaffold
 - [x] Milestone D.3: Scene output directory planning resolves deterministic image/video/partial paths from `manim.cfg` templates (`module_name`, `quality`, `scene_name`)
+- [x] Milestone D.4: Camera configuration scaffold now supports deterministic frame rate, pixel-size, and aspect-ratio contracts with unit coverage
 - [ ] Milestone E: OpenGL backend + interaction parity
 - [x] Milestone E.1: Shader root discovery supports `MANIM_CPP_SHADER_ROOT` override for runtime/packaged deployments
 - [x] Milestone E.2: OpenGL renderer shader root/path helpers for deterministic program-stage shader resolution

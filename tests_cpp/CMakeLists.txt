@@ -25,6 +25,7 @@ add_executable(
   manim_cpp_tests
   unit/test_scene_registry.cpp
   unit/test_config.cpp
+  unit/test_camera.cpp
   unit/test_math_core.cpp
   unit/test_eigen_adapter.cpp
   unit/test_triangulation.cpp
