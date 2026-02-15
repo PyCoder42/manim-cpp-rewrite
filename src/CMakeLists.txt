@@ -16,6 +16,7 @@ add_library(
   manim_cpp/migrate/migrate.cpp
   manim_cpp/mobject/geometry.cpp
   manim_cpp/mobject/mobject.cpp
+  manim_cpp/mobject/value_tracker.cpp
   manim_cpp/plugin/loader.cpp
   manim_cpp/renderer/cairo_renderer.cpp
   manim_cpp/renderer/opengl_renderer.cpp
