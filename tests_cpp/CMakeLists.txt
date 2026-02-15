@@ -106,3 +106,9 @@ add_test(
   COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_legacy_python_workflows.sh
           ${PROJECT_SOURCE_DIR}
 )
+
+add_test(
+  NAME CxxReleaseWorkflowCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_cxx_release_workflow.sh
+          ${PROJECT_SOURCE_DIR}
+)

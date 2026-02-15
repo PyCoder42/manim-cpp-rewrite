@@ -128,6 +128,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone L.10: Removed legacy `manim/` and `tests/` Python sources from the tracked tree; transitional allowlist now contains only `scripts/dev_changelog.py`
 - [x] Milestone L.11: Replaced `scripts/dev_changelog.py` with `scripts/dev_changelog.sh` (non-Python) and removed the final tracked Python source file
 - [x] Milestone L.12: Emptied `config/python_allowlist.txt` to transition CI from transitional allowlist mode to strict zero-Python enforcement mode
+- [x] Milestone L.13: Added cross-platform `cxx-release.yml` artifact pipeline + non-Python release workflow enforcement (`CxxReleaseWorkflowCheck`)
 
 ### Detailed Subsystem Mapping (Source-to-Source Intent)
 - [ ] `manim/mobject` -> `src/manim_cpp/mobject`
