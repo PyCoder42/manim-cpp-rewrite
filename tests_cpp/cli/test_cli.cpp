@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <string>
 
 #include <gtest/gtest.h>
 
@@ -21,6 +22,24 @@ class CliRenderSmokeScene : public manim_cpp::scene::Scene {
 };
 
 MANIM_REGISTER_SCENE(CliRenderSmokeScene);
+
+class ScopedCurrentPath {
+ public:
+  explicit ScopedCurrentPath(const std::filesystem::path& next_path)
+      : previous_(std::filesystem::current_path()) {
+    std::filesystem::current_path(next_path);
+  }
+  ~ScopedCurrentPath() { std::filesystem::current_path(previous_); }
+
+ private:
+  std::filesystem::path previous_;
+};
+
+std::string read_file(const std::filesystem::path& path) {
+  std::ifstream input(path);
+  return std::string((std::istreambuf_iterator<char>(input)),
+                     std::istreambuf_iterator<char>());
+}
 
 }  // namespace
 
@@ -108,6 +127,74 @@ TEST(Cli, RenderFailsForUnknownSceneWhenSceneFlagIsProvided) {
   const std::array<const char*, 5> args = {
       "manim-cpp", "render", "example_scene.cpp", "--scene", "MissingScene"};
   EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data()), 2);
+}
+
+TEST(Cli, RenderSceneWritesConfiguredMediaArtifacts) {
+  g_cli_render_scene_runs = 0;
+  const auto temp_root =
+      std::filesystem::temp_directory_path() / "manim_cpp_cli_render_scene_outputs";
+  std::filesystem::remove_all(temp_root);
+  std::filesystem::create_directories(temp_root);
+
+  std::ofstream cfg(temp_root / "manim.cfg");
+  cfg << "[CLI]\n";
+  cfg << "media_dir = ./media\n";
+  cfg << "video_dir = {media_dir}/videos/{module_name}/{quality}\n";
+  cfg << "images_dir = {media_dir}/images/{module_name}\n";
+  cfg << "partial_movie_dir = {video_dir}/partial_movie_files/{scene_name}\n";
+  cfg << "pixel_width = 1280\n";
+  cfg << "pixel_height = 720\n";
+  cfg << "frame_rate = 30\n";
+  cfg.close();
+
+  std::ofstream input_scene(temp_root / "demo_scene.cpp");
+  input_scene << "// placeholder\n";
+  input_scene.close();
+
+  {
+    ScopedCurrentPath scoped_path(temp_root);
+    const std::array<const char*, 9> args = {"manim-cpp",
+                                             "render",
+                                             "demo_scene.cpp",
+                                             "--scene",
+                                             "CliRenderSmokeScene",
+                                             "--renderer",
+                                             "cairo",
+                                             "--format",
+                                             "webm"};
+
+    std::ostringstream out_capture;
+    std::streambuf* old_cout = std::cout.rdbuf(out_capture.rdbuf());
+    const int exit_code =
+        manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data());
+    std::cout.rdbuf(old_cout);
+
+    EXPECT_EQ(exit_code, 0);
+    EXPECT_EQ(g_cli_render_scene_runs, 1);
+    EXPECT_NE(out_capture.str().find("Rendered registered scene: CliRenderSmokeScene"),
+              std::string::npos);
+    EXPECT_NE(out_capture.str().find("format=webm"), std::string::npos);
+    EXPECT_NE(out_capture.str().find("size=1280x720"), std::string::npos);
+    EXPECT_NE(out_capture.str().find("fps=30"), std::string::npos);
+  }
+
+  const auto media_root = temp_root / "media" / "videos" / "demo_scene" / "720p30";
+  const auto output_file = media_root / "CliRenderSmokeScene.webm";
+  const auto manifest_file = media_root / "CliRenderSmokeScene.json";
+  const auto subcaption_file = media_root / "CliRenderSmokeScene.srt";
+
+  EXPECT_TRUE(std::filesystem::exists(output_file));
+  EXPECT_TRUE(std::filesystem::exists(manifest_file));
+  EXPECT_TRUE(std::filesystem::exists(subcaption_file));
+
+  const std::string manifest = read_file(manifest_file);
+  EXPECT_NE(manifest.find("\"scene\":\"CliRenderSmokeScene\""), std::string::npos);
+  EXPECT_NE(manifest.find("\"format\":\"webm\""), std::string::npos);
+  EXPECT_NE(manifest.find("\"codec_hint\":\"vp9+opus\""), std::string::npos);
+  EXPECT_NE(manifest.find("\"pixel_width\":1280"), std::string::npos);
+  EXPECT_NE(manifest.find("\"pixel_height\":720"), std::string::npos);
+
+  std::filesystem::remove_all(temp_root);
 }
 
 TEST(Cli, RenderAcceptsWatchAndInteractiveFlags) {

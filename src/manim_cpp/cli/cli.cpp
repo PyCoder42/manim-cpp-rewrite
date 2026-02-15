@@ -4,6 +4,7 @@
 #include <climits>
 #include <cstdlib>
 #include <cerrno>
+#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -15,6 +16,7 @@
 #include "manim_cpp/plugin/loader.hpp"
 #include "manim_cpp/renderer/renderer.hpp"
 #include "manim_cpp/scene/media_format.hpp"
+#include "manim_cpp/scene/scene_file_writer.hpp"
 #include "manim_cpp/scene/registry.hpp"
 #include "manim_cpp/version.hpp"
 
@@ -148,6 +150,21 @@ bool parse_int_strict(const std::string& value, int* output) {
     return false;
   }
   *output = static_cast<int>(parsed);
+  return true;
+}
+
+bool parse_double_strict(const std::string& value, double* output) {
+  if (value.empty() || output == nullptr) {
+    return false;
+  }
+
+  char* end = nullptr;
+  errno = 0;
+  const double parsed = std::strtod(value.c_str(), &end);
+  if (errno != 0 || end == value.c_str() || *end != '\0' || !std::isfinite(parsed)) {
+    return false;
+  }
+  *output = parsed;
   return true;
 }
 
@@ -482,8 +499,100 @@ int handle_render(const int argc, const char* const argv[]) {
       return 2;
     }
     scene->run();
+
+    manim_cpp::config::ManimConfig config;
+    std::vector<std::filesystem::path> config_chain;
+    const auto default_cfg = default_cfg_template_path();
+    if (!default_cfg.empty()) {
+      config_chain.push_back(default_cfg);
+    }
+    const auto local_cfg = std::filesystem::current_path() / "manim.cfg";
+    if (std::filesystem::exists(local_cfg)) {
+      config_chain.push_back(local_cfg);
+    }
+    if (!config_chain.empty()) {
+      if (!config.load_with_precedence(config_chain)) {
+        std::cerr << "Failed to load config chain for render.\n";
+        return 2;
+      }
+    }
+
+    int pixel_width = 1920;
+    int pixel_height = 1080;
+    double frame_rate = 60.0;
+    parse_int_strict(config.get("CLI", "pixel_width", "1920"), &pixel_width);
+    parse_int_strict(config.get("CLI", "pixel_height", "1080"), &pixel_height);
+    parse_double_strict(config.get("CLI", "frame_rate", "60"), &frame_rate);
+    if (pixel_width <= 0) {
+      pixel_width = 1920;
+    }
+    if (pixel_height <= 0) {
+      pixel_height = 1080;
+    }
+    if (frame_rate <= 0.0) {
+      frame_rate = 60.0;
+    }
+
+    const auto quality =
+        std::to_string(pixel_height) + "p" + std::to_string(static_cast<int>(std::llround(frame_rate)));
+    const auto module_name = input_file.stem().string();
+    const auto scene_output_extension = "." + manim_cpp::scene::to_string(media_format);
+
+    manim_cpp::scene::SceneFileWriter writer(scene->scene_name());
+    const double elapsed_seconds = scene->time_seconds();
+    const std::size_t frame_count =
+        elapsed_seconds > 0.0
+            ? static_cast<std::size_t>(std::llround(elapsed_seconds * frame_rate))
+            : static_cast<std::size_t>(1);
+    std::optional<std::filesystem::path> output_file = std::nullopt;
+    std::optional<std::filesystem::path> manifest_path = std::nullopt;
+    std::optional<std::filesystem::path> subcaption_path = std::nullopt;
+
+    const auto output_paths = writer.resolve_output_paths(config, module_name, quality);
+    if (output_paths.has_value()) {
+      std::filesystem::create_directories(output_paths->images_dir);
+      std::filesystem::create_directories(output_paths->video_dir);
+      std::filesystem::create_directories(output_paths->partial_movie_dir);
+
+      output_file = output_paths->video_dir / (scene->scene_name() + scene_output_extension);
+      manifest_path = output_paths->video_dir / (scene->scene_name() + ".json");
+      subcaption_path = output_paths->video_dir / (scene->scene_name() + ".srt");
+    }
+
+    writer.set_render_summary(frame_count,
+                              static_cast<std::size_t>(pixel_width),
+                              static_cast<std::size_t>(pixel_height),
+                              frame_rate,
+                              manim_cpp::scene::to_string(media_format),
+                              output_file);
+
+    if (output_file.has_value()) {
+      std::ofstream output_media(output_file.value());
+      if (!output_media.is_open()) {
+        std::cerr << "Failed to create render output file: " << output_file.value() << "\n";
+        return 2;
+      }
+      output_media << "";
+      output_media.close();
+    }
+    if (subcaption_path.has_value()) {
+      if (!writer.write_subcaptions_srt(subcaption_path.value())) {
+        std::cerr << "Failed to write subcaptions file: " << subcaption_path.value() << "\n";
+        return 2;
+      }
+    }
+    if (manifest_path.has_value()) {
+      if (!writer.write_media_manifest(manifest_path.value())) {
+        std::cerr << "Failed to write media manifest: " << manifest_path.value() << "\n";
+        return 2;
+      }
+    }
+
     std::cout << "Rendered registered scene: " << scene->scene_name()
               << " elapsed=" << scene->time_seconds() << "s"
+              << " frames=" << frame_count
+              << " size=" << pixel_width << "x" << pixel_height
+              << " fps=" << frame_rate
               << " renderer=" << manim_cpp::renderer::to_string(renderer_type)
               << " format=" << manim_cpp::scene::to_string(media_format)
               << " watch=" << (watch ? "true" : "false")
@@ -493,7 +602,14 @@ int handle_render(const int argc, const char* const argv[]) {
               << " force_window=" << (force_window ? "true" : "false")
               << " window_position=" << window_position
               << " window_size=" << window_size
-              << " window_monitor=" << window_monitor << "\n";
+              << " window_monitor=" << window_monitor;
+    if (output_file.has_value()) {
+      std::cout << " output=" << output_file->generic_string();
+    }
+    if (manifest_path.has_value()) {
+      std::cout << " manifest=" << manifest_path->generic_string();
+    }
+    std::cout << "\n";
     return 0;
   }
 
