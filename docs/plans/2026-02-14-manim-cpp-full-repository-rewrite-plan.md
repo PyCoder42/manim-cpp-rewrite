@@ -50,6 +50,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone C.4: Animation run-time and rate-function support integrated into `Scene::play`
 - [x] Milestone C.5: Base `Mobject` scene-graph node supports child lists, center transforms, and opacity state
 - [x] Milestone C.6: `Scene` tracks unique mobject instances with add/remove/clear semantics
+- [x] Milestone C.7: Added concrete geometry mobjects (`Dot`, `Circle`, `Square`) with deterministic radius/vertex contracts and C++ unit coverage
 - [ ] Milestone D: Cairo backend parity
 - [x] Milestone D.1: Renderer type parsing, string conversion, and factory creation for Cairo/OpenGL backends
 - [x] Milestone D.2: Cairo renderer deterministic frame naming + static-frame signature dedupe scaffold

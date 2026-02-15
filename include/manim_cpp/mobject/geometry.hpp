@@ -1,0 +1,48 @@
+#pragma once
+
+#include <vector>
+
+#include "manim_cpp/math/core.hpp"
+#include "manim_cpp/mobject/mobject.hpp"
+
+namespace manim_cpp::mobject {
+
+class Dot : public Mobject {
+ public:
+  explicit Dot(double radius = 0.08);
+
+  [[nodiscard]] std::string debug_name() const override { return "Dot"; }
+  [[nodiscard]] double radius() const;
+  void set_radius(double radius);
+
+ private:
+  double radius_ = 0.08;
+};
+
+class Circle : public Mobject {
+ public:
+  explicit Circle(double radius = 1.0);
+
+  [[nodiscard]] std::string debug_name() const override { return "Circle"; }
+  [[nodiscard]] double radius() const;
+  void set_radius(double radius);
+  [[nodiscard]] math::Vec3 point_at_angle(double angle_radians) const;
+
+ private:
+  double radius_ = 1.0;
+};
+
+class Square : public Mobject {
+ public:
+  explicit Square(double side_length = 2.0);
+
+  [[nodiscard]] std::string debug_name() const override { return "Square"; }
+  [[nodiscard]] double side_length() const;
+  void set_side_length(double side_length);
+  [[nodiscard]] std::vector<math::Vec3> vertices() const;
+
+ private:
+  double side_length_ = 2.0;
+};
+
+}  // namespace manim_cpp::mobject
