@@ -78,3 +78,23 @@ TEST(Renderer, OpenGLRendererBuildsShaderPathFromProgramAndStage) {
   EXPECT_EQ(renderer.shader_path("surface", "frag"),
             temp_root / "surface.frag");
 }
+
+TEST(Renderer, OpenGLRendererGeneratesDeterministicFrameFileNames) {
+  manim_cpp::renderer::OpenGLRenderer renderer;
+
+  EXPECT_EQ(renderer.frame_file_name("DemoScene", 3),
+            std::string("DemoScene_000003.png"));
+  EXPECT_EQ(renderer.frame_file_name("DemoScene", 128),
+            std::string("DemoScene_000128.png"));
+}
+
+TEST(Renderer, OpenGLRendererSkipsDuplicateStaticFrameSignatures) {
+  manim_cpp::renderer::OpenGLRenderer renderer;
+
+  EXPECT_TRUE(renderer.should_render_for_signature("frame-hash-a"));
+  EXPECT_FALSE(renderer.should_render_for_signature("frame-hash-a"));
+  EXPECT_TRUE(renderer.should_render_for_signature("frame-hash-b"));
+
+  renderer.reset_frame_cache();
+  EXPECT_TRUE(renderer.should_render_for_signature("frame-hash-a"));
+}
