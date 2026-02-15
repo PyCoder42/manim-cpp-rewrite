@@ -25,9 +25,12 @@ add_library(
   manim_cpp/renderer/renderer.cpp
   manim_cpp/renderer/shader_paths.cpp
   manim_cpp/scene/media_format.cpp
+  manim_cpp/scene/moving_camera_scene.cpp
   manim_cpp/scene/registry.cpp
   manim_cpp/scene/scene_file_writer.cpp
   manim_cpp/scene/scene.cpp
+  manim_cpp/scene/three_d_scene.cpp
+  manim_cpp/scene/zoomed_scene.cpp
   manim_cpp/testing/npz_archive.cpp
 )
 
