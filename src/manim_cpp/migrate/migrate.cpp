@@ -131,6 +131,24 @@ bool is_numeric_literal(const std::string& text) {
   return std::regex_match(text, kPattern);
 }
 
+std::optional<std::string> parse_wait_argument(const std::string& argument) {
+  if (argument.empty()) {
+    return std::string("1.0");
+  }
+  if (is_numeric_literal(argument)) {
+    return argument;
+  }
+
+  static const std::regex kDurationKeywordPattern(
+      R"(^duration\s*=\s*([+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+))$)",
+      std::regex_constants::ECMAScript);
+  std::smatch keyword_match;
+  if (std::regex_match(argument, keyword_match, kDurationKeywordPattern)) {
+    return keyword_match[1].str();
+  }
+  return std::nullopt;
+}
+
 std::optional<std::string> translate_construct_call(const std::string& call) {
   static const std::regex kWaitPattern(
       R"(^self\.wait\(([^)]*)\)$)",
@@ -142,11 +160,9 @@ std::optional<std::string> translate_construct_call(const std::string& call) {
   std::smatch match;
   if (std::regex_match(call, match, kWaitPattern)) {
     const std::string argument = trim(match[1].str());
-    if (argument.empty()) {
-      return "wait(1.0);";
-    }
-    if (is_numeric_literal(argument)) {
-      return "wait(" + argument + ");";
+    const auto parsed_wait_argument = parse_wait_argument(argument);
+    if (parsed_wait_argument.has_value()) {
+      return "wait(" + parsed_wait_argument.value() + ");";
     }
     return std::nullopt;
   }

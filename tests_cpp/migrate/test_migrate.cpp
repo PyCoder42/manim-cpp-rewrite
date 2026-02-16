@@ -83,6 +83,23 @@ TEST(MigrateTool, TranslatesWaitWithoutArgumentsAndClearCall) {
   EXPECT_NE(report.find("translated_calls=2"), std::string::npos);
 }
 
+TEST(MigrateTool, TranslatesWaitDurationKeywordLiteral) {
+  const std::string source =
+      "from manim import *\n"
+      "class Demo(Scene):\n"
+      "    def construct(self):\n"
+      "        self.wait(duration=2.5)\n";
+
+  std::string report;
+  const std::string converted =
+      manim_cpp::migrate::translate_python_scene_to_cpp(source, &report);
+
+  EXPECT_NE(converted.find("wait(2.5);"), std::string::npos);
+  EXPECT_EQ(converted.find("TODO(migrate): original call -> self.wait(duration=2.5)"),
+            std::string::npos);
+  EXPECT_NE(report.find("translated_calls=1"), std::string::npos);
+}
+
 TEST(MigrateTool, WritesReportFileWhenRequested) {
   const auto temp_root = std::filesystem::temp_directory_path() / "manim_cpp_migrate_report";
   std::filesystem::remove_all(temp_root);
