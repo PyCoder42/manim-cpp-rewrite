@@ -11,7 +11,14 @@ namespace {
 using manim_cpp::math::Vec3;
 using manim_cpp::mobject::Circle;
 using manim_cpp::mobject::Dot;
+using manim_cpp::mobject::Line;
 using manim_cpp::mobject::Square;
+
+void expect_vec3_near(const Vec3& actual, const Vec3& expected, const double eps = 1e-12) {
+  EXPECT_NEAR(actual[0], expected[0], eps);
+  EXPECT_NEAR(actual[1], expected[1], eps);
+  EXPECT_NEAR(actual[2], expected[2], eps);
+}
 
 TEST(GeometryMobjects, DotMaintainsPositiveRadius) {
   Dot dot;
@@ -54,6 +61,42 @@ TEST(GeometryMobjects, SquareVerticesTrackCenterAndSideLength) {
   const auto smaller_vertices = square.vertices();
   EXPECT_EQ(smaller_vertices[0], (Vec3{1.5, -1.5, 0.5}));
   EXPECT_THROW(square.set_side_length(0.0), std::invalid_argument);
+}
+
+TEST(GeometryMobjects, LineTracksEndpointsLengthAndDirection) {
+  Line line(Vec3{-2.0, 1.0, 0.0}, Vec3{4.0, 1.0, 0.0});
+
+  expect_vec3_near(line.start(), Vec3{-2.0, 1.0, 0.0});
+  expect_vec3_near(line.end(), Vec3{4.0, 1.0, 0.0});
+  expect_vec3_near(line.center(), Vec3{1.0, 1.0, 0.0});
+  EXPECT_NEAR(line.length(), 6.0, 1e-12);
+  expect_vec3_near(line.unit_vector(), Vec3{1.0, 0.0, 0.0});
+}
+
+TEST(GeometryMobjects, LineUpdatesEndpointsWhenMovedAndReparameterized) {
+  Line line(Vec3{0.0, 0.0, 0.0}, Vec3{0.0, 2.0, 0.0});
+
+  line.shift(Vec3{2.0, -1.0, 3.0});
+  expect_vec3_near(line.start(), Vec3{2.0, -1.0, 3.0});
+  expect_vec3_near(line.end(), Vec3{2.0, 1.0, 3.0});
+
+  line.move_to(Vec3{-3.0, 0.0, 2.0});
+  expect_vec3_near(line.start(), Vec3{-3.0, -1.0, 2.0});
+  expect_vec3_near(line.end(), Vec3{-3.0, 1.0, 2.0});
+
+  line.set_points(Vec3{1.0, 2.0, 3.0}, Vec3{4.0, 6.0, 3.0});
+  EXPECT_NEAR(line.length(), 5.0, 1e-12);
+  expect_vec3_near(line.start(), Vec3{1.0, 2.0, 3.0});
+  expect_vec3_near(line.end(), Vec3{4.0, 6.0, 3.0});
+  expect_vec3_near(line.unit_vector(), Vec3{0.6, 0.8, 0.0});
+}
+
+TEST(GeometryMobjects, LineRejectsDegenerateEndpoints) {
+  EXPECT_THROW(Line(Vec3{1.0, 1.0, 1.0}, Vec3{1.0, 1.0, 1.0}), std::invalid_argument);
+
+  Line line;
+  EXPECT_THROW(line.set_points(Vec3{2.0, 2.0, 2.0}, Vec3{2.0, 2.0, 2.0}),
+               std::invalid_argument);
 }
 
 }  // namespace

@@ -45,4 +45,21 @@ class Square : public Mobject {
   double side_length_ = 2.0;
 };
 
+class Line : public Mobject {
+ public:
+  Line(math::Vec3 start = math::Vec3{0.0, 0.0, 0.0},
+       math::Vec3 end = math::Vec3{1.0, 0.0, 0.0});
+
+  [[nodiscard]] std::string debug_name() const override { return "Line"; }
+  [[nodiscard]] math::Vec3 start() const;
+  [[nodiscard]] math::Vec3 end() const;
+  [[nodiscard]] math::Vec3 unit_vector() const;
+  [[nodiscard]] double length() const;
+  void set_points(const math::Vec3& start, const math::Vec3& end);
+
+ private:
+  math::Vec3 unit_vector_{1.0, 0.0, 0.0};
+  double length_ = 1.0;
+};
+
 }  // namespace manim_cpp::mobject

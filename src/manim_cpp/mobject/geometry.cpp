@@ -15,6 +15,22 @@ double require_positive(const double value, const char* field_name) {
   return value;
 }
 
+math::Vec3 subtract(const math::Vec3& a, const math::Vec3& b) {
+  return math::Vec3{a[0] - b[0], a[1] - b[1], a[2] - b[2]};
+}
+
+math::Vec3 scale(const math::Vec3& a, const double factor) {
+  return math::Vec3{a[0] * factor, a[1] * factor, a[2] * factor};
+}
+
+math::Vec3 midpoint(const math::Vec3& a, const math::Vec3& b) {
+  return math::Vec3{(a[0] + b[0]) / 2.0, (a[1] + b[1]) / 2.0, (a[2] + b[2]) / 2.0};
+}
+
+double norm(const math::Vec3& a) {
+  return std::sqrt((a[0] * a[0]) + (a[1] * a[1]) + (a[2] * a[2]));
+}
+
 }  // namespace
 
 Dot::Dot(const double radius) : radius_(require_positive(radius, "radius")) {}
@@ -60,6 +76,37 @@ std::vector<math::Vec3> Square::vertices() const {
       math::Vec3{c[0] + half, c[1] + half, c[2]},
       math::Vec3{c[0] - half, c[1] + half, c[2]},
   };
+}
+
+Line::Line(const math::Vec3 start, const math::Vec3 end) {
+  set_points(start, end);
+}
+
+math::Vec3 Line::start() const {
+  const auto half = scale(unit_vector_, length_ / 2.0);
+  return subtract(center(), half);
+}
+
+math::Vec3 Line::end() const {
+  const auto half = scale(unit_vector_, length_ / 2.0);
+  const auto& c = center();
+  return math::Vec3{c[0] + half[0], c[1] + half[1], c[2] + half[2]};
+}
+
+math::Vec3 Line::unit_vector() const { return unit_vector_; }
+
+double Line::length() const { return length_; }
+
+void Line::set_points(const math::Vec3& start, const math::Vec3& end) {
+  const auto delta = subtract(end, start);
+  const auto length = norm(delta);
+  if (length <= 0.0) {
+    throw std::invalid_argument("line endpoints must be distinct");
+  }
+
+  length_ = length;
+  unit_vector_ = scale(delta, 1.0 / length_);
+  move_to(midpoint(start, end));
 }
 
 }  // namespace manim_cpp::mobject
