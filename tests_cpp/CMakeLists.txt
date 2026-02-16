@@ -120,3 +120,23 @@ add_test(
   COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_cxx_release_workflow.sh
           ${PROJECT_SOURCE_DIR}
 )
+
+add_test(
+  NAME CliAliasManimVersion
+  COMMAND $<TARGET_FILE:manim> --version
+)
+set_tests_properties(
+  CliAliasManimVersion
+  PROPERTIES
+    PASS_REGULAR_EXPRESSION "manim-cpp v"
+)
+
+add_test(
+  NAME CliAliasManimceVersion
+  COMMAND $<TARGET_FILE:manimce> --version
+)
+set_tests_properties(
+  CliAliasManimceVersion
+  PROPERTIES
+    PASS_REGULAR_EXPRESSION "manim-cpp v"
+)

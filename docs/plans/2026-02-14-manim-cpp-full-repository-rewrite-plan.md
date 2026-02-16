@@ -101,6 +101,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone G.14: `ManimConfig::resolve_path` expands nested `{...}` directory templates (CLI/custom_folders) with explicit substitution inputs
 - [x] Milestone G.15: `render --help` now emits detailed option contract (renderer/format/watch/interactive/window flags) with CLI compatibility test coverage
 - [x] Milestone G.16: `render --scene <SceneName>` now resolves and executes registered C++ scenes via `SceneRegistry`, with explicit unknown-scene failure coverage
+- [x] Milestone G.17: Added explicit alias compatibility checks so `manim --version` and `manimce --version` are enforced in `ctest`
 - [x] Milestone H: Plugin system parity
 - [x] Milestone H.1: Plugin discovery by shared-library extension + host ABI version gate
 - [x] Milestone H.2: Batch plugin loading API with deterministic failure aggregation
@@ -125,6 +126,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.4: Added example-scene registry/run integration coverage by linking converted C++ `example_scenes` into `manim_cpp_tests`
 - [x] Milestone J.5: Expanded example-scene integration coverage so every converted C++ scene registration executes `run()` without throwing
 - [x] Milestone J.6: Replaced TODO-only bodies in converted advanced/custom/OpenGL example scenes with deterministic runnable C++ animation scaffolds
+- [x] Milestone J.7: Added non-Python CTest coverage for CLI alias binaries (`manim`, `manimce`) to enforce one-major-version compatibility contract
 - [ ] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers
