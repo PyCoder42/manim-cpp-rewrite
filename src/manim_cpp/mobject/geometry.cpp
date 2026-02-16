@@ -78,6 +78,34 @@ std::vector<math::Vec3> Square::vertices() const {
   };
 }
 
+Rectangle::Rectangle(const double width, const double height)
+    : width_(require_positive(width, "width")),
+      height_(require_positive(height, "height")) {}
+
+double Rectangle::width() const { return width_; }
+
+double Rectangle::height() const { return height_; }
+
+void Rectangle::set_width(const double width) {
+  width_ = require_positive(width, "width");
+}
+
+void Rectangle::set_height(const double height) {
+  height_ = require_positive(height, "height");
+}
+
+std::vector<math::Vec3> Rectangle::vertices() const {
+  const auto& c = center();
+  const double half_width = width_ / 2.0;
+  const double half_height = height_ / 2.0;
+  return {
+      math::Vec3{c[0] - half_width, c[1] - half_height, c[2]},
+      math::Vec3{c[0] + half_width, c[1] - half_height, c[2]},
+      math::Vec3{c[0] + half_width, c[1] + half_height, c[2]},
+      math::Vec3{c[0] - half_width, c[1] + half_height, c[2]},
+  };
+}
+
 Line::Line(const math::Vec3 start, const math::Vec3 end) {
   set_points(start, end);
 }

@@ -45,6 +45,22 @@ class Square : public Mobject {
   double side_length_ = 2.0;
 };
 
+class Rectangle : public Mobject {
+ public:
+  Rectangle(double width = 4.0, double height = 2.0);
+
+  [[nodiscard]] std::string debug_name() const override { return "Rectangle"; }
+  [[nodiscard]] double width() const;
+  [[nodiscard]] double height() const;
+  void set_width(double width);
+  void set_height(double height);
+  [[nodiscard]] std::vector<math::Vec3> vertices() const;
+
+ private:
+  double width_ = 4.0;
+  double height_ = 2.0;
+};
+
 class Line : public Mobject {
  public:
   Line(math::Vec3 start = math::Vec3{0.0, 0.0, 0.0},

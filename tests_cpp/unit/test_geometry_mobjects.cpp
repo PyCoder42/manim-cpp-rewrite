@@ -12,6 +12,7 @@ using manim_cpp::math::Vec3;
 using manim_cpp::mobject::Circle;
 using manim_cpp::mobject::Dot;
 using manim_cpp::mobject::Line;
+using manim_cpp::mobject::Rectangle;
 using manim_cpp::mobject::Square;
 
 void expect_vec3_near(const Vec3& actual, const Vec3& expected, const double eps = 1e-12) {
@@ -61,6 +62,30 @@ TEST(GeometryMobjects, SquareVerticesTrackCenterAndSideLength) {
   const auto smaller_vertices = square.vertices();
   EXPECT_EQ(smaller_vertices[0], (Vec3{1.5, -1.5, 0.5}));
   EXPECT_THROW(square.set_side_length(0.0), std::invalid_argument);
+}
+
+TEST(GeometryMobjects, RectangleVerticesTrackCenterWidthAndHeight) {
+  Rectangle rectangle(6.0, 2.0);
+  rectangle.move_to(Vec3{-2.0, 3.0, 1.0});
+
+  EXPECT_DOUBLE_EQ(rectangle.width(), 6.0);
+  EXPECT_DOUBLE_EQ(rectangle.height(), 2.0);
+
+  const auto vertices = rectangle.vertices();
+  ASSERT_EQ(vertices.size(), static_cast<size_t>(4));
+  expect_vec3_near(vertices[0], Vec3{-5.0, 2.0, 1.0});
+  expect_vec3_near(vertices[1], Vec3{1.0, 2.0, 1.0});
+  expect_vec3_near(vertices[2], Vec3{1.0, 4.0, 1.0});
+  expect_vec3_near(vertices[3], Vec3{-5.0, 4.0, 1.0});
+}
+
+TEST(GeometryMobjects, RectangleRejectsNonPositiveDimensions) {
+  EXPECT_THROW(Rectangle(0.0, 2.0), std::invalid_argument);
+  EXPECT_THROW(Rectangle(2.0, -1.0), std::invalid_argument);
+
+  Rectangle rectangle;
+  EXPECT_THROW(rectangle.set_width(0.0), std::invalid_argument);
+  EXPECT_THROW(rectangle.set_height(0.0), std::invalid_argument);
 }
 
 TEST(GeometryMobjects, LineTracksEndpointsLengthAndDirection) {
