@@ -95,3 +95,24 @@ TEST(SceneLifecycle, TracksUniqueMobjectsAndSupportsRemoval) {
   scene.clear();
   EXPECT_TRUE(scene.mobjects().empty());
 }
+
+TEST(SceneLifecycle, WaitAdvancesElapsedTimeAndRunsUpdaters) {
+  EmptyScene scene;
+  double total_delta = 0.0;
+  std::size_t updater_calls = 0;
+  scene.add_updater([&](const double delta_seconds) {
+    total_delta += delta_seconds;
+    ++updater_calls;
+  });
+
+  scene.wait(2.5);
+  EXPECT_NEAR(scene.time_seconds(), 2.5, 1e-9);
+  EXPECT_NEAR(total_delta, 2.5, 1e-9);
+  EXPECT_EQ(updater_calls, static_cast<size_t>(1));
+
+  scene.wait(0.0);
+  scene.wait(-1.0);
+  EXPECT_NEAR(scene.time_seconds(), 2.5, 1e-9);
+  EXPECT_NEAR(total_delta, 2.5, 1e-9);
+  EXPECT_EQ(updater_calls, static_cast<size_t>(1));
+}

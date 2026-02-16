@@ -30,6 +30,7 @@ class Scene {
 
   void run();
   void play(animation::Animation& animation, std::size_t steps = 60);
+  void wait(double seconds = 1.0);
   void tick(double delta_seconds);
 
   void add_updater(SceneUpdater updater);

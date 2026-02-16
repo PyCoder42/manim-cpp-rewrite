@@ -32,6 +32,13 @@ void Scene::play(animation::Animation& animation, const std::size_t steps) {
   animation.finish();
 }
 
+void Scene::wait(const double seconds) {
+  if (seconds <= 0.0) {
+    return;
+  }
+  tick(seconds);
+}
+
 void Scene::tick(const double delta_seconds) {
   elapsed_seconds_ += delta_seconds;
   for (const auto& updater : updaters_) {

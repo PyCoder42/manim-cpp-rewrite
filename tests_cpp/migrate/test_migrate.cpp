@@ -42,9 +42,27 @@ TEST(MigrateTool, DetectsAdditionalSceneBaseClasses) {
 
   EXPECT_NE(converted.find("class OrbitDemo : public Scene"), std::string::npos);
   EXPECT_NE(converted.find("MANIM_REGISTER_SCENE(OrbitDemo);"), std::string::npos);
-  EXPECT_NE(converted.find("TODO(migrate): original call -> self.wait(1)"),
+  EXPECT_NE(converted.find("wait(1);"), std::string::npos);
+  EXPECT_EQ(converted.find("TODO(migrate): original call -> self.wait(1)"),
             std::string::npos);
   EXPECT_NE(report.find("scenes_detected=1"), std::string::npos);
+}
+
+TEST(MigrateTool, TranslatesWaitWithoutArgumentsAndClearCall) {
+  const std::string source =
+      "from manim import *\n"
+      "class Demo(Scene):\n"
+      "    def construct(self):\n"
+      "        self.wait()\n"
+      "        self.clear()\n";
+
+  std::string report;
+  const std::string converted =
+      manim_cpp::migrate::translate_python_scene_to_cpp(source, &report);
+
+  EXPECT_NE(converted.find("wait(1.0);"), std::string::npos);
+  EXPECT_NE(converted.find("clear();"), std::string::npos);
+  EXPECT_NE(report.find("translated_calls=2"), std::string::npos);
 }
 
 TEST(MigrateTool, WritesReportFileWhenRequested) {

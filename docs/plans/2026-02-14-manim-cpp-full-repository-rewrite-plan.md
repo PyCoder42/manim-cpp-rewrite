@@ -56,6 +56,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone C.10: Added `Graph` mobject parity scaffold with deterministic circular layout vertex positioning and validated edge/vertex contracts
 - [x] Milestone C.11: Added composed animation primitives (`ParallelAnimation`, `SuccessionAnimation`) for deterministic multi-animation timeline mapping
 - [x] Milestone C.12: Added scene-type parity scaffolds (`MovingCameraScene`, `ThreeDScene`, `ZoomedScene`) with deterministic camera/orientation/zoom contracts
+- [x] Milestone C.13: Added explicit `Scene::wait(seconds)` timeline API with deterministic updater/time accumulation semantics
 - [ ] Milestone D: Cairo backend parity
 - [x] Milestone D.1: Renderer type parsing, string conversion, and factory creation for Cairo/OpenGL backends
 - [x] Milestone D.2: Cairo renderer deterministic frame naming + static-frame signature dedupe scaffold
@@ -110,6 +111,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone I.3: `manim-cpp-migrate <dir> --out-dir <dir>` batch-converts `.py` scenes to deterministic `.cpp` outputs
 - [x] Milestone I.4: `manim-cpp-migrate --recursive` discovers nested scene files and preserves relative output paths
 - [x] Milestone I.5: Directory migration fails fast with deterministic error when no Python scene files are discovered
+- [x] Milestone I.6: Migration now translates common construct calls (`self.wait(...)`, `self.clear()`) into runnable C++ scene calls while preserving TODO markers for unsupported patterns
 - [ ] Milestone J: Test suite full port
 - [x] Milestone J.1: Added C++ unit/integration coverage for core math/scene/cli/plugin/migrate scaffolds
 - [x] Milestone J.2: Added shared-library plugin integration fixture coverage in `ctest`

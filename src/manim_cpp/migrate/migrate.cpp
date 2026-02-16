@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <optional>
 #include <regex>
 #include <sstream>
 #include <string>
@@ -117,6 +118,40 @@ std::vector<std::string> detect_construct_calls(const std::string& source_text) 
   return calls;
 }
 
+bool is_numeric_literal(const std::string& text) {
+  static const std::regex kPattern(
+      R"(^[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$)",
+      std::regex_constants::ECMAScript);
+  return std::regex_match(text, kPattern);
+}
+
+std::optional<std::string> translate_construct_call(const std::string& call) {
+  static const std::regex kWaitPattern(
+      R"(^self\.wait\(([^)]*)\)$)",
+      std::regex_constants::ECMAScript);
+  static const std::regex kClearPattern(
+      R"(^self\.clear\(\)$)",
+      std::regex_constants::ECMAScript);
+
+  std::smatch match;
+  if (std::regex_match(call, match, kWaitPattern)) {
+    const std::string argument = trim(match[1].str());
+    if (argument.empty()) {
+      return "wait(1.0);";
+    }
+    if (is_numeric_literal(argument)) {
+      return "wait(" + argument + ");";
+    }
+    return std::nullopt;
+  }
+
+  if (std::regex_match(call, kClearPattern)) {
+    return "clear();";
+  }
+
+  return std::nullopt;
+}
+
 bool read_text_file(const std::filesystem::path& input_path, std::string* output) {
   std::ifstream input(input_path);
   if (!input.is_open()) {
@@ -171,6 +206,7 @@ std::string translate_python_scene_to_cpp(const std::string& source_text,
   const auto scene_classes = detect_scene_classes(source_text);
   const auto hazards = detect_dynamic_hazards(source_text);
   const auto calls = detect_construct_calls(source_text);
+  std::size_t translated_calls = 0;
 
   std::ostringstream converted;
   converted << "#include \"manim_cpp/scene/scene.hpp\"\n";
@@ -190,7 +226,13 @@ std::string translate_python_scene_to_cpp(const std::string& source_text,
     converted
         << "    // TODO(migrate): port Python construct() body manually.\n";
     for (const auto& call : calls) {
-      converted << "    // TODO(migrate): original call -> " << call << "\n";
+      const auto translated = translate_construct_call(call);
+      if (translated.has_value()) {
+        converted << "    " << translated.value() << "\n";
+        ++translated_calls;
+      } else {
+        converted << "    // TODO(migrate): original call -> " << call << "\n";
+      }
     }
     converted << "  }\n";
     converted << "};\n\n";
@@ -212,7 +254,8 @@ std::string translate_python_scene_to_cpp(const std::string& source_text,
     std::ostringstream summary;
     summary << "scenes_detected=" << scene_classes.size()
             << " hazards_detected=" << hazards.size()
-            << " calls_detected=" << calls.size();
+            << " calls_detected=" << calls.size()
+            << " translated_calls=" << translated_calls;
     *report = summary.str();
   }
 
