@@ -14,7 +14,9 @@
 
 #include "manim_cpp/config/config.hpp"
 #include "manim_cpp/plugin/loader.hpp"
+#include "manim_cpp/renderer/cairo_renderer.hpp"
 #include "manim_cpp/renderer/interaction.hpp"
+#include "manim_cpp/renderer/opengl_renderer.hpp"
 #include "manim_cpp/renderer/renderer.hpp"
 #include "manim_cpp/scene/media_format.hpp"
 #include "manim_cpp/scene/scene_file_writer.hpp"
@@ -167,6 +169,22 @@ bool parse_double_strict(const std::string& value, double* output) {
   }
   *output = parsed;
   return true;
+}
+
+std::string frame_file_name_for_renderer(const manim_cpp::renderer::RendererType type,
+                                         const std::string& scene_name,
+                                         const std::size_t frame_index) {
+  switch (type) {
+    case manim_cpp::renderer::RendererType::kCairo: {
+      manim_cpp::renderer::CairoRenderer renderer;
+      return renderer.frame_file_name(scene_name, frame_index);
+    }
+    case manim_cpp::renderer::RendererType::kOpenGL: {
+      manim_cpp::renderer::OpenGLRenderer renderer;
+      return renderer.frame_file_name(scene_name, frame_index);
+    }
+  }
+  return scene_name + ".png";
 }
 
 std::filesystem::path default_cfg_template_path() {
@@ -577,6 +595,18 @@ int handle_render(const int argc, const char* const argv[]) {
       std::filesystem::create_directories(output_paths->images_dir);
       std::filesystem::create_directories(output_paths->video_dir);
       std::filesystem::create_directories(output_paths->partial_movie_dir);
+
+      for (std::size_t frame_index = 1; frame_index <= frame_count; ++frame_index) {
+        const auto frame_path = output_paths->images_dir /
+                                frame_file_name_for_renderer(renderer_type,
+                                                             scene->scene_name(),
+                                                             frame_index);
+        std::ofstream frame_file(frame_path);
+        if (!frame_file.is_open()) {
+          std::cerr << "Failed to create frame image file: " << frame_path << "\n";
+          return 2;
+        }
+      }
 
       output_file = output_paths->video_dir / (scene->scene_name() + scene_output_extension);
       manifest_path = output_paths->video_dir / (scene->scene_name() + ".json");

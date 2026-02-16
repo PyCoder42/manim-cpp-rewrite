@@ -23,6 +23,14 @@ class CliRenderSmokeScene : public manim_cpp::scene::Scene {
 
 MANIM_REGISTER_SCENE(CliRenderSmokeScene);
 
+class CliRenderTimedScene : public manim_cpp::scene::Scene {
+ public:
+  std::string scene_name() const override { return "CliRenderTimedScene"; }
+  void construct() override { wait(0.5); }
+};
+
+MANIM_REGISTER_SCENE(CliRenderTimedScene);
+
 class ScopedCurrentPath {
  public:
   explicit ScopedCurrentPath(const std::filesystem::path& next_path)
@@ -193,6 +201,90 @@ TEST(Cli, RenderSceneWritesConfiguredMediaArtifacts) {
   EXPECT_NE(manifest.find("\"codec_hint\":\"vp9+opus\""), std::string::npos);
   EXPECT_NE(manifest.find("\"pixel_width\":1280"), std::string::npos);
   EXPECT_NE(manifest.find("\"pixel_height\":720"), std::string::npos);
+
+  std::filesystem::remove_all(temp_root);
+}
+
+TEST(Cli, RenderSceneWritesDeterministicFrameImagesForCairoRenderer) {
+  const auto temp_root =
+      std::filesystem::temp_directory_path() / "manim_cpp_cli_render_scene_frames";
+  std::filesystem::remove_all(temp_root);
+  std::filesystem::create_directories(temp_root);
+
+  std::ofstream cfg(temp_root / "manim.cfg");
+  cfg << "[CLI]\n";
+  cfg << "media_dir = ./media\n";
+  cfg << "video_dir = {media_dir}/videos/{module_name}/{quality}\n";
+  cfg << "images_dir = {media_dir}/images/{module_name}\n";
+  cfg << "partial_movie_dir = {video_dir}/partial_movie_files/{scene_name}\n";
+  cfg << "pixel_width = 640\n";
+  cfg << "pixel_height = 360\n";
+  cfg << "frame_rate = 4\n";
+  cfg.close();
+
+  std::ofstream input_scene(temp_root / "demo_scene.cpp");
+  input_scene << "// placeholder\n";
+  input_scene.close();
+
+  {
+    ScopedCurrentPath scoped_path(temp_root);
+    const std::array<const char*, 7> args = {"manim-cpp",
+                                             "render",
+                                             "demo_scene.cpp",
+                                             "--scene",
+                                             "CliRenderTimedScene",
+                                             "--renderer",
+                                             "cairo"};
+
+    EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data()), 0);
+  }
+
+  const auto images_root = temp_root / "media" / "images" / "demo_scene";
+  EXPECT_TRUE(std::filesystem::exists(images_root / "CliRenderTimedScene_000001.png"));
+  EXPECT_TRUE(std::filesystem::exists(images_root / "CliRenderTimedScene_000002.png"));
+  EXPECT_FALSE(std::filesystem::exists(images_root / "CliRenderTimedScene_000003.png"));
+
+  std::filesystem::remove_all(temp_root);
+}
+
+TEST(Cli, RenderSceneWritesDeterministicFrameImagesForOpenGLRenderer) {
+  const auto temp_root =
+      std::filesystem::temp_directory_path() / "manim_cpp_cli_render_scene_frames_opengl";
+  std::filesystem::remove_all(temp_root);
+  std::filesystem::create_directories(temp_root);
+
+  std::ofstream cfg(temp_root / "manim.cfg");
+  cfg << "[CLI]\n";
+  cfg << "media_dir = ./media\n";
+  cfg << "video_dir = {media_dir}/videos/{module_name}/{quality}\n";
+  cfg << "images_dir = {media_dir}/images/{module_name}\n";
+  cfg << "partial_movie_dir = {video_dir}/partial_movie_files/{scene_name}\n";
+  cfg << "pixel_width = 640\n";
+  cfg << "pixel_height = 360\n";
+  cfg << "frame_rate = 4\n";
+  cfg.close();
+
+  std::ofstream input_scene(temp_root / "demo_scene.cpp");
+  input_scene << "// placeholder\n";
+  input_scene.close();
+
+  {
+    ScopedCurrentPath scoped_path(temp_root);
+    const std::array<const char*, 7> args = {"manim-cpp",
+                                             "render",
+                                             "demo_scene.cpp",
+                                             "--scene",
+                                             "CliRenderTimedScene",
+                                             "--renderer",
+                                             "opengl"};
+
+    EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data()), 0);
+  }
+
+  const auto images_root = temp_root / "media" / "images" / "demo_scene";
+  EXPECT_TRUE(std::filesystem::exists(images_root / "CliRenderTimedScene_000001.png"));
+  EXPECT_TRUE(std::filesystem::exists(images_root / "CliRenderTimedScene_000002.png"));
+  EXPECT_FALSE(std::filesystem::exists(images_root / "CliRenderTimedScene_000003.png"));
 
   std::filesystem::remove_all(temp_root);
 }
