@@ -113,6 +113,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone I.4: `manim-cpp-migrate --recursive` discovers nested scene files and preserves relative output paths
 - [x] Milestone I.5: Directory migration fails fast with deterministic error when no Python scene files are discovered
 - [x] Milestone I.6: Migration now translates common construct calls (`self.wait(...)`, `self.clear()`) into runnable C++ scene calls while preserving TODO markers for unsupported patterns
+- [x] Milestone I.7: Migration now preserves detected scene base-class inheritance (`Scene`, `MovingCameraScene`, `ThreeDScene`) in generated C++ class declarations
 - [ ] Milestone J: Test suite full port
 - [x] Milestone J.1: Added C++ unit/integration coverage for core math/scene/cli/plugin/migrate scaffolds
 - [x] Milestone J.2: Added shared-library plugin integration fixture coverage in `ctest`

@@ -13,6 +13,11 @@
 namespace manim_cpp::migrate {
 namespace {
 
+struct SceneClass {
+  std::string name;
+  std::string base_class;
+};
+
 struct MigrateArgs {
   std::filesystem::path input_path;
   std::filesystem::path output_path;
@@ -64,8 +69,8 @@ bool parse_args(int argc, const char* const argv[], MigrateArgs* out_args) {
   return true;
 }
 
-std::vector<std::string> detect_scene_classes(const std::string& source_text) {
-  std::vector<std::string> classes;
+std::vector<SceneClass> detect_scene_classes(const std::string& source_text) {
+  std::vector<SceneClass> classes;
   std::regex scene_class_pattern(R"(^\s*class\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)\s*:)",
                                  std::regex_constants::ECMAScript |
                                      std::regex_constants::multiline);
@@ -81,11 +86,12 @@ std::vector<std::string> detect_scene_classes(const std::string& source_text) {
     std::stringstream base_stream(bases);
     std::string base;
     while (std::getline(base_stream, base, ',')) {
-      if (std::find(kSupportedBases.begin(), kSupportedBases.end(), trim(base)) ==
+      const std::string trimmed_base = trim(base);
+      if (std::find(kSupportedBases.begin(), kSupportedBases.end(), trimmed_base) ==
           kSupportedBases.end()) {
         continue;
       }
-      classes.push_back(class_name);
+      classes.push_back(SceneClass{.name = class_name, .base_class = trimmed_base});
       break;
     }
   }
@@ -210,6 +216,8 @@ std::string translate_python_scene_to_cpp(const std::string& source_text,
 
   std::ostringstream converted;
   converted << "#include \"manim_cpp/scene/scene.hpp\"\n";
+  converted << "#include \"manim_cpp/scene/moving_camera_scene.hpp\"\n";
+  converted << "#include \"manim_cpp/scene/three_d_scene.hpp\"\n";
   converted << "#include \"manim_cpp/scene/registry.hpp\"\n\n";
   converted << "using namespace manim_cpp::scene;\n\n";
 
@@ -217,11 +225,12 @@ std::string translate_python_scene_to_cpp(const std::string& source_text,
     converted << "// TODO(migrate): No Scene subclasses detected.\n";
   }
 
-  for (const auto& class_name : scene_classes) {
-    converted << "class " << class_name << " : public Scene {\n";
+  for (const auto& scene_class : scene_classes) {
+    converted << "class " << scene_class.name << " : public "
+              << scene_class.base_class << " {\n";
     converted << " public:\n";
     converted << "  std::string scene_name() const override { return \""
-              << class_name << "\"; }\n";
+              << scene_class.name << "\"; }\n";
     converted << "  void construct() override {\n";
     converted
         << "    // TODO(migrate): port Python construct() body manually.\n";
@@ -236,7 +245,7 @@ std::string translate_python_scene_to_cpp(const std::string& source_text,
     }
     converted << "  }\n";
     converted << "};\n\n";
-    converted << "MANIM_REGISTER_SCENE(" << class_name << ");\n\n";
+    converted << "MANIM_REGISTER_SCENE(" << scene_class.name << ");\n\n";
   }
 
   if (!hazards.empty()) {

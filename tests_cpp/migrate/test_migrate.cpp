@@ -40,11 +40,29 @@ TEST(MigrateTool, DetectsAdditionalSceneBaseClasses) {
   const std::string converted =
       manim_cpp::migrate::translate_python_scene_to_cpp(source, &report);
 
-  EXPECT_NE(converted.find("class OrbitDemo : public Scene"), std::string::npos);
+  EXPECT_NE(converted.find("class OrbitDemo : public ThreeDScene"),
+            std::string::npos);
   EXPECT_NE(converted.find("MANIM_REGISTER_SCENE(OrbitDemo);"), std::string::npos);
   EXPECT_NE(converted.find("wait(1);"), std::string::npos);
   EXPECT_EQ(converted.find("TODO(migrate): original call -> self.wait(1)"),
             std::string::npos);
+  EXPECT_NE(report.find("scenes_detected=1"), std::string::npos);
+}
+
+TEST(MigrateTool, PreservesMovingCameraSceneBaseClass) {
+  const std::string source =
+      "from manim import *\n"
+      "class CameraPan(MovingCameraScene):\n"
+      "    def construct(self):\n"
+      "        self.wait(0.5)\n";
+
+  std::string report;
+  const std::string converted =
+      manim_cpp::migrate::translate_python_scene_to_cpp(source, &report);
+
+  EXPECT_NE(converted.find("class CameraPan : public MovingCameraScene"),
+            std::string::npos);
+  EXPECT_NE(converted.find("wait(0.5);"), std::string::npos);
   EXPECT_NE(report.find("scenes_detected=1"), std::string::npos);
 }
 
