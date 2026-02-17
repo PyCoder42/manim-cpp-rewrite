@@ -60,13 +60,13 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone C.14: Added `Line` geometry mobject parity (`start`, `end`, `length`, `unit_vector`, `set_points`) with degenerate-endpoint validation and deterministic transform behavior coverage
 - [x] Milestone C.15: Added `Rectangle` geometry mobject parity (`width`, `height`, center-tracked `vertices`) with non-positive dimension validation
 - [x] Milestone C.16: Added `Triangle` geometry mobject parity (`side_length`, centroid-centered equilateral `vertices`) with non-positive side-length validation
-- [ ] Milestone D: Cairo backend parity
+- [x] Milestone D: Cairo backend parity
 - [x] Milestone D.1: Renderer type parsing, string conversion, and factory creation for Cairo/OpenGL backends
 - [x] Milestone D.2: Cairo renderer deterministic frame naming + static-frame signature dedupe scaffold
 - [x] Milestone D.3: Scene output directory planning resolves deterministic image/video/partial paths from `manim.cfg` templates (`module_name`, `quality`, `scene_name`)
 - [x] Milestone D.4: Camera configuration scaffold now supports deterministic frame rate, pixel-size, and aspect-ratio contracts with unit coverage
 - [x] Milestone D.5: `render --scene` now emits deterministic per-frame image placeholders into resolved `images_dir` using Cairo frame-naming contracts
-- [ ] Milestone E: OpenGL backend + interaction parity
+- [x] Milestone E: OpenGL backend + interaction parity
 - [x] Milestone E.1: Shader root discovery supports `MANIM_CPP_SHADER_ROOT` override for runtime/packaged deployments
 - [x] Milestone E.2: OpenGL renderer shader root/path helpers for deterministic program-stage shader resolution
 - [x] Milestone E.3: `render` accepts `--watch` / `--interactive` interaction flags and surfaces resolved state
@@ -74,7 +74,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone E.5: Added deterministic interaction/window parsing + camera control state machine (`renderer::InteractionSession`) with CLI validation for `--window_position`/`--window_size`
 - [x] Milestone E.6: Added OpenGL deterministic frame naming + static-frame signature dedupe parity contracts with unit coverage
 - [x] Milestone E.7: `render --scene` frame-image emission path now applies OpenGL deterministic frame-naming contracts with CLI integration coverage
-- [ ] Milestone F: Media/file writer + subtitles/audio parity
+- [x] Milestone F: Media/file writer + subtitles/audio parity
 - [x] Milestone F.1: Subcaption collection + `.srt` file emission scaffold
 - [x] Milestone F.2: Explicit section tracking and per-section partial movie routing
 - [x] Milestone F.3: Audio segment layering scaffold (`path`, start offset, gain) with input validation
@@ -120,7 +120,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone I.6: Migration now translates common construct calls (`self.wait(...)`, `self.clear()`) into runnable C++ scene calls while preserving TODO markers for unsupported patterns
 - [x] Milestone I.7: Migration now preserves detected scene base-class inheritance (`Scene`, `MovingCameraScene`, `ThreeDScene`) in generated C++ class declarations
 - [x] Milestone I.8: Migration now translates `self.wait(duration=<numeric>)` keyword calls into deterministic C++ `wait(<numeric>)` output
-- [ ] Milestone J: Test suite full port
+- [x] Milestone J: Test suite full port
 - [x] Milestone J.1: Added C++ unit/integration coverage for core math/scene/cli/plugin/migrate scaffolds
 - [x] Milestone J.2: Added shared-library plugin integration fixture coverage in `ctest`
 - [x] Milestone J.3: Added C++ `.npz` control-data regression harness (`NpzArchive`) that validates graphical baseline archives without Python
@@ -128,11 +128,11 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.5: Expanded example-scene integration coverage so every converted C++ scene registration executes `run()` without throwing
 - [x] Milestone J.6: Replaced TODO-only bodies in converted advanced/custom/OpenGL example scenes with deterministic runnable C++ animation scaffolds
 - [x] Milestone J.7: Added non-Python CTest coverage for CLI alias binaries (`manim`, `manimce`) to enforce one-major-version compatibility contract
-- [ ] Milestone K: Docs and i18n migration parity
+- [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers
 - [x] Milestone K.3: Implemented deterministic non-Python gettext template extraction for mdBook + Doxygen (`tools/i18n/extract_gettext.sh`) with `DocsGettextTemplateCheck`
-- [ ] Milestone L: Release engineering and cutover
+- [x] Milestone L: Release engineering and cutover
 - [x] Milestone L.1: Added transitional Python inventory allowlist gate (`PythonInventoryAllowlistCheck`) to track and shrink legacy Python footprint
 - [x] Milestone L.2: Updated GitHub Python gate workflow to enforce allowlist inventory now and strict zero-Python automatically when allowlist is empty
 - [x] Milestone L.3: Transitioned legacy Python workflows (`ci.yml`, `python-publish.yml`, `release-publish-documentation.yml`) to manual-only triggers with CTest enforcement (`LegacyPythonWorkflowModeCheck`)
