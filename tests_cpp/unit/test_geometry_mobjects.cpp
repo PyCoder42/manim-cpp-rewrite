@@ -14,6 +14,7 @@ using manim_cpp::mobject::Dot;
 using manim_cpp::mobject::Line;
 using manim_cpp::mobject::Rectangle;
 using manim_cpp::mobject::Square;
+using manim_cpp::mobject::Triangle;
 
 void expect_vec3_near(const Vec3& actual, const Vec3& expected, const double eps = 1e-12) {
   EXPECT_NEAR(actual[0], expected[0], eps);
@@ -86,6 +87,27 @@ TEST(GeometryMobjects, RectangleRejectsNonPositiveDimensions) {
   Rectangle rectangle;
   EXPECT_THROW(rectangle.set_width(0.0), std::invalid_argument);
   EXPECT_THROW(rectangle.set_height(0.0), std::invalid_argument);
+}
+
+TEST(GeometryMobjects, TriangleVerticesTrackCenterAndSideLength) {
+  Triangle triangle(2.0);
+  triangle.move_to(Vec3{1.0, -2.0, 0.5});
+
+  EXPECT_DOUBLE_EQ(triangle.side_length(), 2.0);
+
+  const auto vertices = triangle.vertices();
+  ASSERT_EQ(vertices.size(), static_cast<size_t>(3));
+  expect_vec3_near(vertices[0], Vec3{1.0, -0.8452994616207485, 0.5});
+  expect_vec3_near(vertices[1], Vec3{0.0, -2.5773502691896257, 0.5});
+  expect_vec3_near(vertices[2], Vec3{2.0, -2.5773502691896257, 0.5});
+}
+
+TEST(GeometryMobjects, TriangleRejectsNonPositiveSideLength) {
+  EXPECT_THROW(Triangle(0.0), std::invalid_argument);
+  EXPECT_THROW(Triangle(-2.0), std::invalid_argument);
+
+  Triangle triangle;
+  EXPECT_THROW(triangle.set_side_length(0.0), std::invalid_argument);
 }
 
 TEST(GeometryMobjects, LineTracksEndpointsLengthAndDirection) {

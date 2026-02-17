@@ -61,6 +61,19 @@ class Rectangle : public Mobject {
   double height_ = 2.0;
 };
 
+class Triangle : public Mobject {
+ public:
+  explicit Triangle(double side_length = 2.0);
+
+  [[nodiscard]] std::string debug_name() const override { return "Triangle"; }
+  [[nodiscard]] double side_length() const;
+  void set_side_length(double side_length);
+  [[nodiscard]] std::vector<math::Vec3> vertices() const;
+
+ private:
+  double side_length_ = 2.0;
+};
+
 class Line : public Mobject {
  public:
   Line(math::Vec3 start = math::Vec3{0.0, 0.0, 0.0},

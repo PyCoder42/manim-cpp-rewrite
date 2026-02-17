@@ -106,6 +106,28 @@ std::vector<math::Vec3> Rectangle::vertices() const {
   };
 }
 
+Triangle::Triangle(const double side_length)
+    : side_length_(require_positive(side_length, "side_length")) {}
+
+double Triangle::side_length() const { return side_length_; }
+
+void Triangle::set_side_length(const double side_length) {
+  side_length_ = require_positive(side_length, "side_length");
+}
+
+std::vector<math::Vec3> Triangle::vertices() const {
+  const auto& c = center();
+  const double height = (side_length_ * std::sqrt(3.0)) / 2.0;
+  const double top_y = c[1] + (2.0 * height / 3.0);
+  const double base_y = c[1] - (height / 3.0);
+  const double half_side = side_length_ / 2.0;
+  return {
+      math::Vec3{c[0], top_y, c[2]},
+      math::Vec3{c[0] - half_side, base_y, c[2]},
+      math::Vec3{c[0] + half_side, base_y, c[2]},
+  };
+}
+
 Line::Line(const math::Vec3 start, const math::Vec3 end) {
   set_points(start, end);
 }
