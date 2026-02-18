@@ -189,6 +189,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone L.20: Rewrote top-level `README.md` for the C++23 monorepo workflow and added repository enforcement (`ReadmeCxxConversionCheck`)
 - [x] Milestone L.21: Converted GitHub issue templates to C++ diagnostics (`compiler`, `cmake`, backend/toolchain details) and added repository enforcement (`IssueTemplateCxxCheck`)
 - [x] Milestone L.22: Converted GitHub pull-request templates to `manim-cpp` wording and added repository enforcement (`PRTemplateCxxCheck`)
+- [x] Milestone L.23: Converted CodeQL workflow language target from Python to C++ and added repository enforcement (`CodeqlCxxWorkflowCheck`)
 - [x] Milestone K.4: Expanded mdBook docs from scaffold pages to C++ workflow chapters (installation, quickstart, CLI, plugins, testing) and added repository enforcement (`BookDocsCoverageCheck`)
 
 ### Detailed Subsystem Mapping (Source-to-Source Intent)
