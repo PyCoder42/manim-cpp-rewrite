@@ -1,142 +1,112 @@
-<p align="center">
-    <a href="https://www.manim.community/"><img src="https://raw.githubusercontent.com/ManimCommunity/manim/main/logo/cropped.png"></a>
-    <br />
-    <br />
-    <a href="https://pypi.org/project/manim/"><img src="https://img.shields.io/pypi/v/manim.svg?style=flat&logo=pypi" alt="PyPI Latest Release"></a>
-    <a href="https://hub.docker.com/r/manimcommunity/manim"><img src="https://img.shields.io/docker/v/manimcommunity/manim?color=%23099cec&label=docker%20image&logo=docker" alt="Docker image"> </a>
-    <a href="https://mybinder.org/v2/gh/ManimCommunity/jupyter_examples/HEAD?filepath=basic_example_scenes.ipynb"><img src="https://mybinder.org/badge_logo.svg"></a>
-    <a href="http://choosealicense.com/licenses/mit/"><img src="https://img.shields.io/badge/license-MIT-red.svg?style=flat" alt="MIT License"></a>
-    <a href="https://www.reddit.com/r/manim/"><img src="https://img.shields.io/reddit/subreddit-subscribers/manim.svg?color=orange&label=reddit&logo=reddit" alt="Reddit" href=></a>
-    <a href="https://twitter.com/manim_community/"><img src="https://img.shields.io/twitter/url/https/twitter.com/cloudposse.svg?style=social&label=Follow%20%40manim_community" alt="Twitter">
-    <a href="https://www.manim.community/discord/"><img src="https://img.shields.io/discord/581738731934056449.svg?label=discord&color=yellow&logo=discord" alt="Discord"></a>
-    <a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black">
-    <a href="https://docs.manim.community/"><img src="https://readthedocs.org/projects/manimce/badge/?version=latest" alt="Documentation Status"></a>
-    <a href="https://pepy.tech/project/manim"><img src="https://pepy.tech/badge/manim/month?" alt="Downloads"> </a>
-    <img src="https://github.com/ManimCommunity/manim/workflows/CI/badge.svg" alt="CI">
-    <br />
-    <br />
-    <i>An animation engine for explanatory math videos</i>
-</p>
-<hr />
+# manim-cpp
 
-Manim is an animation engine for explanatory math videos. It's used to create precise animations programmatically, as demonstrated in the videos of [3Blue1Brown](https://www.3blue1brown.com/).
+`manim-cpp` is a C++23 animation engine monorepo focused on Manim CE behavior parity with dual Cairo/OpenGL rendering, deterministic media outputs, plugin ABI support, and a Python-free mainline.
 
-> [!NOTE]
-> The community edition of Manim (ManimCE) is a version maintained and developed by the community. It was forked from 3b1b/manim, a tool originally created and open-sourced by Grant Sanderson, also creator of the 3Blue1Brown educational math videos. While Grant Sanderson continues to maintain his own repository, we recommend this version for its continued development, improved features, enhanced documentation, and more active community-driven maintenance. If you would like to study how Grant makes his videos, head over to his repository ([3b1b/manim](https://github.com/3b1b/manim)).
+## Current State
 
-## Table of Contents:
+- Primary CLI: `manim-cpp`
+- Transitional aliases (one major version): `manim`, `manimce`
+- Migration tool: `manim-cpp-migrate`
+- Frame extractor: `manim-cpp-extract-frames`
+- Build baseline: C++23 (`GCC 13+`, `Clang 17+`, `MSVC 19.38+`)
 
-- [Installation](#installation)
-- [Usage](#usage)
-- [Documentation](#documentation)
-- [Docker](#docker)
-- [Help with Manim](#help-with-manim)
-- [Contributing](#contributing)
-- [License](#license)
+## Build Quick Start
 
-## Installation
+Install system dependencies first:
 
-> [!CAUTION]
-> These instructions are for the community version _only_. Trying to use these instructions to install [3b1b/manim](https://github.com/3b1b/manim) or instructions there to install this version will cause problems. Read [this](https://docs.manim.community/en/stable/faq/installation.html#why-are-there-different-versions-of-manim) and decide which version you wish to install, then only follow the instructions for your desired version.
+- Linux: `./tools/deps/install_linux.sh`
+- macOS: `./tools/deps/install_macos.sh`
+- Windows: `./tools/deps/install_windows.ps1`
 
-Manim requires a few dependencies that must be installed prior to using it. If you
-want to try it out first before installing it locally, you can do so
-[in our online Jupyter environment](https://try.manim.community/).
-
-For local installation, please visit the [Documentation](https://docs.manim.community/en/stable/installation.html)
-and follow the appropriate instructions for your operating system.
-
-## Usage
-
-Manim is an extremely versatile package. The following is an example `Scene` you can construct:
-
-```python
-from manim import *
-
-
-class SquareToCircle(Scene):
-    def construct(self):
-        circle = Circle()
-        square = Square()
-        square.flip(RIGHT)
-        square.rotate(-3 * TAU / 8)
-        circle.set_fill(PINK, opacity=0.5)
-
-        self.play(Create(square))
-        self.play(Transform(square, circle))
-        self.play(FadeOut(square))
-```
-
-In order to view the output of this scene, save the code in a file called `example.py`. Then, run the following in a terminal window:
+Then configure/build/test:
 
 ```sh
-manim -p -ql example.py SquareToCircle
+cmake --preset debug
+cmake --build --preset debug -j4
+ctest --preset debug --output-on-failure
 ```
 
-You should see your native video player program pop up and play a simple scene in which a square is transformed into a circle. You may find some more simple examples within this
-[GitHub repository](example_scenes). You can also visit the [official gallery](https://docs.manim.community/en/stable/examples.html) for more advanced examples.
+Release build:
 
-Manim also ships with a `%%manim` IPython magic which allows to use it conveniently in JupyterLab (as well as classic Jupyter) notebooks. See the
-[corresponding documentation](https://docs.manim.community/en/stable/reference/manim.utils.ipython_magic.ManimMagic.html) for some guidance and
-[try it out online](https://mybinder.org/v2/gh/ManimCommunity/jupyter_examples/HEAD?filepath=basic_example_scenes.ipynb).
+```sh
+cmake --preset release
+cmake --build --preset release -j4
+ctest --preset release --output-on-failure
+```
 
-## Command line arguments
+## CLI Usage
 
-The general usage of Manim is as follows:
+Show help/version:
 
-![manim-illustration](https://raw.githubusercontent.com/ManimCommunity/manim/main/docs/source/_static/command.png)
+```sh
+manim-cpp --help
+manim-cpp --version
+```
 
-The `-p` flag in the command above is for previewing, meaning the video file will automatically open when it is done rendering. The `-ql` flag is for a faster rendering at a lower quality.
+Initialize a project scaffold:
 
-Some other useful flags include:
+```sh
+manim-cpp init project ./demo_project
+```
 
-- `-s` to skip to the end and just show the final frame.
-- `-n <number>` to skip ahead to the `n`'th animation of a scene.
-- `-f` show the file in the file browser.
+Render a registered C++ scene:
 
-For a thorough list of command line arguments, visit the [documentation](https://docs.manim.community/en/stable/guides/configuration.html).
+```sh
+manim-cpp render demo_scene.cpp --scene MyScene --renderer cairo --format mp4
+```
+
+## Repository Layout
+
+- Runtime: `src/manim_cpp/`
+- Public headers: `include/manim_cpp/`
+- Primary CLI app: `apps/manim_cpp_cli/`
+- Migration app: `apps/manim_cpp_migrate/`
+- Plugin SDK/ABI: `plugins/sdk/`
+- Tests: `tests_cpp/`
+- Docs: `docs/book/` (mdBook), `docs/api/` (Doxygen)
+- Tooling: `tools/`
+
+## Rendering and Media
+
+- Renderers: Cairo, OpenGL
+- Formats: `png`, `gif`, `mp4`, `webm`, `mov`
+- Deterministic frame/media payloads for bitwise regression checks
+- Subcaptions (`.srt`), section timeline metadata, codec hint metadata
+
+## Plugins
+
+Plugin loading is backed by a stable C ABI boundary:
+
+- Entrypoint: `extern "C" int manim_plugin_init(const manim_plugin_host_api_v1*)`
+- Host ABI gate: `MANIM_PLUGIN_ABI_VERSION_V1`
+
+List and load plugins:
+
+```sh
+manim-cpp plugins path
+manim-cpp plugins list
+manim-cpp plugins load
+```
+
+## Migration Tool
+
+Convert supported scene constructs into deterministic C++ output:
+
+```sh
+manim-cpp-migrate input_scene.py --out-dir converted/
+manim-cpp-migrate scenes_dir --recursive --out-dir converted/
+```
 
 ## Documentation
 
-Documentation is in progress at [ReadTheDocs](https://docs.manim.community/).
+- mdBook sources: `docs/book/src/`
+- Doxygen config: `docs/api/Doxyfile`
+- Build docs:
 
-## Docker
-
-The community also maintains a docker image (`manimcommunity/manim`), which can be found [on DockerHub](https://hub.docker.com/r/manimcommunity/manim).
-Instructions on how to install and use it can be found in our [documentation](https://docs.manim.community/en/stable/installation/docker.html).
-
-## Help with Manim
-
-If you need help installing or using Manim, feel free to reach out to our [Discord
-Server](https://www.manim.community/discord/) or [Reddit Community](https://www.reddit.com/r/manim). If you would like to submit a bug report or feature request, please open an issue.
-
-## Contributing
-
-Contributions to Manim are always welcome. In particular, there is a dire need for tests and documentation. For contribution guidelines, please see the [documentation](https://docs.manim.community/en/stable/contributing.html).
-
-However, please note that Manim is currently undergoing a major refactor. In general,
-contributions implementing new features will not be accepted in this period.
-The contribution guide may become outdated quickly; we highly recommend joining our
-[Discord server](https://www.manim.community/discord/) to discuss any potential
-contributions and keep up to date with the latest developments.
-
-Most developers on the project use `uv` for management. You'll want to have uv installed and available in your environment.
-Learn more about `uv` at its [documentation](https://docs.astral.sh/uv/) and find out how to install manim with uv at the [manim dev-installation guide](https://docs.manim.community/en/latest/contributing/development.html) in the manim documentation.
-
-## How to Cite Manim
-
-We acknowledge the importance of good software to support research, and we note
-that research becomes more valuable when it is communicated effectively. To
-demonstrate the value of Manim, we ask that you cite Manim in your work.
-Currently, the best way to cite Manim is to go to our
-[repository page](https://github.com/ManimCommunity/manim) (if you aren't already) and
-click the "cite this repository" button on the right sidebar. This will generate
-a citation in your preferred format, and will also integrate well with citation managers.
-
-## Code of Conduct
-
-Our full code of conduct, and how we enforce it, can be read on [our website](https://docs.manim.community/en/stable/conduct.html).
+```sh
+./tools/docs/build_docs.sh
+```
 
 ## License
 
-The software is double-licensed under the MIT license, with copyright by 3blue1brown LLC (see LICENSE), and copyright by Manim Community Developers (see LICENSE.community).
+MIT. See `LICENSE` and `LICENSE.community`.
