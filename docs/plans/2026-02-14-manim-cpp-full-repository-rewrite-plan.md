@@ -165,6 +165,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.22: Added original-Manim feature cross-test matrix mapping parity-scope features to enforced CTest coverage (`OriginalFeatureCrossTestCoverageCheck`)
 - [x] Milestone J.23: Added `tools/tests/run_original_feature_cross_tests.sh` helper to execute parity-scope feature buckets from the cross-test matrix against CTest
 - [x] Milestone J.24: Hardened original-feature matrix guard to reject duplicate `feature_id` and duplicate `required_test_regex` rows (prevents drift/masked coverage)
+- [x] Milestone J.25: Expanded original-feature matrix to include config precedence/template resolution, camera frame contract, and math/Eigen parity coverage buckets
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers
