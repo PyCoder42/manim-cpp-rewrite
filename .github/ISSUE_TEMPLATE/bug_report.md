@@ -1,6 +1,6 @@
 ---
-name: Manim bug
-about: Report a bug or unexpected behavior when running Manim
+name: manim-cpp bug
+about: Report a bug or unexpected behavior when running manim-cpp
 title: ""
 labels: bug
 assignees: ''
@@ -16,19 +16,29 @@ assignees: ''
 
 
 ## How to reproduce the issue
-<!-- Provide a piece of code illustrating the undesired behavior. -->
+<!-- Provide a C++ scene and CLI command illustrating the undesired behavior. -->
 
 <details><summary>Code for reproducing the problem</summary>
 
-```py
+```cpp
 Paste your code here.
+```
+
+</details>
+
+<details><summary>Build and render commands</summary>
+
+```text
+cmake -S . -B build/repro -DCMAKE_BUILD_TYPE=Debug
+cmake --build build/repro -j
+./build/repro/apps/manim_cpp_cli/manim-cpp render <scene-file>.cpp <SceneName> -v DEBUG
 ```
 
 </details>
 
 
 ## Additional media files
-<!-- Paste in the files manim produced on rendering the code above. -->
+<!-- Paste in the files manim-cpp produced while rendering the code above. -->
 
 <details><summary>Images/GIFs</summary>
 
@@ -39,7 +49,7 @@ Paste your code here.
 
 ## Logs
 <details><summary>Terminal output</summary>
-<!-- Add "-v DEBUG" when calling manim to generate more detailed logs -->
+<!-- Add "-v DEBUG" when calling manim-cpp to generate more detailed logs -->
 
 ```
 PASTE HERE OR PROVIDE LINK TO https://pastebin.com/ OR SIMILAR
@@ -56,8 +66,11 @@ PASTE HERE OR PROVIDE LINK TO https://pastebin.com/ OR SIMILAR
 
 - OS (with version, e.g., Windows 10 v2004 or macOS 10.15 (Catalina)):
 - RAM:
-- Python version (`python/py/python3 --version`):
-- Installed modules (provide output from `pip list`):
+- Compiler (name and version):
+- CMake version:
+- Renderer backend (`cairo` or `opengl`):
+- FFmpeg version:
+- GPU and driver version (if using OpenGL):
 ```
 PASTE HERE
 ```

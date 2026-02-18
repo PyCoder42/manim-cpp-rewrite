@@ -171,6 +171,12 @@ add_test(
 )
 
 add_test(
+  NAME IssueTemplateCxxCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_issue_templates_cxx.sh
+          ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
   NAME CliAliasManimVersion
   COMMAND $<TARGET_FILE:manim> --version
 )

@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Request a new feature for Manim
+about: Request a new feature for manim-cpp
 title: ""
 labels: new feature
 assignees: ''
@@ -12,7 +12,15 @@ assignees: ''
 
 
 ## How can the new feature be used?
-<!-- If possible, illustrate how this new feature could be used. -->
+<!-- If possible, illustrate usage with a C++ API example or CLI invocation. -->
+
+<details><summary>Example usage snippet</summary>
+
+```cpp
+// Optional: paste a minimal scene or API sketch.
+```
+
+</details>
 
 
 ## Additional comments

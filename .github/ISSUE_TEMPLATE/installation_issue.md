@@ -1,6 +1,6 @@
 ---
 name: Installation issue
-about: Report issues with the installation process of Manim
+about: Report issues with the installation process of manim-cpp
 title: ""
 labels: bug, installation
 assignees: ''
@@ -10,8 +10,8 @@ assignees: ''
 #### Preliminaries
 
 - [ ] I have followed the latest version of the
-      [installation instructions](https://docs.manim.community/en/stable/installation.html).
-- [ ] I have checked the [installation FAQ](https://docs.manim.community/en/stable/faq/installation.html) and my problem is either not mentioned there,
+      [installation instructions](../docs/book/src/installation.md).
+- [ ] I have checked the [installation FAQ](../docs/book/src/quickstart.md) and my problem is either not mentioned there,
       or the solution given there does not help.
 
 ## Description of error
@@ -39,8 +39,11 @@ PASTE HERE OR PROVIDE LINK TO https://pastebin.com/ OR SIMILAR
 
 - OS (with version, e.g., Windows 10 v2004 or macOS 10.15 (Catalina)):
 - RAM:
-- Python version (`python/py/python3 --version`):
-- Installed modules (provide output from `pip list`):
+- Compiler (name and version):
+- CMake version:
+- Cairo version (if relevant):
+- OpenGL toolchain details (if relevant):
+- FFmpeg version:
 ```
 PASTE HERE
 ```
