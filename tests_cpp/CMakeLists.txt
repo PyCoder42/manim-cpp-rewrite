@@ -261,6 +261,12 @@ add_test(
 )
 
 add_test(
+  NAME NoPythonScriptRuntimeCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_no_python_script_runtime.sh
+          ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
   NAME OriginalFeatureCrossTestCoverageCheck
   COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_original_feature_cross_tests.sh
           ${PROJECT_SOURCE_DIR}

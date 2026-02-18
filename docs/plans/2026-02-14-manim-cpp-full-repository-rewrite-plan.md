@@ -210,6 +210,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone L.28: Added duplicate-copy artifact guard for tracked/untracked filenames (`NoDuplicateCopyArtifactsCheck`) to prevent accidental `* 2.*`/`* copy.*` drift
 - [x] Milestone L.29: Added backup/conflict artifact guard for tracked/untracked filenames (`NoBackupArtifactsCheck`) to block `.orig`/`.rej`/`.bak`/`*~` drift
 - [x] Milestone L.30: Added workflow runtime guard to block Python setup/tool invocations in GitHub Actions (`NoPythonWorkflowToolingCheck`)
+- [x] Milestone L.31: Added scripts/tools runtime guard to block Python shebangs and python/pip execution in repository automation (`NoPythonScriptRuntimeCheck`)
 - [x] Milestone K.4: Expanded mdBook docs from scaffold pages to C++ workflow chapters (installation, quickstart, CLI, plugins, testing) and added repository enforcement (`BookDocsCoverageCheck`)
 
 ### Detailed Subsystem Mapping (Source-to-Source Intent)
