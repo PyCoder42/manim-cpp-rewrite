@@ -287,6 +287,61 @@ std::vector<std::string> split_top_level_arguments(const std::string& text,
   return args;
 }
 
+bool contains_top_level_assignment(const std::string& text) {
+  int paren_depth = 0;
+  int bracket_depth = 0;
+  int brace_depth = 0;
+  char quote = '\0';
+  bool escaped = false;
+
+  for (const char ch : text) {
+    if (quote != '\0') {
+      if (escaped) {
+        escaped = false;
+      } else if (ch == '\\') {
+        escaped = true;
+      } else if (ch == quote) {
+        quote = '\0';
+      }
+      continue;
+    }
+
+    if (ch == '\'' || ch == '"') {
+      quote = ch;
+      continue;
+    }
+    if (ch == '(') {
+      ++paren_depth;
+      continue;
+    }
+    if (ch == ')') {
+      --paren_depth;
+      continue;
+    }
+    if (ch == '[') {
+      ++bracket_depth;
+      continue;
+    }
+    if (ch == ']') {
+      --bracket_depth;
+      continue;
+    }
+    if (ch == '{') {
+      ++brace_depth;
+      continue;
+    }
+    if (ch == '}') {
+      --brace_depth;
+      continue;
+    }
+
+    if (ch == '=' && paren_depth == 0 && bracket_depth == 0 && brace_depth == 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
 std::optional<std::string> translate_geometry_constructor_expression(
     const std::string& expression) {
   static const std::regex kCtorPattern(
@@ -303,6 +358,9 @@ std::optional<std::string> translate_geometry_constructor_expression(
   }
 
   const std::string ctor_args = trim(match[2].str());
+  if (contains_top_level_assignment(ctor_args)) {
+    return std::nullopt;
+  }
   if (ctor_args.empty()) {
     return "std::make_shared<manim_cpp::mobject::" + class_name + ">()";
   }

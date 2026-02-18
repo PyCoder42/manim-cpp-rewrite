@@ -201,6 +201,24 @@ TEST(MigrateTool, LeavesAddTodoWhenConstructorArgumentsAreNotSupported) {
   EXPECT_NE(report.find("translated_calls=0"), std::string::npos);
 }
 
+TEST(MigrateTool, LeavesAddTodoWhenConstructorUsesKeywordArguments) {
+  const std::string source =
+      "from manim import *\n"
+      "class Demo(Scene):\n"
+      "    def construct(self):\n"
+      "        self.add(Circle(radius=2.0))\n";
+
+  std::string report;
+  const std::string converted =
+      manim_cpp::migrate::translate_python_scene_to_cpp(source, &report);
+
+  EXPECT_NE(converted.find("TODO(migrate): original call -> self.add(Circle(radius=2.0))"),
+            std::string::npos);
+  EXPECT_EQ(converted.find("std::make_shared<manim_cpp::mobject::Circle>(radius=2.0)"),
+            std::string::npos);
+  EXPECT_NE(report.find("translated_calls=0"), std::string::npos);
+}
+
 TEST(MigrateTool, WritesReportFileWhenRequested) {
   const auto temp_root = std::filesystem::temp_directory_path() / "manim_cpp_migrate_report";
   std::filesystem::remove_all(temp_root);

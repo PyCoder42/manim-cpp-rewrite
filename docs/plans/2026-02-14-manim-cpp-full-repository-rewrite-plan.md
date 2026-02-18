@@ -133,6 +133,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone I.10: Migration now detects/preserves `ZoomedScene` inheritance and emits the corresponding C++ scene-type include
 - [x] Milestone I.11: Migration now translates constructor-safe `self.add(...)` and `self.remove(...)` calls into deterministic C++ `std::make_shared` geometry mobject expressions
 - [x] Milestone I.12: Migration argument splitting now handles nested delimiters/quotes to safely parse multi-argument construct calls
+- [x] Milestone I.13: Migration now rejects Python keyword-argument constructor calls during `add/remove` translation and falls back to explicit TODO markers (prevents invalid C++ output)
 - [x] Milestone J: Test suite full port
 - [x] Milestone J.1: Added C++ unit/integration coverage for core math/scene/cli/plugin/migrate scaffolds
 - [x] Milestone J.2: Added shared-library plugin integration fixture coverage in `ctest`
@@ -148,6 +149,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.12: Added geometry unit coverage for `Annulus`/`Sector` radius validation and deterministic boundary-point contracts
 - [x] Milestone J.13: Added media-format + CLI integration coverage for format-to-codec-hint mapping across `png/gif/mp4/webm/mov`
 - [x] Milestone J.14: Added CLI integration coverage that renders every converted C++ example scene and validates media/manifest/subcaption artifact emission
+- [x] Milestone J.15: Added migration regression coverage that enforces TODO fallback for keyword-argument constructor calls in translated `add/remove` lines
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers
