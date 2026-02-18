@@ -237,11 +237,14 @@ main() {
       printf '%s\n' "${author}" >> "${authors_file}"
     fi
 
-    printf '* :pr:`%s`: %s\n' "${pr_num}" "${title}" >> "${tmp_dir}/label_${section_index}.txt"
+    printf -- '- [#%s](https://github.com/%s/pull/%s): %s\n' \
+      "${pr_num}" "${repo_slug}" "${pr_num}" "${title}" >> "${tmp_dir}/label_${section_index}.txt"
     summary="$(extract_between_markers "${body}")"
     if [[ -n "${summary}" ]]; then
       while IFS= read -r summary_line; do
-        printf '   %s\n' "${summary_line}" >> "${tmp_dir}/label_${section_index}.txt"
+        if [[ -n "${summary_line}" ]]; then
+          printf '  - %s\n' "${summary_line}" >> "${tmp_dir}/label_${section_index}.txt"
+        fi
       done <<< "${summary}"
     fi
     printf '\n' >> "${tmp_dir}/label_${section_index}.txt"
@@ -264,40 +267,36 @@ main() {
   )"
 
   {
-    printf '%s\n' "$(printf '%*s' "${#tag}" '' | tr ' ' '*')"
-    printf '%s\n' "${tag}"
-    printf '%s\n\n' "$(printf '%*s' "${#tag}" '' | tr ' ' '*')"
-    printf ':Date: %s\n\n' "${today_pretty}"
+    printf '# %s\n\n' "${tag}"
+    printf '- Date: %s\n\n' "${today_pretty}"
 
-    printf 'Contributors\n'
-    printf '============\n\n'
+    printf '## Contributors\n\n'
     printf 'A total of %s people contributed to this release.\n\n' "${contributor_count}"
 
     if [[ -n "${unique_authors}" ]]; then
       while IFS= read -r author; do
-        printf '* %s\n' "${author}"
+        printf -- '- %s\n' "${author}"
       done <<< "${unique_authors}"
       printf '\n'
     fi
 
-    printf 'The patches included in this release have been reviewed by the following contributors.\n\n'
+    printf '### Reviewers\n\n'
+    printf 'The patches included in this release were reviewed by:\n\n'
     if [[ -n "${unique_reviewers}" ]]; then
       while IFS= read -r reviewer; do
-        printf '* %s\n' "${reviewer}"
+        printf -- '- %s\n' "${reviewer}"
       done <<< "${unique_reviewers}"
       printf '\n'
     fi
 
-    printf 'Pull requests merged\n'
-    printf '====================\n\n'
+    printf '## Pull Requests Merged\n\n'
     printf 'A total of %s pull requests were merged for this release.\n\n' "${#pr_numbers[@]}"
 
     for ((i = 0; i < ${#label_titles[@]}; ++i)); do
       if [[ ! -s "${tmp_dir}/label_${i}.txt" ]]; then
         continue
       fi
-      printf '%s\n' "${label_titles[$i]}"
-      printf '%*s\n\n' "${#label_titles[$i]}" '' | tr ' ' '-'
+      printf '### %s\n\n' "${label_titles[$i]}"
       cat "${tmp_dir}/label_${i}.txt"
     done
   } > "${output_path}"
