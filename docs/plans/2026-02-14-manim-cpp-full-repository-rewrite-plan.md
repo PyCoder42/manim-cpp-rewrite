@@ -166,6 +166,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers
 - [x] Milestone K.3: Implemented deterministic non-Python gettext template extraction for mdBook + Doxygen (`tools/i18n/extract_gettext.sh`) with `DocsGettextTemplateCheck`
 - [x] Milestone K.5: Pruned legacy Sphinx-era gettext template tree to mdBook/API scope only (`book.pot`, `api.pot`) with enforcement (`GettextTemplateScopeCheck`)
+- [x] Milestone K.6: Scoped per-locale catalogs to active mdBook/API components only (`book.po`, `api.po`) and added repository enforcement (`I18nCatalogScopeCheck`)
 - [x] Milestone L: Release engineering and cutover
 - [x] Milestone L.1: Added transitional Python inventory allowlist gate (`PythonInventoryAllowlistCheck`) to track and shrink legacy Python footprint
 - [x] Milestone L.2: Updated GitHub Python gate workflow to enforce allowlist inventory now and strict zero-Python automatically when allowlist is empty

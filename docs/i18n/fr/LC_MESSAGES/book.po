@@ -8,6 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: fr\n"
 
 #: plugins.md:5
 msgid "ABI Contract"
@@ -75,10 +76,6 @@ msgstr ""
 
 #: testing.md:20
 msgid "Docs/i18n extraction and coverage checks."
-msgstr ""
-
-#: i18n.md:17
-msgid "Each supported locale stores translated catalogs scoped to the active docs"
 msgstr ""
 
 #: quickstart.md:12
@@ -281,8 +278,8 @@ msgstr ""
 msgid "Usage"
 msgstr ""
 
-#: i18n.md:23
-msgid "Use `./tools/i18n/extract_gettext.sh` to regenerate templates,"
+#: i18n.md:17
+msgid "Use `./tools/i18n/extract_gettext.sh` to regenerate templates and"
 msgstr ""
 
 #: cli.md:23
@@ -337,12 +334,8 @@ msgstr ""
 msgid "`--window_position`, `--window_size`, `--window_monitor`"
 msgstr ""
 
-#: i18n.md:25
-msgid "`./tools/docs/check_i18n_catalog_scope.sh` to enforce the scoped catalog set."
-msgstr ""
-
-#: i18n.md:24
-msgid "`./tools/docs/check_i18n_catalogs.sh` to validate locale catalog presence, and"
+#: i18n.md:18
+msgid "`./tools/docs/check_i18n_catalogs.sh` to validate locale catalog presence."
 msgstr ""
 
 #: architecture.md:19
@@ -367,14 +360,6 @@ msgstr ""
 
 #: cli.md:9
 msgid "`checkhealth`: inspect runtime dependencies and supported formats/renderers."
-msgstr ""
-
-#: i18n.md:21
-msgid "`docs/i18n/<locale>/LC_MESSAGES/api.po`"
-msgstr ""
-
-#: i18n.md:20
-msgid "`docs/i18n/<locale>/LC_MESSAGES/book.po`"
 msgstr ""
 
 #: i18n.md:15
@@ -463,10 +448,6 @@ msgstr ""
 
 #: architecture.md:4
 msgid "binaries."
-msgstr ""
-
-#: i18n.md:18
-msgid "components:"
 msgstr ""
 
 #: index.md:21
