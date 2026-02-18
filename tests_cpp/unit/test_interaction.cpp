@@ -89,3 +89,33 @@ TEST(Interaction, SessionAppliesCameraCommandsDeterministically) {
   EXPECT_DOUBLE_EQ(reset.pitch, 0.0);
   EXPECT_DOUBLE_EQ(reset.zoom, 1.0);
 }
+
+TEST(Interaction, ParsesScriptTokensIntoCommandsAndSteps) {
+  const auto pan_left = manim_cpp::renderer::parse_interaction_command_step("pan_left");
+  ASSERT_TRUE(pan_left.has_value());
+  EXPECT_EQ(pan_left->command, manim_cpp::renderer::InteractionCommand::kPanLeft);
+  EXPECT_DOUBLE_EQ(pan_left->step, 1.0);
+
+  const auto zoom_in =
+      manim_cpp::renderer::parse_interaction_command_step("zoom_in:0.5");
+  ASSERT_TRUE(zoom_in.has_value());
+  EXPECT_EQ(zoom_in->command, manim_cpp::renderer::InteractionCommand::kZoomIn);
+  EXPECT_DOUBLE_EQ(zoom_in->step, 0.5);
+
+  const auto reset =
+      manim_cpp::renderer::parse_interaction_command_step("reset_camera:3.0");
+  ASSERT_TRUE(reset.has_value());
+  EXPECT_EQ(reset->command, manim_cpp::renderer::InteractionCommand::kResetCamera);
+  EXPECT_DOUBLE_EQ(reset->step, 1.0);
+}
+
+TEST(Interaction, RejectsInvalidScriptTokens) {
+  EXPECT_FALSE(
+      manim_cpp::renderer::parse_interaction_command_step("pan_left:abc").has_value());
+  EXPECT_FALSE(
+      manim_cpp::renderer::parse_interaction_command_step("zoom_in:-0.5").has_value());
+  EXPECT_FALSE(
+      manim_cpp::renderer::parse_interaction_command_step("unknown_command").has_value());
+  EXPECT_FALSE(
+      manim_cpp::renderer::parse_interaction_command_step("pan_left:1:2").has_value());
+}

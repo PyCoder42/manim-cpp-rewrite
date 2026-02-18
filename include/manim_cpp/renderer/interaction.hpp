@@ -65,6 +65,13 @@ enum class InteractionCommand {
   kResetCamera,
 };
 
+struct ParsedInteractionCommand {
+  InteractionCommand command = InteractionCommand::kResetCamera;
+  double step = 1.0;
+};
+
+std::optional<ParsedInteractionCommand> parse_interaction_command_step(std::string token);
+
 class InteractionSession {
  public:
   explicit InteractionSession(InteractionConfig config = {});

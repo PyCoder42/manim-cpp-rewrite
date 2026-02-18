@@ -53,6 +53,7 @@ add_executable(
   plugin/test_plugin_sdk.cpp
   migrate/test_migrate.cpp
   render_regression/test_control_data_npz.cpp
+  render_regression/test_bitwise_render_parity.cpp
   integration/test_example_scenes.cpp
 )
 
@@ -118,6 +119,12 @@ add_test(
 add_test(
   NAME CxxReleaseWorkflowCheck
   COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_cxx_release_workflow.sh
+          ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+  NAME PluginAbiWorkflowCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_plugin_abi_workflow.sh
           ${PROJECT_SOURCE_DIR}
 )
 

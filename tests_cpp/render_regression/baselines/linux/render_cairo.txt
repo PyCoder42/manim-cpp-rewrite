@@ -1,0 +1,3 @@
+CliRenderBitwiseScene_000001.png=224da9bcc8eff3d9
+CliRenderBitwiseScene_000002.png=2db292eb01c55dc2
+CliRenderBitwiseScene.mp4=af5aec996ed7b750

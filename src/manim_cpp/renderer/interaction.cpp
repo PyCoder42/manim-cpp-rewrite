@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cerrno>
+#include <cmath>
 #include <cstdlib>
 #include <limits>
 
@@ -33,6 +34,20 @@ bool parse_int_strict(const std::string& value, int* output) {
   return true;
 }
 
+bool parse_double_strict(const std::string& value, double* output) {
+  if (value.empty() || output == nullptr) {
+    return false;
+  }
+  char* end = nullptr;
+  errno = 0;
+  const double parsed = std::strtod(value.c_str(), &end);
+  if (errno != 0 || end == value.c_str() || *end != '\0' || !std::isfinite(parsed)) {
+    return false;
+  }
+  *output = parsed;
+  return true;
+}
+
 std::optional<std::pair<int, int>> parse_int_pair(const std::string& value) {
   const auto separator = value.find(',');
   if (separator == std::string::npos) {
@@ -49,6 +64,57 @@ std::optional<std::pair<int, int>> parse_int_pair(const std::string& value) {
 }
 
 }  // namespace
+
+std::optional<ParsedInteractionCommand> parse_interaction_command_step(std::string token) {
+  token = lower(std::move(token));
+  if (token.empty()) {
+    return std::nullopt;
+  }
+
+  std::string command_name = token;
+  double step = 1.0;
+  const auto separator = token.find(':');
+  if (separator != std::string::npos) {
+    if (token.find(':', separator + 1) != std::string::npos) {
+      return std::nullopt;
+    }
+    command_name = token.substr(0, separator);
+    const std::string raw_step = token.substr(separator + 1);
+    if (!parse_double_strict(raw_step, &step) || step <= 0.0) {
+      return std::nullopt;
+    }
+  }
+
+  std::optional<InteractionCommand> command = std::nullopt;
+  if (command_name == "pan_left") {
+    command = InteractionCommand::kPanLeft;
+  } else if (command_name == "pan_right") {
+    command = InteractionCommand::kPanRight;
+  } else if (command_name == "pan_up") {
+    command = InteractionCommand::kPanUp;
+  } else if (command_name == "pan_down") {
+    command = InteractionCommand::kPanDown;
+  } else if (command_name == "yaw_left") {
+    command = InteractionCommand::kYawLeft;
+  } else if (command_name == "yaw_right") {
+    command = InteractionCommand::kYawRight;
+  } else if (command_name == "pitch_up") {
+    command = InteractionCommand::kPitchUp;
+  } else if (command_name == "pitch_down") {
+    command = InteractionCommand::kPitchDown;
+  } else if (command_name == "zoom_in") {
+    command = InteractionCommand::kZoomIn;
+  } else if (command_name == "zoom_out") {
+    command = InteractionCommand::kZoomOut;
+  } else if (command_name == "reset_camera") {
+    command = InteractionCommand::kResetCamera;
+    step = 1.0;
+  } else {
+    return std::nullopt;
+  }
+
+  return ParsedInteractionCommand{.command = command.value(), .step = step};
+}
 
 std::optional<WindowPosition> parse_window_position(std::string value) {
   value = lower(std::move(value));

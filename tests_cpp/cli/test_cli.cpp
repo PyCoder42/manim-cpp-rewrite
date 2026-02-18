@@ -132,6 +132,7 @@ TEST(Cli, RenderHelpIncludesCoreOptions) {
   EXPECT_NE(out_capture.str().find("--scene <SceneName>"), std::string::npos);
   EXPECT_NE(out_capture.str().find("--watch"), std::string::npos);
   EXPECT_NE(out_capture.str().find("--interactive"), std::string::npos);
+  EXPECT_NE(out_capture.str().find("--interaction_script"), std::string::npos);
   EXPECT_NE(out_capture.str().find("--enable_gui"), std::string::npos);
   EXPECT_NE(out_capture.str().find("--window_position"), std::string::npos);
 }
@@ -482,6 +483,72 @@ TEST(Cli, RenderAcceptsWatchAndInteractiveFlags) {
   EXPECT_NE(out_capture.str().find("watch=true"), std::string::npos);
   EXPECT_NE(out_capture.str().find("interactive=true"), std::string::npos);
   EXPECT_NE(out_capture.str().find("window_open=true"), std::string::npos);
+}
+
+TEST(Cli, RenderAppliesInteractionScriptAndReportsCameraState) {
+  const auto temp_root =
+      std::filesystem::temp_directory_path() / "manim_cpp_cli_interaction_script";
+  std::filesystem::remove_all(temp_root);
+  std::filesystem::create_directories(temp_root);
+
+  const auto script_path = temp_root / "camera.script";
+  std::ofstream script(script_path);
+  script << "# camera replay\n";
+  script << "pan_right:2\n";
+  script << "pan_up:1.5\n";
+  script << "yaw_left:0.5\n";
+  script << "zoom_in:0.5\n";
+  script.close();
+
+  const auto script_path_string = script_path.string();
+  const std::array<const char*, 9> args = {
+      "manim-cpp",
+      "render",
+      "example_scene.cpp",
+      "--renderer",
+      "opengl",
+      "--watch",
+      "--interactive",
+      "--interaction_script",
+      script_path_string.c_str(),
+  };
+
+  std::ostringstream out_capture;
+  std::streambuf* old_cout = std::cout.rdbuf(out_capture.rdbuf());
+  const int exit_code = manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data());
+  std::cout.rdbuf(old_cout);
+
+  EXPECT_EQ(exit_code, 0);
+  EXPECT_NE(out_capture.str().find("camera_state=2,1.5,-0.5,0,1.5"), std::string::npos);
+
+  std::filesystem::remove_all(temp_root);
+}
+
+TEST(Cli, RenderFailsForInvalidInteractionScriptLine) {
+  const auto temp_root =
+      std::filesystem::temp_directory_path() / "manim_cpp_cli_interaction_script_bad";
+  std::filesystem::remove_all(temp_root);
+  std::filesystem::create_directories(temp_root);
+
+  const auto script_path = temp_root / "camera_bad.script";
+  std::ofstream script(script_path);
+  script << "pan_right:abc\n";
+  script.close();
+
+  const auto script_path_string = script_path.string();
+  const std::array<const char*, 7> args = {
+      "manim-cpp",
+      "render",
+      "example_scene.cpp",
+      "--renderer",
+      "opengl",
+      "--interaction_script",
+      script_path_string.c_str(),
+  };
+
+  EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data()), 2);
+
+  std::filesystem::remove_all(temp_root);
 }
 
 TEST(Cli, RenderValidatesFormatOption) {

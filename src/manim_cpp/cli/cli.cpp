@@ -49,6 +49,7 @@ void print_subcommand_help(const std::string& command) {
     std::cout << "  --scene <SceneName>             Run a registered C++ scene.\n";
     std::cout << "  --watch, -w                     Enable watch mode.\n";
     std::cout << "  --interactive, -i               Enable interactive controls.\n";
+    std::cout << "  --interaction_script <path>     Replay interaction commands from file.\n";
     std::cout << "  --enable_gui                    Enable GUI window output.\n";
     std::cout << "  --fullscreen                    Start in fullscreen mode.\n";
     std::cout << "  --force_window                  Force creation of a window.\n";
@@ -406,6 +407,8 @@ int handle_render(const int argc, const char* const argv[]) {
   auto renderer_type = manim_cpp::renderer::RendererType::kCairo;
   auto media_format = manim_cpp::scene::MediaFormat::kMp4;
   std::string scene_name;
+  std::filesystem::path interaction_script_path;
+  bool has_interaction_script = false;
   bool watch = false;
   bool interactive = false;
   bool enable_gui = false;
@@ -460,6 +463,15 @@ int handle_render(const int argc, const char* const argv[]) {
     }
     if (token == "--interactive" || token == "-i") {
       interactive = true;
+      continue;
+    }
+    if (token == "--interaction_script") {
+      if (i + 1 >= argc) {
+        std::cerr << "Missing value for --interaction_script.\n";
+        return 2;
+      }
+      interaction_script_path = argv[++i];
+      has_interaction_script = true;
       continue;
     }
     if (token == "--enable_gui") {
@@ -540,7 +552,48 @@ int handle_render(const int argc, const char* const argv[]) {
   interaction_config.window_position = window_position;
   interaction_config.window_size = window_size;
   manim_cpp::renderer::InteractionSession interaction_session(interaction_config);
+  if (has_interaction_script) {
+    std::ifstream script_stream(interaction_script_path);
+    if (!script_stream.is_open()) {
+      std::cerr << "Failed to open interaction script: " << interaction_script_path
+                << "\n";
+      return 2;
+    }
+
+    auto trim_line = [](const std::string& text) {
+      const auto first = text.find_first_not_of(" \t\r\n");
+      if (first == std::string::npos) {
+        return std::string{};
+      }
+      const auto last = text.find_last_not_of(" \t\r\n");
+      return text.substr(first, last - first + 1);
+    };
+
+    std::string line;
+    std::size_t line_number = 0;
+    while (std::getline(script_stream, line)) {
+      ++line_number;
+      const auto comment_position = line.find('#');
+      if (comment_position != std::string::npos) {
+        line = line.substr(0, comment_position);
+      }
+      const std::string token = trim_line(line);
+      if (token.empty()) {
+        continue;
+      }
+
+      const auto parsed =
+          manim_cpp::renderer::parse_interaction_command_step(token);
+      if (!parsed.has_value()) {
+        std::cerr << "Invalid interaction script command at line "
+                  << line_number << ": " << token << "\n";
+        return 2;
+      }
+      interaction_session.apply(parsed->command, parsed->step);
+    }
+  }
   const bool window_open = interaction_session.should_open_window();
+  const auto camera_state = interaction_session.camera_state();
 
   if (!scene_name.empty()) {
     auto scene = manim_cpp::scene::SceneRegistry::instance().create(scene_name);
@@ -612,9 +665,19 @@ int handle_render(const int argc, const char* const argv[]) {
                                 frame_file_name_for_renderer(renderer_type,
                                                              scene->scene_name(),
                                                              frame_index);
-        std::ofstream frame_file(frame_path);
+        std::ofstream frame_file(frame_path, std::ios::binary);
         if (!frame_file.is_open()) {
           std::cerr << "Failed to create frame image file: " << frame_path << "\n";
+          return 2;
+        }
+        frame_file << "manim-cpp-frame\n";
+        frame_file << "scene=" << scene->scene_name() << "\n";
+        frame_file << "renderer=" << manim_cpp::renderer::to_string(renderer_type)
+                   << "\n";
+        frame_file << "frame_index=" << frame_index << "\n";
+        frame_file << "frame_count=" << frame_count << "\n";
+        if (!frame_file.good()) {
+          std::cerr << "Failed to write frame image file: " << frame_path << "\n";
           return 2;
         }
       }
@@ -632,13 +695,23 @@ int handle_render(const int argc, const char* const argv[]) {
                               output_file);
 
     if (output_file.has_value()) {
-      std::ofstream output_media(output_file.value());
+      std::ofstream output_media(output_file.value(), std::ios::binary);
       if (!output_media.is_open()) {
         std::cerr << "Failed to create render output file: " << output_file.value() << "\n";
         return 2;
       }
-      output_media << "";
-      output_media.close();
+      output_media << "manim-cpp-media\n";
+      output_media << "scene=" << scene->scene_name() << "\n";
+      output_media << "renderer=" << manim_cpp::renderer::to_string(renderer_type)
+                   << "\n";
+      output_media << "format=" << manim_cpp::scene::to_string(media_format) << "\n";
+      output_media << "frames=" << frame_count << "\n";
+      output_media << "resolution=" << pixel_width << "x" << pixel_height << "\n";
+      output_media << "fps=" << frame_rate << "\n";
+      if (!output_media.good()) {
+        std::cerr << "Failed to write render output file: " << output_file.value() << "\n";
+        return 2;
+      }
     }
     if (subcaption_path.has_value()) {
       if (!writer.write_subcaptions_srt(subcaption_path.value())) {
@@ -670,7 +743,10 @@ int handle_render(const int argc, const char* const argv[]) {
               << " window_position="
               << manim_cpp::renderer::to_string(window_position)
               << " window_size=" << manim_cpp::renderer::to_string(window_size)
-              << " window_monitor=" << window_monitor;
+              << " window_monitor=" << window_monitor
+              << " camera_state=" << camera_state.pan_x << ","
+              << camera_state.pan_y << "," << camera_state.yaw << ","
+              << camera_state.pitch << "," << camera_state.zoom;
     if (output_file.has_value()) {
       std::cout << " output=" << output_file->generic_string();
     }
@@ -695,7 +771,10 @@ int handle_render(const int argc, const char* const argv[]) {
             << " window_position="
             << manim_cpp::renderer::to_string(window_position)
             << " window_size=" << manim_cpp::renderer::to_string(window_size)
-            << " window_monitor=" << window_monitor << "\n";
+            << " window_monitor=" << window_monitor
+            << " camera_state=" << camera_state.pan_x << ","
+            << camera_state.pan_y << "," << camera_state.yaw << ","
+            << camera_state.pitch << "," << camera_state.zoom << "\n";
   return 0;
 }
 
