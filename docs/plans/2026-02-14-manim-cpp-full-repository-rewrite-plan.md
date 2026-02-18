@@ -214,6 +214,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone L.30: Added workflow runtime guard to block Python setup/tool invocations in GitHub Actions (`NoPythonWorkflowToolingCheck`)
 - [x] Milestone L.31: Added scripts/tools runtime guard to block Python shebangs and python/pip execution in repository automation (`NoPythonScriptRuntimeCheck`)
 - [x] Milestone L.32: Fixed legacy-reference allowlist scope to include the reference-scope checker itself, restoring `LegacyReferenceScopeCheck` stability under expanded hygiene buckets
+- [x] Milestone L.33: Added toolchain-floor contract guard (`ToolchainFloorContractCheck`) to keep CMake + README + installation docs aligned on GCC/Clang/MSVC minimums
 - [x] Milestone K.4: Expanded mdBook docs from scaffold pages to C++ workflow chapters (installation, quickstart, CLI, plugins, testing) and added repository enforcement (`BookDocsCoverageCheck`)
 
 ### Detailed Subsystem Mapping (Source-to-Source Intent)

@@ -177,6 +177,12 @@ add_test(
 )
 
 add_test(
+  NAME ToolchainFloorContractCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_toolchain_floor_contract.sh
+          ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
   NAME LegacyDocsPurgeCheck
   COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_legacy_docs_purged.sh
           ${PROJECT_SOURCE_DIR}
