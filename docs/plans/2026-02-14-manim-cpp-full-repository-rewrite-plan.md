@@ -117,6 +117,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone G.19: `render` CLI output now emits deterministic `codec_hint` metadata derived from selected output format
 - [x] Milestone G.20: `plugins path` and `checkhealth` now honor `MANIM_CPP_PLUGIN_DIR` override for environment-driven plugin directory resolution
 - [x] Milestone G.21: `plugins list/load` now default to resolved plugin directory (including `MANIM_CPP_PLUGIN_DIR` override) when `<directory>` is omitted
+- [x] Milestone G.22: Added `manim.cfg` section/key compatibility enforcement for parity-critical sections (`[CLI]`, `[custom_folders]`, `[logger]`, `[ffmpeg]`, `[jupyter]`) via `ManimCfgContractCheck`
 - [x] Milestone H: Plugin system parity
 - [x] Milestone H.1: Plugin discovery by shared-library extension + host ABI version gate
 - [x] Milestone H.2: Batch plugin loading API with deterministic failure aggregation
