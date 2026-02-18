@@ -171,6 +171,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone K.6: Scoped per-locale catalogs to active mdBook/API components only (`book.po`, `api.po`) and added repository enforcement (`I18nCatalogScopeCheck`)
 - [x] Milestone K.7: Updated mdBook metadata author contract to `manim-cpp contributors` and added repository enforcement (`BookMetadataCxxCheck`)
 - [x] Milestone K.8: Migrated release changelog generator to mdBook Markdown output/paths with dynamic GitHub PR links and repository enforcement (`ChangelogMarkdownCheck`)
+- [x] Milestone K.9: Converted the remaining tracked docs template from `.rst` to Markdown and enforced zero tracked `.rst` artifacts (`NoRstArtifactsCheck`)
 - [x] Milestone L: Release engineering and cutover
 - [x] Milestone L.1: Added transitional Python inventory allowlist gate (`PythonInventoryAllowlistCheck`) to track and shrink legacy Python footprint
 - [x] Milestone L.2: Updated GitHub Python gate workflow to enforce allowlist inventory now and strict zero-Python automatically when allowlist is empty

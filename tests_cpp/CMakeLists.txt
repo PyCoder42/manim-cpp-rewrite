@@ -171,6 +171,12 @@ add_test(
 )
 
 add_test(
+  NAME NoRstArtifactsCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_no_rst_artifacts.sh
+          ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
   NAME ReadmeCxxConversionCheck
   COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_readme_cxx.sh
           ${PROJECT_SOURCE_DIR}

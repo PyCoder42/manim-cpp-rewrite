@@ -53,7 +53,7 @@ if ! rg -n "repos/\\$\\{repo_slug\\}" "${changelog_script}" >/dev/null 2>&1; the
   exit 1
 fi
 
-doc_template="${repo_root}/scripts/template_docsting_with_example.rst"
+doc_template="${repo_root}/scripts/template_docsting_with_example.md"
 if [[ -f "${doc_template}" ]] && rg -n "ManimCommunity/manim" "${doc_template}" >/dev/null 2>&1; then
   echo "Docstring template must not reference legacy ManimCommunity URL." >&2
   exit 1
