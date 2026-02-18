@@ -9,115 +9,463 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: plugins.md:5
+msgid "ABI Contract"
+msgstr ""
+
+#: testing.md:22
+msgid "All gates are expected to pass before merging to `main`."
+msgstr ""
+
 #: SUMMARY.md:4 architecture.md:1
 msgid "Architecture"
 msgstr ""
 
-#: index.md:10
-msgid "C ABI plugin boundary."
+#: SUMMARY.md:7
+msgid "CLI"
 msgstr ""
 
-#: i18n.md:5
-msgid "C++ docs extraction pipeline is fully switched."
+#: cli.md:1
+msgid "CLI Reference"
 msgstr ""
 
-#: index.md:7
-msgid "C++ scene authoring via static registration."
+#: plugins.md:15
+msgid "CLI Workflow"
 msgstr ""
 
-#: architecture.md:13
-msgid "CLI and migration binaries live in `apps/` and link `manim_cpp_core`."
+#: index.md:13
+msgid "CLI command behavior and config layering."
 msgstr ""
 
-#: index.md:9
-msgid "Config compatibility with `manim.cfg` semantics."
+#: testing.md:17
+msgid "CLI compatibility and alias contract checks."
 msgstr ""
 
-#: index.md:8
-msgid "Dual Cairo/OpenGL backend architecture."
+#: installation.md:11
+msgid "CMake 3.26+"
 msgstr ""
 
-#: SUMMARY.md:6 i18n.md:1
+#: testing.md:4
+msgid "CTest."
+msgstr ""
+
+#: installation.md:9
+msgid "Clang 17+"
+msgstr ""
+
+#: installation.md:19
+msgid "Configure and Build"
+msgstr ""
+
+#: migration.md:10
+msgid "Constructor-safe translation for supported `add/remove` geometry expressions."
+msgstr ""
+
+#: testing.md:6
+msgid "Core Commands"
+msgstr ""
+
+#: architecture.md:6
+msgid "Core Namespaces"
+msgstr ""
+
+#: quickstart.md:3
+msgid "Create a scene template and render it with the C++ CLI."
+msgstr ""
+
+#: testing.md:20
+msgid "Docs/i18n extraction and coverage checks."
+msgstr ""
+
+#: quickstart.md:12
+msgid "Edit Scene"
+msgstr ""
+
+#: architecture.md:16
+msgid "Executables"
+msgstr ""
+
+#: index.md:12
+msgid "First-scene authoring and rendering with `manim-cpp`."
+msgstr ""
+
+#: installation.md:8
+msgid "GCC 13+"
+msgstr ""
+
+#: plugins.md:13
+msgid "Host version check is enforced with `MANIM_PLUGIN_ABI_VERSION_V1`."
+msgstr ""
+
+#: testing.md:14
+msgid "Important Gate Categories"
+msgstr ""
+
+#: quickstart.md:5
+msgid "Initialize Project"
+msgstr ""
+
+#: installation.md:13
+msgid "Install Dependencies"
+msgstr ""
+
+#: SUMMARY.md:5 installation.md:1
+msgid "Installation"
+msgstr ""
+
+#: SUMMARY.md:11 i18n.md:1
 msgid "Internationalization"
 msgstr ""
 
+#: installation.md:15
+msgid "Linux: `./tools/deps/install_linux.sh`"
+msgstr ""
+
 #: i18n.md:3
-msgid "Locale catalog continuity is preserved from existing `docs/i18n` assets (`fr`, `hi`,"
+msgid "Locale catalog continuity is maintained in `docs/i18n` for:"
+msgstr ""
+
+#: installation.md:10
+msgid "MSVC 19.38+"
+msgstr ""
+
+#: index.md:4
+msgid "Manim CE semantics to compiled C++ scene authoring."
 msgstr ""
 
 #: index.md:1
-msgid "Manim-Cpp"
+msgid "Manim-Cpp Book"
 msgstr ""
 
-#: index.md:3
-msgid "Manim-Cpp is the C++23 rewrite of Manim CE with a parity-focused migration path."
+#: quickstart.md:29
+msgid "Media artifacts are emitted according to `manim.cfg` output directory templates."
 msgstr ""
 
-#: SUMMARY.md:5
+#: SUMMARY.md:9 migration.md:1
 msgid "Migration"
 msgstr ""
 
-#: migration.md:1
-msgid "Migration Notes"
+#: index.md:15
+msgid "Migration workflow from legacy `.py` scenes."
 msgstr ""
 
 #: SUMMARY.md:3
 msgid "Overview"
 msgstr ""
 
-#: index.md:5
-msgid "Scope"
+#: index.md:14
+msgid "Plugin ABI and extension workflow."
+msgstr ""
+
+#: testing.md:18
+msgid "Plugin ABI loading and workflow enforcement checks."
+msgstr ""
+
+#: SUMMARY.md:8 plugins.md:1
+msgid "Plugins"
+msgstr ""
+
+#: plugins.md:3
+msgid "Plugins are loaded through a stable C ABI boundary with version gating."
+msgstr ""
+
+#: cli.md:3
+msgid "Primary binary: `manim-cpp`."
+msgstr ""
+
+#: index.md:18
+msgid "Project Status"
+msgstr ""
+
+#: index.md:7
+msgid "Python cutover."
+msgstr ""
+
+#: SUMMARY.md:6 quickstart.md:1
+msgid "Quickstart"
+msgstr ""
+
+#: quickstart.md:17
+msgid "Render Scene"
+msgstr ""
+
+#: testing.md:16
+msgid "Render regression and bitwise baseline checks."
+msgstr ""
+
+#: quickstart.md:15
+msgid "Replace `construct()` with your animation logic."
+msgstr ""
+
+#: plugins.md:7
+msgid "Required symbol:"
+msgstr ""
+
+#: cli.md:5
+msgid "Root Commands"
+msgstr ""
+
+#: migration.md:8
+msgid "Scene class detection for common scene base classes."
+msgstr ""
+
+#: plugins.md:23
+msgid "Set `MANIM_CPP_PLUGIN_DIR` to override the default plugin directory at runtime."
 msgstr ""
 
 #: SUMMARY.md:1
 msgid "Summary"
 msgstr ""
 
+#: migration.md:6
+msgid "Supported Patterns"
+msgstr ""
+
+#: index.md:11
+msgid "System installation and toolchain requirements."
+msgstr ""
+
+#: i18n.md:10
+msgid "Templates"
+msgstr ""
+
+#: SUMMARY.md:10 testing.md:1
+msgid "Testing and Gates"
+msgstr ""
+
+#: index.md:16
+msgid "Testing and regression gates used in CI."
+msgstr ""
+
+#: i18n.md:12
+msgid "The C++ docs pipeline maintains deterministic gettext templates at:"
+msgstr ""
+
+#: index.md:20
+msgid "The mainline branch is Python-free and enforces deterministic render/media output"
+msgstr ""
+
 #: architecture.md:3
-msgid "The runtime is organized under `manim_cpp` namespaces:"
+msgid "The runtime is organized under `manim_cpp` namespaces and linked into shared CLI"
 msgstr ""
 
-#: architecture.md:7
-msgid "`animation`"
+#: index.md:6
+msgid "This book documents how to build, run, test, and extend the repository after the"
 msgstr ""
 
-#: architecture.md:9
-msgid "`camera`"
+#: installation.md:6
+msgid "Toolchain Floor"
 msgstr ""
 
-#: architecture.md:10
-msgid "`config`"
+#: migration.md:9
+msgid "Translation of selected calls such as `wait`, `clear`, and seed/updater helpers."
+msgstr ""
+
+#: quickstart.md:23
+msgid "Try OpenGL"
+msgstr ""
+
+#: migration.md:12
+msgid "Unsupported Dynamic Patterns"
+msgstr ""
+
+#: migration.md:14
+msgid "Unsupported constructs are preserved as explicit `TODO(migrate)` annotations in"
+msgstr ""
+
+#: migration.md:17
+msgid "Usage"
+msgstr ""
+
+#: i18n.md:17
+msgid "Use `./tools/i18n/extract_gettext.sh` to regenerate templates and"
+msgstr ""
+
+#: cli.md:23
+msgid "Use `manim-cpp render --help` for the full flag contract."
+msgstr ""
+
+#: cli.md:13
+msgid "Useful Render Flags"
+msgstr ""
+
+#: installation.md:26
+msgid "Verify"
+msgstr ""
+
+#: index.md:9
+msgid "What This Book Covers"
+msgstr ""
+
+#: installation.md:17
+msgid "Windows: `./tools/deps/install_windows.ps1`"
+msgstr ""
+
+#: testing.md:19
+msgid "Zero-Python and release/workflow policy checks."
+msgstr ""
+
+#: cli.md:20
+msgid "`--enable_gui`, `--fullscreen`, `--force_window`"
+msgstr ""
+
+#: cli.md:17
+msgid "`--format <png|gif|mp4|webm|mov>`"
+msgstr ""
+
+#: cli.md:19
+msgid "`--interaction_script <path>`"
+msgstr ""
+
+#: cli.md:16
+msgid "`--renderer <cairo|opengl>`"
+msgstr ""
+
+#: cli.md:15
+msgid "`--scene <SceneName>`"
+msgstr ""
+
+#: cli.md:18
+msgid "`--watch`, `--interactive`"
+msgstr ""
+
+#: cli.md:21
+msgid "`--window_position`, `--window_size`, `--window_monitor`"
+msgstr ""
+
+#: i18n.md:18
+msgid "`./tools/docs/check_i18n_catalogs.sh` to validate locale catalog presence."
+msgstr ""
+
+#: architecture.md:19
+msgid "`apps/manim_alias_manim`, `apps/manim_alias_manimce`: transitional aliases."
+msgstr ""
+
+#: architecture.md:18
+msgid "`apps/manim_cpp_cli`: main `manim-cpp` CLI entrypoint."
+msgstr ""
+
+#: architecture.md:21
+msgid "`apps/manim_cpp_extract_frames`: `.npz` frame extraction utility."
+msgstr ""
+
+#: architecture.md:20
+msgid "`apps/manim_cpp_migrate`: migration utility."
+msgstr ""
+
+#: cli.md:8
+msgid "`cfg`: inspect/write config templates."
+msgstr ""
+
+#: cli.md:9
+msgid "`checkhealth`: inspect runtime dependencies and supported formats/renderers."
+msgstr ""
+
+#: i18n.md:15
+msgid "`docs/i18n/gettext/api.pot`"
+msgstr ""
+
+#: i18n.md:14
+msgid "`docs/i18n/gettext/book.pot`"
+msgstr ""
+
+#: i18n.md:5
+msgid "`fr`"
+msgstr ""
+
+#: i18n.md:6
+msgid "`hi`"
+msgstr ""
+
+#: cli.md:10
+msgid "`init`: scaffold scene/project structure."
 msgstr ""
 
 #: migration.md:3
-msgid "`manim-cpp-migrate` is a dedicated conversion tool that targets deterministic"
+msgid "`manim-cpp-migrate` provides deterministic source-to-source conversion for"
 msgstr ""
 
-#: architecture.md:6
-msgid "`mobject`"
+#: index.md:3
+msgid "`manim-cpp` is a C++23 animation engine monorepo with a parity-oriented path from"
+msgstr ""
+
+#: installation.md:3
+msgid "`manim-cpp` targets C++23 and requires platform packages for rendering and media"
+msgstr ""
+
+#: testing.md:3
+msgid "`manim-cpp` uses GoogleTest/GMock plus repository guard scripts registered in"
+msgstr ""
+
+#: architecture.md:10
+msgid "`manim_cpp::animation`: animation primitives and composition APIs."
+msgstr ""
+
+#: architecture.md:12
+msgid "`manim_cpp::camera`: camera frame/rate/pixel configuration."
+msgstr ""
+
+#: architecture.md:13
+msgid "`manim_cpp::config`: `manim.cfg` loading, precedence, and path templates."
+msgstr ""
+
+#: architecture.md:9
+msgid "`manim_cpp::mobject`: geometry and scene-graph data model."
+msgstr ""
+
+#: architecture.md:14
+msgid "`manim_cpp::plugin`: ABI-compatible plugin discovery and loading."
 msgstr ""
 
 #: architecture.md:11
-msgid "`plugin`"
-msgstr ""
-
-#: i18n.md:4
-msgid "`pt`, `sv`). During migration, gettext artifacts remain source-of-truth until"
+msgid "`manim_cpp::renderer`: Cairo/OpenGL renderer contracts and interaction state."
 msgstr ""
 
 #: architecture.md:8
-msgid "`renderer`"
+msgid "`manim_cpp::scene`: scene lifecycle, timeline, and file writer contracts."
 msgstr ""
 
-#: architecture.md:5
-msgid "`scene`"
+#: cli.md:11
+msgid "`plugins`: path/list/load plugin libraries."
+msgstr ""
+
+#: i18n.md:7
+msgid "`pt`"
+msgstr ""
+
+#: cli.md:7
+msgid "`render`: render scenes from a C++ input unit."
+msgstr ""
+
+#: quickstart.md:14
+msgid "`scenes/main_scene.cpp` already contains `MANIM_REGISTER_SCENE(MainScene)`."
+msgstr ""
+
+#: i18n.md:8
+msgid "`sv`"
+msgstr ""
+
+#: architecture.md:4
+msgid "binaries."
+msgstr ""
+
+#: index.md:21
+msgid "contracts through C++ tests and repository guard scripts."
+msgstr ""
+
+#: migration.md:15
+msgid "generated C++ output."
+msgstr ""
+
+#: installation.md:16
+msgid "macOS: `./tools/deps/install_macos.sh`"
+msgstr ""
+
+#: installation.md:4
+msgid "processing."
 msgstr ""
 
 #: migration.md:4
-msgid "translation for supported Python scene constructs and explicit TODO markers for"
-msgstr ""
-
-#: migration.md:5
-msgid "unsupported dynamic patterns."
+msgid "supported scene patterns."
 msgstr ""
 

@@ -1,10 +1,21 @@
-# Manim-Cpp
+# Manim-Cpp Book
 
-Manim-Cpp is the C++23 rewrite of Manim CE with a parity-focused migration path.
+`manim-cpp` is a C++23 animation engine monorepo with a parity-oriented path from
+Manim CE semantics to compiled C++ scene authoring.
 
-## Scope
+This book documents how to build, run, test, and extend the repository after the
+Python cutover.
 
-- C++ scene authoring via static registration.
-- Dual Cairo/OpenGL backend architecture.
-- Config compatibility with `manim.cfg` semantics.
-- C ABI plugin boundary.
+## What This Book Covers
+
+- System installation and toolchain requirements.
+- First-scene authoring and rendering with `manim-cpp`.
+- CLI command behavior and config layering.
+- Plugin ABI and extension workflow.
+- Migration workflow from legacy `.py` scenes.
+- Testing and regression gates used in CI.
+
+## Project Status
+
+The mainline branch is Python-free and enforces deterministic render/media output
+contracts through C++ tests and repository guard scripts.

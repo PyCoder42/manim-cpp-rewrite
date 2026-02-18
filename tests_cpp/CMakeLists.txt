@@ -159,6 +159,12 @@ add_test(
 )
 
 add_test(
+  NAME BookDocsCoverageCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_book_docs_coverage.sh
+          ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
   NAME CliAliasManimVersion
   COMMAND $<TARGET_FILE:manim> --version
 )

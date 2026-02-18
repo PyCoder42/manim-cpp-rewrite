@@ -186,6 +186,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone L.18: Purged legacy docs artifacts (`docs/source`, `docs/html`, old docs requirements files) and added repository enforcement (`LegacyDocsPurgeCheck`)
 - [x] Milestone L.19: Converted `publish-docker.yml` to Python-free shell logic and `manim-cpp` image tags while keeping transitional `manim` tags
 - [x] Milestone L.20: Rewrote top-level `README.md` for the C++23 monorepo workflow and added repository enforcement (`ReadmeCxxConversionCheck`)
+- [x] Milestone K.4: Expanded mdBook docs from scaffold pages to C++ workflow chapters (installation, quickstart, CLI, plugins, testing) and added repository enforcement (`BookDocsCoverageCheck`)
 
 ### Detailed Subsystem Mapping (Source-to-Source Intent)
 - [x] `manim/mobject` -> `src/manim_cpp/mobject`
