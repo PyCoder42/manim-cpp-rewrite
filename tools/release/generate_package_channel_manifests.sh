@@ -15,6 +15,43 @@ asset_url="$2"
 asset_sha256="$3"
 output_dir="$4"
 
+to_https_repo_url() {
+  local raw_url="$1"
+
+  if [[ -z "${raw_url}" ]]; then
+    return 1
+  fi
+
+  if [[ "${raw_url}" =~ ^git@github\.com:(.+)\.git$ ]]; then
+    echo "https://github.com/${BASH_REMATCH[1]}"
+    return 0
+  fi
+
+  if [[ "${raw_url}" =~ ^https://github\.com/.+\.git$ ]]; then
+    echo "${raw_url%.git}"
+    return 0
+  fi
+
+  if [[ "${raw_url}" =~ ^https://github\.com/.+$ ]]; then
+    echo "${raw_url}"
+    return 0
+  fi
+
+  return 1
+}
+
+origin_url="$(git config --get remote.origin.url 2>/dev/null || true)"
+default_project_url="https://github.com/PyCoder42/manim-cpp-rewrite"
+project_url="${MANIM_CPP_PROJECT_URL:-}"
+if [[ -z "${project_url}" ]]; then
+  project_url="$(to_https_repo_url "${origin_url}" || true)"
+fi
+if [[ -z "${project_url}" ]]; then
+  project_url="${default_project_url}"
+fi
+publisher="${MANIM_CPP_PUBLISHER:-manim-cpp contributors}"
+winget_identifier="${MANIM_CPP_WINGET_IDENTIFIER:-ManimCpp.ManimCpp}"
+
 mkdir -p "${output_dir}/homebrew"
 mkdir -p "${output_dir}/scoop"
 mkdir -p "${output_dir}/winget"
@@ -23,7 +60,7 @@ mkdir -p "${output_dir}/chocolatey/tools"
 cat > "${output_dir}/homebrew/manim-cpp.rb" <<EOF
 class ManimCpp < Formula
   desc "C++ animation engine for explanatory math videos"
-  homepage "https://github.com/ManimCommunity/manim"
+  homepage "${project_url}"
   version "${version}"
   url "${asset_url}"
   sha256 "${asset_sha256}"
@@ -45,7 +82,7 @@ cat > "${output_dir}/scoop/manim-cpp.json" <<EOF
 {
   "version": "${version}",
   "description": "C++ animation engine for explanatory math videos",
-  "homepage": "https://github.com/ManimCommunity/manim",
+  "homepage": "${project_url}",
   "license": "MIT",
   "architecture": {
     "64bit": {
@@ -65,10 +102,10 @@ cat > "${output_dir}/scoop/manim-cpp.json" <<EOF
 EOF
 
 cat > "${output_dir}/winget/manim-cpp.yaml" <<EOF
-PackageIdentifier: ManimCommunity.ManimCpp
+PackageIdentifier: ${winget_identifier}
 PackageVersion: ${version}
 PackageName: manim-cpp
-Publisher: Manim Community
+Publisher: ${publisher}
 License: MIT
 ShortDescription: C++ animation engine for explanatory math videos
 Installers:
@@ -92,10 +129,10 @@ cat > "${output_dir}/chocolatey/manim-cpp.nuspec" <<EOF
   <metadata>
     <id>manim-cpp</id>
     <version>${version}</version>
-    <authors>Manim Community</authors>
-    <projectUrl>https://github.com/ManimCommunity/manim</projectUrl>
+    <authors>${publisher}</authors>
+    <projectUrl>${project_url}</projectUrl>
     <description>C++ animation engine for explanatory math videos</description>
-    <licenseUrl>https://github.com/ManimCommunity/manim/blob/main/LICENSE</licenseUrl>
+    <licenseUrl>${project_url}/blob/main/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <tags>manim cpp animation</tags>
   </metadata>
@@ -113,3 +150,4 @@ Install-ChocolateyZipPackage -PackageName \$packageName -Url64bit \$url64 -Unzip
 EOF
 
 echo "Generated package channel manifests in ${output_dir}"
+echo "Using project URL: ${project_url}"

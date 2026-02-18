@@ -161,7 +161,6 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.19: Added render-regression bitwise parity harness (`RenderBitwiseParity`) with committed per-platform Cairo/OpenGL baseline hashes
 - [x] Milestone J.20: Added dedicated cross-platform Plugin ABI CI workflow (`cxx-plugin-abi-matrix.yml`) plus repository guard (`PluginAbiWorkflowCheck`)
 - [x] Milestone J.21: Added interaction-script unit/CLI coverage for deterministic command parsing, replay, and invalid-script failure handling
-- [x] Milestone J.22: Added Original-Manim feature-to-CTest cross-coverage matrix gate (`OriginalFeatureCrossTestCoverageCheck`) with enforced regex mapping inventory
 - [x] Milestone J.22: Added original-Manim feature cross-test matrix mapping parity-scope features to enforced CTest coverage (`OriginalFeatureCrossTestCoverageCheck`)
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
@@ -193,6 +192,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone L.21: Converted GitHub issue templates to C++ diagnostics (`compiler`, `cmake`, backend/toolchain details) and added repository enforcement (`IssueTemplateCxxCheck`)
 - [x] Milestone L.22: Converted GitHub pull-request templates to `manim-cpp` wording and added repository enforcement (`PRTemplateCxxCheck`)
 - [x] Milestone L.23: Converted CodeQL workflow language target from Python to C++ and added repository enforcement (`CodeqlCxxWorkflowCheck`)
+- [x] Milestone L.24: Converted package-channel manifest metadata from legacy `ManimCommunity/manim` URLs to dynamic current-repo URLs and added repository enforcement (`PackageManifestProjectUrlCheck`)
 - [x] Milestone K.4: Expanded mdBook docs from scaffold pages to C++ workflow chapters (installation, quickstart, CLI, plugins, testing) and added repository enforcement (`BookDocsCoverageCheck`)
 
 ### Detailed Subsystem Mapping (Source-to-Source Intent)
