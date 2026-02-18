@@ -161,6 +161,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.19: Added render-regression bitwise parity harness (`RenderBitwiseParity`) with committed per-platform Cairo/OpenGL baseline hashes
 - [x] Milestone J.20: Added dedicated cross-platform Plugin ABI CI workflow (`cxx-plugin-abi-matrix.yml`) plus repository guard (`PluginAbiWorkflowCheck`)
 - [x] Milestone J.21: Added interaction-script unit/CLI coverage for deterministic command parsing, replay, and invalid-script failure handling
+- [x] Milestone J.22: Added original-Manim feature cross-test matrix mapping parity-scope features to enforced CTest coverage (`OriginalFeatureCrossTestCoverageCheck`)
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers

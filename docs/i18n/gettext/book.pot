@@ -13,7 +13,7 @@ msgstr ""
 msgid "ABI Contract"
 msgstr ""
 
-#: testing.md:22
+#: testing.md:23
 msgid "All gates are expected to pass before merging to `main`."
 msgstr ""
 
@@ -151,6 +151,10 @@ msgstr ""
 
 #: index.md:15
 msgid "Migration workflow from legacy `.py` scenes."
+msgstr ""
+
+#: testing.md:21
+msgid "Original-Manim feature cross-test coverage matrix checks."
 msgstr ""
 
 #: SUMMARY.md:3

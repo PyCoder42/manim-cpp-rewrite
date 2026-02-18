@@ -18,5 +18,6 @@ ctest --preset debug --output-on-failure
 - Plugin ABI loading and workflow enforcement checks.
 - Zero-Python and release/workflow policy checks.
 - Docs/i18n extraction and coverage checks.
+- Original-Manim feature cross-test coverage matrix checks.
 
 All gates are expected to pass before merging to `main`.
