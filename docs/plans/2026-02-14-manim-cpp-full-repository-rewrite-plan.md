@@ -167,6 +167,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.24: Hardened original-feature matrix guard to reject duplicate `feature_id` and duplicate `required_test_regex` rows (prevents drift/masked coverage)
 - [x] Milestone J.25: Expanded original-feature matrix to include config precedence/template resolution, camera frame contract, and math/Eigen parity coverage buckets
 - [x] Milestone J.26: Expanded original-feature matrix to include triangulation, path-ops, graph-layout, and isocurve algorithm parity coverage buckets
+- [x] Milestone J.27: Expanded original-feature matrix to include media-writer output-path/partial-cache/render-summary and CLI render artifact parity buckets
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers
