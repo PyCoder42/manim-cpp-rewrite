@@ -75,7 +75,7 @@ std::vector<SceneClass> detect_scene_classes(const std::string& source_text) {
                                  std::regex_constants::ECMAScript |
                                      std::regex_constants::multiline);
   const std::vector<std::string> kSupportedBases = {
-      "Scene", "ThreeDScene", "MovingCameraScene"};
+      "Scene", "ThreeDScene", "MovingCameraScene", "ZoomedScene"};
 
   for (std::sregex_iterator it(source_text.begin(), source_text.end(),
                                scene_class_pattern);
@@ -258,6 +258,7 @@ std::string translate_python_scene_to_cpp(const std::string& source_text,
   converted << "#include \"manim_cpp/scene/scene.hpp\"\n";
   converted << "#include \"manim_cpp/scene/moving_camera_scene.hpp\"\n";
   converted << "#include \"manim_cpp/scene/three_d_scene.hpp\"\n";
+  converted << "#include \"manim_cpp/scene/zoomed_scene.hpp\"\n";
   converted << "#include \"manim_cpp/scene/registry.hpp\"\n\n";
   converted << "using namespace manim_cpp::scene;\n\n";
 
