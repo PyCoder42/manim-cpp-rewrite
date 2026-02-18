@@ -1,24 +1,26 @@
-Thanks for your contribution for the manim community hackathon!
+Thanks for your contribution to the manim-cpp hackathon track.
 
 Please make sure your pull request has a meaningful title.
 
 E.g. "Example for the class Angle".
 
-Details for the submissions can be found in the [discord announcement channel](https://discord.com/channels/581738731934056449/581739610154074112/846460718479966228
-).
+Submission details are posted in the project coordination channel.
 
-Docstrings can be created in the discord channel with the manimator like this:
+Use this style when sharing an API/documentation sketch:
 ```
-!mdocstring
+/// Brief summary.
+/// Parameters:
+/// - scene: active scene context.
 ```
-```python
-class HelloWorld(Scene):
-    def construct(self):
-        self.add(Circle())
+```cpp
+class HelloWorld final : public manim_cpp::scene::Scene {
+ public:
+  void construct() override { add(std::make_shared<manim_cpp::mobject::Circle>()); }
+};
 ```
-Copy+paste the output docstring to the right place in the source code.
+Copy or adapt the snippet into the relevant source/docs location.
 
-If you need any help, do not hesitate to ask the hackathon-mentors in the discord channel.
+If you need help, ask in the project collaboration channel.
 
 ## Checklist
 - [ ] Milestone gate review completed for the current plan tranche.

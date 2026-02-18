@@ -1,8 +1,8 @@
-<!-- Thank you for contributing to ManimCommunity!
+<!-- Thank you for contributing to manim-cpp!
 Before filling in the details, ensure:
 - The title of your PR gives a descriptive summary to end-users. Some examples:
-  - Fixed last animations not running to completion
-  - Added gradient support and documentation for SVG files
+  - Added CLI usage notes for plugin ABI checks
+  - Clarified CMake preset setup for local builds
 -->
 ## Summary of Changes
 
@@ -13,7 +13,7 @@ release. Write RST between the following start and end comments.-->
 <!--changelog-end-->
 
 ## Checklist
-- [ ] I have read the [Contributing Guidelines](https://docs.manim.community/en/latest/contributing.html)
+- [ ] I have read the contributor docs in `README.md` and `docs/book/src/`
 - [ ] I have written a descriptive PR title (see top of PR template for examples)
 - [ ] My new documentation builds, looks correctly formatted, and adds no additional build warnings
 - [ ] Milestone gate review completed for the current plan tranche.
