@@ -112,6 +112,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone G.17: Added explicit alias compatibility checks so `manim --version` and `manimce --version` are enforced in `ctest`
 - [x] Milestone G.18: `checkhealth` text mode now reports supported renderer/format metadata alongside ffmpeg and plugin directory status
 - [x] Milestone G.19: `render` CLI output now emits deterministic `codec_hint` metadata derived from selected output format
+- [x] Milestone G.20: `plugins path` and `checkhealth` now honor `MANIM_CPP_PLUGIN_DIR` override for environment-driven plugin directory resolution
 - [x] Milestone H: Plugin system parity
 - [x] Milestone H.1: Plugin discovery by shared-library extension + host ABI version gate
 - [x] Milestone H.2: Batch plugin loading API with deterministic failure aggregation
@@ -150,6 +151,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.13: Added media-format + CLI integration coverage for format-to-codec-hint mapping across `png/gif/mp4/webm/mov`
 - [x] Milestone J.14: Added CLI integration coverage that renders every converted C++ example scene and validates media/manifest/subcaption artifact emission
 - [x] Milestone J.15: Added migration regression coverage that enforces TODO fallback for keyword-argument constructor calls in translated `add/remove` lines
+- [x] Milestone J.16: Added CLI integration coverage for `MANIM_CPP_PLUGIN_DIR` override behavior in `checkhealth --json` and `plugins path`
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers

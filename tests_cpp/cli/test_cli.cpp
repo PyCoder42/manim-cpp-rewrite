@@ -1,4 +1,5 @@
 #include <array>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -42,6 +43,54 @@ class ScopedCurrentPath {
 
  private:
   std::filesystem::path previous_;
+};
+
+class ScopedEnvVar {
+ public:
+  ScopedEnvVar(std::string name, std::string value) : name_(std::move(name)) {
+    const char* current = std::getenv(name_.c_str());
+    if (current != nullptr) {
+      had_previous_ = true;
+      previous_ = current;
+    }
+    set_value(std::move(value));
+  }
+
+  ~ScopedEnvVar() { restore(); }
+
+ private:
+  void set_value(std::string value) {
+#ifdef _WIN32
+    _putenv_s(name_.c_str(), value.c_str());
+#else
+    setenv(name_.c_str(), value.c_str(), 1);
+#endif
+  }
+
+  void restore() {
+    if (restored_) {
+      return;
+    }
+    restored_ = true;
+    if (had_previous_) {
+#ifdef _WIN32
+      _putenv_s(name_.c_str(), previous_.c_str());
+#else
+      setenv(name_.c_str(), previous_.c_str(), 1);
+#endif
+      return;
+    }
+#ifdef _WIN32
+    _putenv_s(name_.c_str(), "");
+#else
+    unsetenv(name_.c_str());
+#endif
+  }
+
+  std::string name_;
+  std::string previous_;
+  bool had_previous_ = false;
+  bool restored_ = false;
 };
 
 std::string read_file(const std::filesystem::path& path) {
@@ -615,6 +664,22 @@ TEST(Cli, CheckhealthJsonModeIsAccepted) {
             std::string::npos);
 }
 
+TEST(Cli, CheckhealthJsonReportsPluginDirFromEnvironmentOverride) {
+  const auto plugin_root =
+      std::filesystem::temp_directory_path() / "manim_cpp_cli_plugin_override";
+  std::filesystem::create_directories(plugin_root);
+  ScopedEnvVar plugin_env("MANIM_CPP_PLUGIN_DIR", plugin_root.string());
+
+  const std::array<const char*, 3> args = {"manim-cpp", "checkhealth", "--json"};
+  std::ostringstream out_capture;
+  std::streambuf* old_cout = std::cout.rdbuf(out_capture.rdbuf());
+  const int exit_code = manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data());
+  std::cout.rdbuf(old_cout);
+
+  EXPECT_EQ(exit_code, 0);
+  EXPECT_NE(out_capture.str().find(plugin_root.string()), std::string::npos);
+}
+
 TEST(Cli, CheckhealthTextModeReportsRenderersAndFormats) {
   const std::array<const char*, 2> args = {"manim-cpp", "checkhealth"};
   std::ostringstream out_capture;
@@ -703,4 +768,20 @@ TEST(Cli, PluginsListSupportsRecursiveDiscoveryFlag) {
   EXPECT_NE(out_capture.str().find("sample"), std::string::npos);
 
   std::filesystem::remove_all(temp_root);
+}
+
+TEST(Cli, PluginsPathRespectsEnvironmentOverride) {
+  const auto plugin_root =
+      std::filesystem::temp_directory_path() / "manim_cpp_cli_plugins_path_override";
+  std::filesystem::create_directories(plugin_root);
+  ScopedEnvVar plugin_env("MANIM_CPP_PLUGIN_DIR", plugin_root.string());
+
+  const std::array<const char*, 3> args = {"manim-cpp", "plugins", "path"};
+  std::ostringstream out_capture;
+  std::streambuf* old_cout = std::cout.rdbuf(out_capture.rdbuf());
+  const int exit_code = manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data());
+  std::cout.rdbuf(old_cout);
+
+  EXPECT_EQ(exit_code, 0);
+  EXPECT_NE(out_capture.str().find(plugin_root.string()), std::string::npos);
 }

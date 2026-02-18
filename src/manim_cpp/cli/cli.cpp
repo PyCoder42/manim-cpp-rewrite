@@ -140,6 +140,14 @@ bool command_on_path(const std::string& command) {
   return false;
 }
 
+std::filesystem::path resolve_plugin_dir() {
+  const char* plugin_dir_env = std::getenv("MANIM_CPP_PLUGIN_DIR");
+  if (plugin_dir_env != nullptr && *plugin_dir_env != '\0') {
+    return std::filesystem::path(plugin_dir_env);
+  }
+  return std::filesystem::current_path() / "plugins";
+}
+
 bool parse_int_strict(const std::string& value, int* output) {
   if (value.empty() || output == nullptr) {
     return false;
@@ -725,7 +733,7 @@ int handle_checkhealth(const int argc, const char* const argv[]) {
   }
 
   const bool ffmpeg_found = command_on_path("ffmpeg");
-  const auto plugin_dir = std::filesystem::current_path() / "plugins";
+  const auto plugin_dir = resolve_plugin_dir();
   if (json) {
     std::cout << "{"
               << "\"ffmpeg\":" << (ffmpeg_found ? "true" : "false") << ","
@@ -783,7 +791,7 @@ int handle_plugins(const int argc, const char* const argv[]) {
   }
 
   if (subcommand == "path") {
-    std::cout << (std::filesystem::current_path() / "plugins") << "\n";
+    std::cout << resolve_plugin_dir() << "\n";
     return 0;
   }
 
