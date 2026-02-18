@@ -49,6 +49,26 @@ class Ellipse : public Mobject {
   double height_ = 2.0;
 };
 
+class Arc : public Mobject {
+ public:
+  Arc(double radius = 1.0, double start_angle = 0.0, double angle = 1.5707963267948966);
+
+  [[nodiscard]] std::string debug_name() const override { return "Arc"; }
+  [[nodiscard]] double radius() const;
+  [[nodiscard]] double start_angle() const;
+  [[nodiscard]] double angle() const;
+  void set_radius(double radius);
+  void set_angles(double start_angle, double angle);
+  [[nodiscard]] math::Vec3 point_at_proportion(double alpha) const;
+  [[nodiscard]] math::Vec3 start_point() const;
+  [[nodiscard]] math::Vec3 end_point() const;
+
+ private:
+  double radius_ = 1.0;
+  double start_angle_ = 0.0;
+  double angle_ = 1.5707963267948966;
+};
+
 class Square : public Mobject {
  public:
   explicit Square(double side_length = 2.0);

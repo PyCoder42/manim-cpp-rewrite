@@ -62,6 +62,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone C.16: Added `Triangle` geometry mobject parity (`side_length`, centroid-centered equilateral `vertices`) with non-positive side-length validation
 - [x] Milestone C.17: Added `RegularPolygon` geometry mobject parity (`n_sides`, `radius`, deterministic top-start vertex winding) with side-count/radius validation
 - [x] Milestone C.18: Added `Ellipse` geometry mobject parity (`width`, `height`, `point_at_angle`) with non-positive dimension validation
+- [x] Milestone C.19: Added `Arc` geometry mobject parity (`radius`, `start_angle`, `angle`, `point_at_proportion`) with non-positive radius validation
 - [x] Milestone D: Cairo backend parity
 - [x] Milestone D.1: Renderer type parsing, string conversion, and factory creation for Cairo/OpenGL backends
 - [x] Milestone D.2: Cairo renderer deterministic frame naming + static-frame signature dedupe scaffold
@@ -134,6 +135,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.6: Replaced TODO-only bodies in converted advanced/custom/OpenGL example scenes with deterministic runnable C++ animation scaffolds
 - [x] Milestone J.7: Added non-Python CTest coverage for CLI alias binaries (`manim`, `manimce`) to enforce one-major-version compatibility contract
 - [x] Milestone J.8: Added CLI integration coverage for human-readable `checkhealth` renderer/format metadata reporting
+- [x] Milestone J.9: Added unit coverage for `Arc` geometry mobject deterministic endpoint/proportion contracts
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers

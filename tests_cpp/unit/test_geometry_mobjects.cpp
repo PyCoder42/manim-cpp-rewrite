@@ -13,6 +13,7 @@ using manim_cpp::mobject::Circle;
 using manim_cpp::mobject::Dot;
 using manim_cpp::mobject::Ellipse;
 using manim_cpp::mobject::Line;
+using manim_cpp::mobject::Arc;
 using manim_cpp::mobject::Rectangle;
 using manim_cpp::mobject::RegularPolygon;
 using manim_cpp::mobject::Square;
@@ -65,6 +66,27 @@ TEST(GeometryMobjects, EllipseComputesPointAtAngleFromCenter) {
 
   EXPECT_THROW(ellipse.set_width(0.0), std::invalid_argument);
   EXPECT_THROW(ellipse.set_height(0.0), std::invalid_argument);
+}
+
+TEST(GeometryMobjects, ArcTracksRadiusAndAngles) {
+  Arc arc(2.0, 0.0, std::numbers::pi / 2.0);
+  arc.move_to(Vec3{1.0, -1.0, 0.5});
+
+  EXPECT_DOUBLE_EQ(arc.radius(), 2.0);
+  EXPECT_DOUBLE_EQ(arc.start_angle(), 0.0);
+  EXPECT_DOUBLE_EQ(arc.angle(), std::numbers::pi / 2.0);
+
+  expect_vec3_near(arc.start_point(), Vec3{3.0, -1.0, 0.5});
+  expect_vec3_near(arc.end_point(), Vec3{1.0, 1.0, 0.5});
+  expect_vec3_near(arc.point_at_proportion(0.5),
+                   Vec3{1.0 + std::sqrt(2.0), -1.0 + std::sqrt(2.0), 0.5});
+}
+
+TEST(GeometryMobjects, ArcRejectsNonPositiveRadius) {
+  EXPECT_THROW(Arc(0.0, 0.0, std::numbers::pi / 2.0), std::invalid_argument);
+
+  Arc arc;
+  EXPECT_THROW(arc.set_radius(0.0), std::invalid_argument);
 }
 
 TEST(GeometryMobjects, SquareVerticesTrackCenterAndSideLength) {

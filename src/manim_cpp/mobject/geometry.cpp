@@ -91,6 +91,40 @@ math::Vec3 Ellipse::point_at_angle(const double angle_radians) const {
   };
 }
 
+Arc::Arc(const double radius, const double start_angle, const double angle)
+    : radius_(require_positive(radius, "radius")),
+      start_angle_(start_angle),
+      angle_(angle) {}
+
+double Arc::radius() const { return radius_; }
+
+double Arc::start_angle() const { return start_angle_; }
+
+double Arc::angle() const { return angle_; }
+
+void Arc::set_radius(const double radius) {
+  radius_ = require_positive(radius, "radius");
+}
+
+void Arc::set_angles(const double start_angle, const double angle) {
+  start_angle_ = start_angle;
+  angle_ = angle;
+}
+
+math::Vec3 Arc::point_at_proportion(const double alpha) const {
+  const double theta = start_angle_ + (angle_ * alpha);
+  const auto& c = center();
+  return math::Vec3{
+      c[0] + (radius_ * std::cos(theta)),
+      c[1] + (radius_ * std::sin(theta)),
+      c[2],
+  };
+}
+
+math::Vec3 Arc::start_point() const { return point_at_proportion(0.0); }
+
+math::Vec3 Arc::end_point() const { return point_at_proportion(1.0); }
+
 Square::Square(const double side_length)
     : side_length_(require_positive(side_length, "side_length")) {}
 
