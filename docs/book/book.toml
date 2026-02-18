@@ -1,6 +1,6 @@
 [book]
 title = "Manim-Cpp"
-authors = ["Manim Community", "Manim-Cpp Contributors"]
+authors = ["manim-cpp contributors"]
 language = "en"
 multilingual = false
 src = "src"

@@ -41,7 +41,7 @@ to_https_repo_url() {
 }
 
 origin_url="$(git config --get remote.origin.url 2>/dev/null || true)"
-default_project_url="https://github.com/PyCoder42/manim-cpp-rewrite"
+default_project_url="https://github.com/manim-cpp/manim-cpp"
 project_url="${MANIM_CPP_PROJECT_URL:-}"
 if [[ -z "${project_url}" ]]; then
   project_url="$(to_https_repo_url "${origin_url}" || true)"

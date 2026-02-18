@@ -171,6 +171,12 @@ add_test(
 )
 
 add_test(
+  NAME BookMetadataCxxCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_book_metadata_cxx.sh
+          ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
   NAME I18nCatalogScopeCheck
   COMMAND ${PROJECT_SOURCE_DIR}/tools/docs/check_i18n_catalog_scope.sh
           ${PROJECT_SOURCE_DIR}
