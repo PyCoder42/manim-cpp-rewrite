@@ -71,7 +71,7 @@ if [[ -n "${duplicate_regexes}" ]]; then
   exit 1
 fi
 
-if [[ "${feature_count}" -lt 30 ]]; then
+if [[ "${feature_count}" -lt 60 ]]; then
   echo "Feature matrix is unexpectedly small (${feature_count} rows)." >&2
   exit 1
 fi
