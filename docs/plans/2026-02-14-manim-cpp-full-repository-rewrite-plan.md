@@ -147,6 +147,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.11: Added migration integration coverage for constructor-safe `add/remove` translations and unsupported-argument fallback TODO behavior
 - [x] Milestone J.12: Added geometry unit coverage for `Annulus`/`Sector` radius validation and deterministic boundary-point contracts
 - [x] Milestone J.13: Added media-format + CLI integration coverage for format-to-codec-hint mapping across `png/gif/mp4/webm/mov`
+- [x] Milestone J.14: Added CLI integration coverage that renders every converted C++ example scene and validates media/manifest/subcaption artifact emission
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers
@@ -180,7 +181,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] CLI compatibility snapshots
 - [ ] Render parity (per-platform bitwise)
 - [ ] Media parity (metadata/timing/section outputs)
-- [ ] Scene API parity on example scenes
+- [x] Scene API parity on example scenes
 - [ ] Interaction parity (GLFW/ImGui)
 - [ ] Plugin ABI integration tests (all platforms)
 - [x] Migration utility integration tests
