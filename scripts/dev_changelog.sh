@@ -37,7 +37,25 @@ resolve_output_file() {
     return
   fi
   local normalized="${tag#v}"
-  printf '%s/docs/source/changelog/%s-changelog.rst\n' "${repo_root}" "${normalized}"
+  printf '%s/docs/book/src/changelog/%s-changelog.md\n' "${repo_root}" "${normalized}"
+}
+
+resolve_repo_slug() {
+  local repo_root="$1"
+
+  if [[ -n "${GITHUB_REPOSITORY:-}" ]] && [[ "${GITHUB_REPOSITORY}" =~ ^[^/]+/[^/]+$ ]]; then
+    printf '%s\n' "${GITHUB_REPOSITORY}"
+    return
+  fi
+
+  local remote_url
+  remote_url="$(git -C "${repo_root}" remote get-url origin 2>/dev/null || true)"
+  if [[ "${remote_url}" =~ github\.com[:/]([^/]+/[^/.]+)(\.git)?$ ]]; then
+    printf '%s\n' "${BASH_REMATCH[1]}"
+    return
+  fi
+
+  printf '%s\n' "manim-cpp/manim-cpp"
 }
 
 extract_between_markers() {
@@ -133,9 +151,10 @@ main() {
   shift 3
 
   local -a additional_prs=("$@")
-  local script_dir repo_root
+  local script_dir repo_root repo_slug
   script_dir="$(cd "$(dirname "$0")" && pwd)"
   repo_root="$(cd "${script_dir}/.." && pwd)"
+  repo_slug="$(resolve_repo_slug "${repo_root}")"
 
   local output_path
   output_path="$(resolve_output_file "${repo_root}" "${tag}" "${outfile}")"
@@ -201,7 +220,7 @@ main() {
       curl -sfL \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${token}" \
-        "https://api.github.com/repos/ManimCommunity/manim/pulls/${pr_num}"
+        "https://api.github.com/repos/${repo_slug}/pulls/${pr_num}"
     )"; then
       echo "Skipping PR ${pr_num}: failed to query metadata" >&2
       continue
@@ -230,7 +249,7 @@ main() {
     curl -sfL \
       -H "Accept: application/vnd.github+json" \
       -H "Authorization: Bearer ${token}" \
-      "https://api.github.com/repos/ManimCommunity/manim/pulls/${pr_num}/reviews" \
+      "https://api.github.com/repos/${repo_slug}/pulls/${pr_num}/reviews" \
       | jq -r '.[]?.user.login // empty' >> "${reviewers_file}" || true
   done
 

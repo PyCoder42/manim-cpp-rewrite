@@ -196,6 +196,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone L.23: Converted CodeQL workflow language target from Python to C++ and added repository enforcement (`CodeqlCxxWorkflowCheck`)
 - [x] Milestone L.24: Converted package-channel manifest metadata from legacy `ManimCommunity/manim` URLs to dynamic current-repo URLs and added repository enforcement (`PackageManifestProjectUrlCheck`)
 - [x] Milestone L.25: Converted Docker publish workflow to namespace-configurable tags (`IMAGE_NAMESPACE`) with repository enforcement (`DockerTagContractCheck`)
+- [x] Milestone L.26: Purged tracked legacy `manim/` tree + Python packaging metadata artifacts and added repository enforcement (`LegacyArtifactsPurgeCheck`)
 - [x] Milestone K.4: Expanded mdBook docs from scaffold pages to C++ workflow chapters (installation, quickstart, CLI, plugins, testing) and added repository enforcement (`BookDocsCoverageCheck`)
 
 ### Detailed Subsystem Mapping (Source-to-Source Intent)

@@ -153,6 +153,12 @@ add_test(
 )
 
 add_test(
+  NAME LegacyArtifactsPurgeCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_legacy_artifacts_purged.sh
+          ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
   NAME FinalCutoverGateCheck
   COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_final_cutover_gate.sh
           ${PROJECT_SOURCE_DIR}

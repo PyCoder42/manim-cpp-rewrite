@@ -1,5 +1,5 @@
 .. Documentation template with example section.
-.. See: https://github.com/ManimCommunity/manim/wiki/Documentation-guidelines-(WIP)
+.. See: https://github.com/manim-cpp/manim-cpp/wiki/documentation-guidelines
 
 SomeClass
 =========
