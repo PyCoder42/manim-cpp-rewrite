@@ -29,6 +29,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 
 ### Implementation Workstreams and Milestones
 - [x] Milestone A: Foundation and build skeleton
+- [x] Milestone A.2: Enforced toolchain floor in top-level CMake (GCC 13+, Clang/AppleClang 17+, MSVC 19.38+)
 - [x] Milestone B: Core math and geometry kernel
 - [x] Milestone B.1: Math kernel bootstrap (`choose`, `rotate_z`, fan triangulation) with `gtest` coverage
 - [x] Milestone B.2: Introduce Eigen-backed vector/matrix adapters for kernel usage
