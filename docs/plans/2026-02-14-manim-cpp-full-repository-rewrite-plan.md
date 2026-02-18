@@ -127,6 +127,8 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone I.8: Migration now translates `self.wait(duration=<numeric>)` keyword calls into deterministic C++ `wait(<numeric>)` output
 - [x] Milestone I.9: Migration now translates `self.set_random_seed(<int>)` and `self.clear_updaters()` into runnable C++ scene calls
 - [x] Milestone I.10: Migration now detects/preserves `ZoomedScene` inheritance and emits the corresponding C++ scene-type include
+- [x] Milestone I.11: Migration now translates constructor-safe `self.add(...)` and `self.remove(...)` calls into deterministic C++ `std::make_shared` geometry mobject expressions
+- [x] Milestone I.12: Migration argument splitting now handles nested delimiters/quotes to safely parse multi-argument construct calls
 - [x] Milestone J: Test suite full port
 - [x] Milestone J.1: Added C++ unit/integration coverage for core math/scene/cli/plugin/migrate scaffolds
 - [x] Milestone J.2: Added shared-library plugin integration fixture coverage in `ctest`
@@ -138,6 +140,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.8: Added CLI integration coverage for human-readable `checkhealth` renderer/format metadata reporting
 - [x] Milestone J.9: Added unit coverage for `Arc` geometry mobject deterministic endpoint/proportion contracts
 - [x] Milestone J.10: Added unit/integration coverage for `LaggedStartAnimation` schedule mapping and scene-duration integration
+- [x] Milestone J.11: Added migration integration coverage for constructor-safe `add/remove` translations and unsupported-argument fallback TODO behavior
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers

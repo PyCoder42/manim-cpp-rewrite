@@ -1,6 +1,7 @@
 #include "manim_cpp/migrate/migrate.hpp"
 
 #include <algorithm>
+#include <cctype>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -155,12 +156,195 @@ std::optional<std::string> parse_wait_argument(const std::string& argument) {
   return std::nullopt;
 }
 
+bool is_supported_geometry_constructor(const std::string& class_name) {
+  static const std::vector<std::string> kSupportedConstructors = {
+      "Dot",    "Circle",         "Square",    "Rectangle",
+      "Triangle", "RegularPolygon", "Ellipse",   "Arc",
+      "Line",
+  };
+  return std::find(kSupportedConstructors.begin(), kSupportedConstructors.end(),
+                   class_name) != kSupportedConstructors.end();
+}
+
+std::vector<std::string> split_top_level_arguments(const std::string& text,
+                                                   bool* ok) {
+  if (ok != nullptr) {
+    *ok = true;
+  }
+
+  const std::string trimmed = trim(text);
+  if (trimmed.empty()) {
+    return {};
+  }
+
+  std::vector<std::string> args;
+  std::string current;
+  int paren_depth = 0;
+  int bracket_depth = 0;
+  int brace_depth = 0;
+  char quote = '\0';
+  bool escaped = false;
+
+  for (const char ch : trimmed) {
+    if (quote != '\0') {
+      current.push_back(ch);
+      if (escaped) {
+        escaped = false;
+      } else if (ch == '\\') {
+        escaped = true;
+      } else if (ch == quote) {
+        quote = '\0';
+      }
+      continue;
+    }
+
+    if (ch == '\'' || ch == '"') {
+      quote = ch;
+      current.push_back(ch);
+      continue;
+    }
+
+    if (ch == '(') {
+      ++paren_depth;
+      current.push_back(ch);
+      continue;
+    }
+    if (ch == ')') {
+      --paren_depth;
+      current.push_back(ch);
+      if (paren_depth < 0) {
+        if (ok != nullptr) {
+          *ok = false;
+        }
+        return {};
+      }
+      continue;
+    }
+    if (ch == '[') {
+      ++bracket_depth;
+      current.push_back(ch);
+      continue;
+    }
+    if (ch == ']') {
+      --bracket_depth;
+      current.push_back(ch);
+      if (bracket_depth < 0) {
+        if (ok != nullptr) {
+          *ok = false;
+        }
+        return {};
+      }
+      continue;
+    }
+    if (ch == '{') {
+      ++brace_depth;
+      current.push_back(ch);
+      continue;
+    }
+    if (ch == '}') {
+      --brace_depth;
+      current.push_back(ch);
+      if (brace_depth < 0) {
+        if (ok != nullptr) {
+          *ok = false;
+        }
+        return {};
+      }
+      continue;
+    }
+
+    if (ch == ',' && paren_depth == 0 && bracket_depth == 0 && brace_depth == 0) {
+      const std::string token = trim(current);
+      if (token.empty()) {
+        if (ok != nullptr) {
+          *ok = false;
+        }
+        return {};
+      }
+      args.push_back(token);
+      current.clear();
+      continue;
+    }
+
+    current.push_back(ch);
+  }
+
+  if (quote != '\0' || paren_depth != 0 || bracket_depth != 0 || brace_depth != 0) {
+    if (ok != nullptr) {
+      *ok = false;
+    }
+    return {};
+  }
+
+  const std::string token = trim(current);
+  if (token.empty()) {
+    if (ok != nullptr) {
+      *ok = false;
+    }
+    return {};
+  }
+  args.push_back(token);
+  return args;
+}
+
+std::optional<std::string> translate_geometry_constructor_expression(
+    const std::string& expression) {
+  static const std::regex kCtorPattern(
+      R"(^([A-Za-z_][A-Za-z0-9_]*)\((.*)\)$)",
+      std::regex_constants::ECMAScript);
+  std::smatch match;
+  if (!std::regex_match(expression, match, kCtorPattern)) {
+    return std::nullopt;
+  }
+
+  const std::string class_name = trim(match[1].str());
+  if (!is_supported_geometry_constructor(class_name)) {
+    return std::nullopt;
+  }
+
+  const std::string ctor_args = trim(match[2].str());
+  if (ctor_args.empty()) {
+    return "std::make_shared<manim_cpp::mobject::" + class_name + ">()";
+  }
+  return "std::make_shared<manim_cpp::mobject::" + class_name + ">(" + ctor_args +
+         ")";
+}
+
+std::optional<std::string> translate_add_or_remove_call(const std::string& method,
+                                                        const std::string& argument_text) {
+  bool parsed_ok = false;
+  const auto arguments = split_top_level_arguments(argument_text, &parsed_ok);
+  if (!parsed_ok || arguments.empty()) {
+    return std::nullopt;
+  }
+
+  std::ostringstream translated;
+  for (std::size_t i = 0; i < arguments.size(); ++i) {
+    const auto converted =
+        translate_geometry_constructor_expression(arguments[i]);
+    if (!converted.has_value()) {
+      return std::nullopt;
+    }
+    if (i > 0) {
+      translated << "\n    ";
+    }
+    translated << method << "(" << converted.value() << ");";
+  }
+  return translated.str();
+}
+
 std::optional<std::string> translate_construct_call(const std::string& call) {
   static const std::regex kWaitPattern(
       R"(^self\.wait\(([^)]*)\)$)",
       std::regex_constants::ECMAScript);
   static const std::regex kClearPattern(
       R"(^self\.clear\(\)$)",
+      std::regex_constants::ECMAScript);
+  static const std::regex kAddPattern(
+      R"(^self\.add\((.*)\)$)",
+      std::regex_constants::ECMAScript);
+  static const std::regex kRemovePattern(
+      R"(^self\.remove\((.*)\)$)",
       std::regex_constants::ECMAScript);
   static const std::regex kSetRandomSeedPattern(
       R"(^self\.set_random_seed\(([^)]*)\)$)",
@@ -181,6 +365,14 @@ std::optional<std::string> translate_construct_call(const std::string& call) {
 
   if (std::regex_match(call, kClearPattern)) {
     return "clear();";
+  }
+
+  if (std::regex_match(call, match, kAddPattern)) {
+    return translate_add_or_remove_call("add", trim(match[1].str()));
+  }
+
+  if (std::regex_match(call, match, kRemovePattern)) {
+    return translate_add_or_remove_call("remove", trim(match[1].str()));
   }
 
   if (std::regex_match(call, match, kSetRandomSeedPattern)) {
@@ -255,6 +447,8 @@ std::string translate_python_scene_to_cpp(const std::string& source_text,
   std::size_t translated_calls = 0;
 
   std::ostringstream converted;
+  converted << "#include <memory>\n";
+  converted << "#include \"manim_cpp/mobject/geometry.hpp\"\n";
   converted << "#include \"manim_cpp/scene/scene.hpp\"\n";
   converted << "#include \"manim_cpp/scene/moving_camera_scene.hpp\"\n";
   converted << "#include \"manim_cpp/scene/three_d_scene.hpp\"\n";

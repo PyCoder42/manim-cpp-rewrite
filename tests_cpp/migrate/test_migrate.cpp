@@ -140,6 +140,67 @@ TEST(MigrateTool, TranslatesSetRandomSeedAndClearUpdaters) {
   EXPECT_NE(report.find("translated_calls=2"), std::string::npos);
 }
 
+TEST(MigrateTool, TranslatesAddCallsWithKnownGeometryConstructors) {
+  const std::string source =
+      "from manim import *\n"
+      "class Demo(Scene):\n"
+      "    def construct(self):\n"
+      "        self.add(Circle(), Dot(0.2), Square(2.5))\n";
+
+  std::string report;
+  const std::string converted =
+      manim_cpp::migrate::translate_python_scene_to_cpp(source, &report);
+
+  EXPECT_NE(converted.find("add(std::make_shared<manim_cpp::mobject::Circle>());"),
+            std::string::npos);
+  EXPECT_NE(converted.find("add(std::make_shared<manim_cpp::mobject::Dot>(0.2));"),
+            std::string::npos);
+  EXPECT_NE(
+      converted.find("add(std::make_shared<manim_cpp::mobject::Square>(2.5));"),
+      std::string::npos);
+  EXPECT_EQ(converted.find("TODO(migrate): original call -> self.add(Circle(), Dot(0.2), Square(2.5))"),
+            std::string::npos);
+  EXPECT_NE(converted.find("#include \"manim_cpp/mobject/geometry.hpp\""),
+            std::string::npos);
+  EXPECT_NE(report.find("translated_calls=1"), std::string::npos);
+}
+
+TEST(MigrateTool, TranslatesRemoveCallsWithKnownGeometryConstructors) {
+  const std::string source =
+      "from manim import *\n"
+      "class Demo(Scene):\n"
+      "    def construct(self):\n"
+      "        self.remove(Circle(), Dot(0.2))\n";
+
+  std::string report;
+  const std::string converted =
+      manim_cpp::migrate::translate_python_scene_to_cpp(source, &report);
+
+  EXPECT_NE(converted.find("remove(std::make_shared<manim_cpp::mobject::Circle>());"),
+            std::string::npos);
+  EXPECT_NE(converted.find("remove(std::make_shared<manim_cpp::mobject::Dot>(0.2));"),
+            std::string::npos);
+  EXPECT_EQ(converted.find("TODO(migrate): original call -> self.remove(Circle(), Dot(0.2))"),
+            std::string::npos);
+  EXPECT_NE(report.find("translated_calls=1"), std::string::npos);
+}
+
+TEST(MigrateTool, LeavesAddTodoWhenConstructorArgumentsAreNotSupported) {
+  const std::string source =
+      "from manim import *\n"
+      "class Demo(Scene):\n"
+      "    def construct(self):\n"
+      "        self.add(square)\n";
+
+  std::string report;
+  const std::string converted =
+      manim_cpp::migrate::translate_python_scene_to_cpp(source, &report);
+
+  EXPECT_NE(converted.find("TODO(migrate): original call -> self.add(square)"),
+            std::string::npos);
+  EXPECT_NE(report.find("translated_calls=0"), std::string::npos);
+}
+
 TEST(MigrateTool, WritesReportFileWhenRequested) {
   const auto temp_root = std::filesystem::temp_directory_path() / "manim_cpp_migrate_report";
   std::filesystem::remove_all(temp_root);
