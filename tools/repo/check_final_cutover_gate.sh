@@ -47,6 +47,11 @@ if ! rg -n "NoRstArtifactsCheck" "${tests_cmake_path}" >/dev/null 2>&1; then
   exit 1
 fi
 
+if ! rg -n "LegacyReferenceScopeCheck" "${tests_cmake_path}" >/dev/null 2>&1; then
+  echo "Final cutover requires scoped legacy-reference enforcement coverage." >&2
+  exit 1
+fi
+
 if [[ ! -f "${python_gate_workflow}" ]]; then
   echo "Missing zero-Python workflow: ${python_gate_workflow}" >&2
   exit 1

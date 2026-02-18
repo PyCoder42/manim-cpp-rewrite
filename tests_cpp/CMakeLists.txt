@@ -159,6 +159,12 @@ add_test(
 )
 
 add_test(
+  NAME LegacyReferenceScopeCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_legacy_reference_scope.sh
+          ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
   NAME FinalCutoverGateCheck
   COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_final_cutover_gate.sh
           ${PROJECT_SOURCE_DIR}
