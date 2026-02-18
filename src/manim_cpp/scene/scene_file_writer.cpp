@@ -6,6 +6,8 @@
 #include <sstream>
 #include <unordered_map>
 
+#include "manim_cpp/scene/media_format.hpp"
+
 namespace manim_cpp::scene {
 namespace {
 
@@ -48,25 +50,6 @@ std::string escape_json(const std::string& value) {
     }
   }
   return escaped;
-}
-
-std::string codec_hint_for_format(const std::string& format) {
-  if (format == "png") {
-    return "image/png-sequence";
-  }
-  if (format == "gif") {
-    return "gif";
-  }
-  if (format == "mp4") {
-    return "h264+aac";
-  }
-  if (format == "webm") {
-    return "vp9+opus";
-  }
-  if (format == "mov") {
-    return "prores+pcm";
-  }
-  return "unknown";
 }
 
 }  // namespace
@@ -160,7 +143,10 @@ void SceneFileWriter::set_render_summary(
   render_summary_.pixel_height = pixel_height;
   render_summary_.frame_rate = frame_rate;
   render_summary_.format = format;
-  render_summary_.codec_hint = codec_hint_for_format(format);
+  const auto parsed_format = parse_media_format(format);
+  render_summary_.codec_hint =
+      parsed_format.has_value() ? codec_hint_for_format(parsed_format.value())
+                                : "unknown";
   render_summary_.duration_seconds =
       static_cast<double>(frame_count) / frame_rate;
   render_summary_.output_file = std::move(output_file);

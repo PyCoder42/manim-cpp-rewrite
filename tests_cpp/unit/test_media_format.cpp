@@ -37,6 +37,24 @@ TEST(MediaFormat, ConvertsFormatsToDeterministicLowercaseStrings) {
             std::string("mov"));
 }
 
+TEST(MediaFormat, ReportsCodecHintsForKnownFormats) {
+  EXPECT_EQ(manim_cpp::scene::codec_hint_for_format(
+                manim_cpp::scene::MediaFormat::kPng),
+            std::string("image/png-sequence"));
+  EXPECT_EQ(manim_cpp::scene::codec_hint_for_format(
+                manim_cpp::scene::MediaFormat::kGif),
+            std::string("gif"));
+  EXPECT_EQ(manim_cpp::scene::codec_hint_for_format(
+                manim_cpp::scene::MediaFormat::kMp4),
+            std::string("h264+aac"));
+  EXPECT_EQ(manim_cpp::scene::codec_hint_for_format(
+                manim_cpp::scene::MediaFormat::kWebm),
+            std::string("vp9+opus"));
+  EXPECT_EQ(manim_cpp::scene::codec_hint_for_format(
+                manim_cpp::scene::MediaFormat::kMov),
+            std::string("prores+pcm"));
+}
+
 TEST(MediaFormat, RejectsUnknownFormats) {
   EXPECT_FALSE(manim_cpp::scene::parse_media_format("avi").has_value());
   EXPECT_FALSE(manim_cpp::scene::parse_media_format("").has_value());

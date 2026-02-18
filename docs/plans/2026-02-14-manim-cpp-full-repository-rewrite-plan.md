@@ -91,6 +91,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone F.8: `SceneFileWriter` manifest now carries deterministic render summary metadata (frame count, resolution, fps, format, codec hint, duration, output file)
 - [x] Milestone F.9: `render --scene` now emits config-resolved media artifacts (output media file, manifest JSON, `.srt`) with deterministic metadata contract
 - [x] Milestone F.10: Section timeline metadata (`start_seconds`, `end_seconds`) now validates and serializes into media manifests for deterministic section timing parity
+- [x] Milestone F.11: Centralized media codec-hint contract in `scene::media_format` and wired `SceneFileWriter` summary metadata to use typed format mapping
 - [x] Milestone G: CLI/config parity
 - [x] Milestone G.1: Command/subcommand validation scaffolding with deterministic exit codes
 - [x] Milestone G.2: `cfg show` and `cfg write` operate on real config files/templates
@@ -110,6 +111,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone G.16: `render --scene <SceneName>` now resolves and executes registered C++ scenes via `SceneRegistry`, with explicit unknown-scene failure coverage
 - [x] Milestone G.17: Added explicit alias compatibility checks so `manim --version` and `manimce --version` are enforced in `ctest`
 - [x] Milestone G.18: `checkhealth` text mode now reports supported renderer/format metadata alongside ffmpeg and plugin directory status
+- [x] Milestone G.19: `render` CLI output now emits deterministic `codec_hint` metadata derived from selected output format
 - [x] Milestone H: Plugin system parity
 - [x] Milestone H.1: Plugin discovery by shared-library extension + host ABI version gate
 - [x] Milestone H.2: Batch plugin loading API with deterministic failure aggregation
@@ -144,6 +146,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.10: Added unit/integration coverage for `LaggedStartAnimation` schedule mapping and scene-duration integration
 - [x] Milestone J.11: Added migration integration coverage for constructor-safe `add/remove` translations and unsupported-argument fallback TODO behavior
 - [x] Milestone J.12: Added geometry unit coverage for `Annulus`/`Sector` radius validation and deterministic boundary-point contracts
+- [x] Milestone J.13: Added media-format + CLI integration coverage for format-to-codec-hint mapping across `png/gif/mp4/webm/mov`
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers

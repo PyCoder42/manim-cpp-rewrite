@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include <gtest/gtest.h>
 
@@ -203,6 +204,92 @@ TEST(Cli, RenderSceneWritesConfiguredMediaArtifacts) {
   EXPECT_NE(manifest.find("\"pixel_height\":720"), std::string::npos);
 
   std::filesystem::remove_all(temp_root);
+}
+
+TEST(Cli, RenderSceneReportsCodecHintForRequestedFormat) {
+  struct FormatCase {
+    std::string format;
+    std::string codec_hint;
+  };
+  const std::vector<FormatCase> cases = {
+      {"png", "image/png-sequence"},
+      {"gif", "gif"},
+      {"mp4", "h264+aac"},
+      {"webm", "vp9+opus"},
+      {"mov", "prores+pcm"},
+  };
+
+  for (const auto& test_case : cases) {
+    const auto temp_root = std::filesystem::temp_directory_path() /
+                           ("manim_cpp_cli_render_codec_" + test_case.format);
+    std::filesystem::remove_all(temp_root);
+    std::filesystem::create_directories(temp_root);
+
+    std::ofstream cfg(temp_root / "manim.cfg");
+    cfg << "[CLI]\n";
+    cfg << "media_dir = ./media\n";
+    cfg << "video_dir = {media_dir}/videos/{module_name}/{quality}\n";
+    cfg << "images_dir = {media_dir}/images/{module_name}\n";
+    cfg << "partial_movie_dir = {video_dir}/partial_movie_files/{scene_name}\n";
+    cfg << "pixel_width = 640\n";
+    cfg << "pixel_height = 360\n";
+    cfg << "frame_rate = 24\n";
+    cfg.close();
+
+    std::ofstream input_scene(temp_root / "demo_scene.cpp");
+    input_scene << "// placeholder\n";
+    input_scene.close();
+
+    {
+      ScopedCurrentPath scoped_path(temp_root);
+      const std::array<std::string, 9> args_storage = {
+          "manim-cpp",
+          "render",
+          "demo_scene.cpp",
+          "--scene",
+          "CliRenderSmokeScene",
+          "--renderer",
+          "cairo",
+          "--format",
+          test_case.format,
+      };
+      const std::array<const char*, 9> args = {
+          args_storage[0].c_str(),
+          args_storage[1].c_str(),
+          args_storage[2].c_str(),
+          args_storage[3].c_str(),
+          args_storage[4].c_str(),
+          args_storage[5].c_str(),
+          args_storage[6].c_str(),
+          args_storage[7].c_str(),
+          args_storage[8].c_str(),
+      };
+
+      std::ostringstream out_capture;
+      std::streambuf* old_cout = std::cout.rdbuf(out_capture.rdbuf());
+      const int exit_code =
+          manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data());
+      std::cout.rdbuf(old_cout);
+
+      EXPECT_EQ(exit_code, 0);
+      EXPECT_NE(out_capture.str().find("format=" + test_case.format),
+                std::string::npos);
+      EXPECT_NE(out_capture.str().find("codec_hint=" + test_case.codec_hint),
+                std::string::npos);
+    }
+
+    const auto media_root =
+        temp_root / "media" / "videos" / "demo_scene" / "360p24";
+    const auto manifest_file = media_root / "CliRenderSmokeScene.json";
+    ASSERT_TRUE(std::filesystem::exists(manifest_file));
+    const std::string manifest = read_file(manifest_file);
+    EXPECT_NE(manifest.find("\"format\":\"" + test_case.format + "\""),
+              std::string::npos);
+    EXPECT_NE(manifest.find("\"codec_hint\":\"" + test_case.codec_hint + "\""),
+              std::string::npos);
+
+    std::filesystem::remove_all(temp_root);
+  }
 }
 
 TEST(Cli, RenderSceneWritesDeterministicFrameImagesForCairoRenderer) {

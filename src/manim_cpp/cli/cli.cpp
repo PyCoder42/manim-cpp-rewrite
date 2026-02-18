@@ -649,6 +649,7 @@ int handle_render(const int argc, const char* const argv[]) {
               << " fps=" << frame_rate
               << " renderer=" << manim_cpp::renderer::to_string(renderer_type)
               << " format=" << manim_cpp::scene::to_string(media_format)
+              << " codec_hint=" << writer.render_summary().codec_hint
               << " watch=" << (watch ? "true" : "false")
               << " interactive=" << (interactive ? "true" : "false")
               << " gui=" << (enable_gui ? "true" : "false")
@@ -672,6 +673,8 @@ int handle_render(const int argc, const char* const argv[]) {
   std::cout << "Command 'render' scaffold received input file: " << input_file
             << " renderer=" << manim_cpp::renderer::to_string(renderer_type)
             << " format=" << manim_cpp::scene::to_string(media_format)
+            << " codec_hint="
+            << manim_cpp::scene::codec_hint_for_format(media_format)
             << " watch=" << (watch ? "true" : "false")
             << " interactive=" << (interactive ? "true" : "false")
             << " gui=" << (enable_gui ? "true" : "false")

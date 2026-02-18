@@ -53,4 +53,20 @@ std::optional<MediaFormat> parse_media_format(std::string format_name) {
   return std::nullopt;
 }
 
+std::string codec_hint_for_format(const MediaFormat format) {
+  switch (format) {
+    case MediaFormat::kPng:
+      return "image/png-sequence";
+    case MediaFormat::kGif:
+      return "gif";
+    case MediaFormat::kMp4:
+      return "h264+aac";
+    case MediaFormat::kWebm:
+      return "vp9+opus";
+    case MediaFormat::kMov:
+      return "prores+pcm";
+  }
+  return "unknown";
+}
+
 }  // namespace manim_cpp::scene
