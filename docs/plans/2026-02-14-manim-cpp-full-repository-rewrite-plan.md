@@ -202,6 +202,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone L.26: Purged tracked legacy `manim/` tree + Python packaging metadata artifacts and added repository enforcement (`LegacyArtifactsPurgeCheck`)
 - [x] Milestone L.27: Scoped remaining legacy repository-token references to explicit enforcement files only and added repository enforcement (`LegacyReferenceScopeCheck`)
 - [x] Milestone L.28: Added duplicate-copy artifact guard for tracked/untracked filenames (`NoDuplicateCopyArtifactsCheck`) to prevent accidental `* 2.*`/`* copy.*` drift
+- [x] Milestone L.29: Added backup/conflict artifact guard for tracked/untracked filenames (`NoBackupArtifactsCheck`) to block `.orig`/`.rej`/`.bak`/`*~` drift
 - [x] Milestone K.4: Expanded mdBook docs from scaffold pages to C++ workflow chapters (installation, quickstart, CLI, plugins, testing) and added repository enforcement (`BookDocsCoverageCheck`)
 
 ### Detailed Subsystem Mapping (Source-to-Source Intent)
