@@ -16,6 +16,20 @@ double require_positive(const double value, const char* field_name) {
   return value;
 }
 
+double require_non_negative(const double value, const char* field_name) {
+  if (value < 0.0) {
+    throw std::invalid_argument(std::string(field_name) +
+                                " must be non-negative");
+  }
+  return value;
+}
+
+void require_radii_strict_order(const double inner_radius, const double outer_radius) {
+  if (outer_radius <= inner_radius) {
+    throw std::invalid_argument("outer_radius must be greater than inner_radius");
+  }
+}
+
 std::size_t require_at_least_three(const std::size_t value, const char* field_name) {
   if (value < 3) {
     throw std::invalid_argument(std::string(field_name) + " must be at least 3");
@@ -124,6 +138,94 @@ math::Vec3 Arc::point_at_proportion(const double alpha) const {
 math::Vec3 Arc::start_point() const { return point_at_proportion(0.0); }
 
 math::Vec3 Arc::end_point() const { return point_at_proportion(1.0); }
+
+Annulus::Annulus(const double inner_radius, const double outer_radius) {
+  set_radii(inner_radius, outer_radius);
+}
+
+double Annulus::inner_radius() const { return inner_radius_; }
+
+double Annulus::outer_radius() const { return outer_radius_; }
+
+void Annulus::set_radii(const double inner_radius, const double outer_radius) {
+  const double validated_inner = require_positive(inner_radius, "inner_radius");
+  const double validated_outer = require_positive(outer_radius, "outer_radius");
+  require_radii_strict_order(validated_inner, validated_outer);
+  inner_radius_ = validated_inner;
+  outer_radius_ = validated_outer;
+}
+
+math::Vec3 Annulus::inner_point_at_angle(const double angle_radians) const {
+  const auto& c = center();
+  return math::Vec3{
+      c[0] + (inner_radius_ * std::cos(angle_radians)),
+      c[1] + (inner_radius_ * std::sin(angle_radians)),
+      c[2],
+  };
+}
+
+math::Vec3 Annulus::outer_point_at_angle(const double angle_radians) const {
+  const auto& c = center();
+  return math::Vec3{
+      c[0] + (outer_radius_ * std::cos(angle_radians)),
+      c[1] + (outer_radius_ * std::sin(angle_radians)),
+      c[2],
+  };
+}
+
+Sector::Sector(const double inner_radius,
+               const double outer_radius,
+               const double start_angle,
+               const double angle)
+    : start_angle_(start_angle), angle_(angle) {
+  set_radii(inner_radius, outer_radius);
+}
+
+double Sector::inner_radius() const { return inner_radius_; }
+
+double Sector::outer_radius() const { return outer_radius_; }
+
+double Sector::start_angle() const { return start_angle_; }
+
+double Sector::angle() const { return angle_; }
+
+void Sector::set_radii(const double inner_radius, const double outer_radius) {
+  const double validated_inner = require_non_negative(inner_radius, "inner_radius");
+  const double validated_outer = require_positive(outer_radius, "outer_radius");
+  require_radii_strict_order(validated_inner, validated_outer);
+  inner_radius_ = validated_inner;
+  outer_radius_ = validated_outer;
+}
+
+void Sector::set_angles(const double start_angle, const double angle) {
+  start_angle_ = start_angle;
+  angle_ = angle;
+}
+
+math::Vec3 Sector::inner_start_point() const {
+  return point_on_radius(inner_radius_, start_angle_);
+}
+
+math::Vec3 Sector::inner_end_point() const {
+  return point_on_radius(inner_radius_, start_angle_ + angle_);
+}
+
+math::Vec3 Sector::outer_start_point() const {
+  return point_on_radius(outer_radius_, start_angle_);
+}
+
+math::Vec3 Sector::outer_end_point() const {
+  return point_on_radius(outer_radius_, start_angle_ + angle_);
+}
+
+math::Vec3 Sector::point_on_radius(const double radius, const double theta) const {
+  const auto& c = center();
+  return math::Vec3{
+      c[0] + (radius * std::cos(theta)),
+      c[1] + (radius * std::sin(theta)),
+      c[2],
+  };
+}
 
 Square::Square(const double side_length)
     : side_length_(require_positive(side_length, "side_length")) {}

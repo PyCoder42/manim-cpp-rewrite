@@ -12,8 +12,10 @@ using manim_cpp::math::Vec3;
 using manim_cpp::mobject::Circle;
 using manim_cpp::mobject::Dot;
 using manim_cpp::mobject::Ellipse;
+using manim_cpp::mobject::Annulus;
 using manim_cpp::mobject::Line;
 using manim_cpp::mobject::Arc;
+using manim_cpp::mobject::Sector;
 using manim_cpp::mobject::Rectangle;
 using manim_cpp::mobject::RegularPolygon;
 using manim_cpp::mobject::Square;
@@ -87,6 +89,60 @@ TEST(GeometryMobjects, ArcRejectsNonPositiveRadius) {
 
   Arc arc;
   EXPECT_THROW(arc.set_radius(0.0), std::invalid_argument);
+}
+
+TEST(GeometryMobjects, AnnulusTracksInnerAndOuterRadii) {
+  Annulus annulus(0.75, 2.0);
+  annulus.move_to(Vec3{-1.0, 2.0, 0.25});
+
+  EXPECT_DOUBLE_EQ(annulus.inner_radius(), 0.75);
+  EXPECT_DOUBLE_EQ(annulus.outer_radius(), 2.0);
+  expect_vec3_near(annulus.outer_point_at_angle(0.0), Vec3{1.0, 2.0, 0.25});
+  expect_vec3_near(annulus.inner_point_at_angle(std::numbers::pi / 2.0),
+                   Vec3{-1.0, 2.75, 0.25});
+
+  annulus.set_radii(0.5, 1.5);
+  EXPECT_DOUBLE_EQ(annulus.inner_radius(), 0.5);
+  EXPECT_DOUBLE_EQ(annulus.outer_radius(), 1.5);
+}
+
+TEST(GeometryMobjects, AnnulusRejectsInvalidRadii) {
+  EXPECT_THROW(Annulus(0.0, 1.0), std::invalid_argument);
+  EXPECT_THROW(Annulus(1.0, 1.0), std::invalid_argument);
+  EXPECT_THROW(Annulus(1.2, 1.0), std::invalid_argument);
+
+  Annulus annulus;
+  EXPECT_THROW(annulus.set_radii(0.0, 2.0), std::invalid_argument);
+  EXPECT_THROW(annulus.set_radii(1.0, 1.0), std::invalid_argument);
+}
+
+TEST(GeometryMobjects, SectorTracksRadiiAnglesAndBoundaryPoints) {
+  Sector sector(0.5, 2.0, std::numbers::pi / 4.0, std::numbers::pi / 2.0);
+  sector.move_to(Vec3{1.0, -1.0, 0.0});
+
+  EXPECT_DOUBLE_EQ(sector.inner_radius(), 0.5);
+  EXPECT_DOUBLE_EQ(sector.outer_radius(), 2.0);
+  EXPECT_DOUBLE_EQ(sector.start_angle(), std::numbers::pi / 4.0);
+  EXPECT_DOUBLE_EQ(sector.angle(), std::numbers::pi / 2.0);
+  expect_vec3_near(
+      sector.outer_start_point(),
+      Vec3{1.0 + std::sqrt(2.0), -1.0 + std::sqrt(2.0), 0.0});
+  expect_vec3_near(
+      sector.outer_end_point(),
+      Vec3{1.0 - std::sqrt(2.0), -1.0 + std::sqrt(2.0), 0.0});
+  expect_vec3_near(
+      sector.inner_start_point(),
+      Vec3{1.0 + (std::sqrt(2.0) / 4.0), -1.0 + (std::sqrt(2.0) / 4.0), 0.0});
+}
+
+TEST(GeometryMobjects, SectorRejectsInvalidRadiusConfiguration) {
+  EXPECT_THROW(Sector(-0.1, 2.0, 0.0, std::numbers::pi / 2.0), std::invalid_argument);
+  EXPECT_THROW(Sector(0.5, 0.0, 0.0, std::numbers::pi / 2.0), std::invalid_argument);
+  EXPECT_THROW(Sector(1.0, 1.0, 0.0, std::numbers::pi / 2.0), std::invalid_argument);
+
+  Sector sector;
+  EXPECT_THROW(sector.set_radii(-1.0, 1.0), std::invalid_argument);
+  EXPECT_THROW(sector.set_radii(1.0, 1.0), std::invalid_argument);
 }
 
 TEST(GeometryMobjects, SquareVerticesTrackCenterAndSideLength) {

@@ -69,6 +69,50 @@ class Arc : public Mobject {
   double angle_ = 1.5707963267948966;
 };
 
+class Annulus : public Mobject {
+ public:
+  Annulus(double inner_radius = 1.0, double outer_radius = 2.0);
+
+  [[nodiscard]] std::string debug_name() const override { return "Annulus"; }
+  [[nodiscard]] double inner_radius() const;
+  [[nodiscard]] double outer_radius() const;
+  void set_radii(double inner_radius, double outer_radius);
+  [[nodiscard]] math::Vec3 inner_point_at_angle(double angle_radians) const;
+  [[nodiscard]] math::Vec3 outer_point_at_angle(double angle_radians) const;
+
+ private:
+  double inner_radius_ = 1.0;
+  double outer_radius_ = 2.0;
+};
+
+class Sector : public Mobject {
+ public:
+  Sector(double inner_radius = 0.0,
+         double outer_radius = 1.0,
+         double start_angle = 0.0,
+         double angle = 1.5707963267948966);
+
+  [[nodiscard]] std::string debug_name() const override { return "Sector"; }
+  [[nodiscard]] double inner_radius() const;
+  [[nodiscard]] double outer_radius() const;
+  [[nodiscard]] double start_angle() const;
+  [[nodiscard]] double angle() const;
+  void set_radii(double inner_radius, double outer_radius);
+  void set_angles(double start_angle, double angle);
+  [[nodiscard]] math::Vec3 inner_start_point() const;
+  [[nodiscard]] math::Vec3 inner_end_point() const;
+  [[nodiscard]] math::Vec3 outer_start_point() const;
+  [[nodiscard]] math::Vec3 outer_end_point() const;
+
+ private:
+  [[nodiscard]] math::Vec3 point_on_radius(double radius, double theta) const;
+
+  double inner_radius_ = 0.0;
+  double outer_radius_ = 1.0;
+  double start_angle_ = 0.0;
+  double angle_ = 1.5707963267948966;
+};
+
 class Square : public Mobject {
  public:
   explicit Square(double side_length = 2.0);

@@ -64,6 +64,8 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone C.18: Added `Ellipse` geometry mobject parity (`width`, `height`, `point_at_angle`) with non-positive dimension validation
 - [x] Milestone C.19: Added `Arc` geometry mobject parity (`radius`, `start_angle`, `angle`, `point_at_proportion`) with non-positive radius validation
 - [x] Milestone C.20: Added `LaggedStartAnimation` composition primitive with deterministic overlap scheduling (`lag_ratio`) and negative-ratio validation
+- [x] Milestone C.21: Added `Annulus` geometry mobject parity (`inner_radius`, `outer_radius`, angle-point helpers) with strict radius-order validation
+- [x] Milestone C.22: Added `Sector` geometry mobject parity (`inner/outer radii`, `start_angle`, `angle`, boundary point helpers) with radius-configuration validation
 - [x] Milestone D: Cairo backend parity
 - [x] Milestone D.1: Renderer type parsing, string conversion, and factory creation for Cairo/OpenGL backends
 - [x] Milestone D.2: Cairo renderer deterministic frame naming + static-frame signature dedupe scaffold
@@ -141,6 +143,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.9: Added unit coverage for `Arc` geometry mobject deterministic endpoint/proportion contracts
 - [x] Milestone J.10: Added unit/integration coverage for `LaggedStartAnimation` schedule mapping and scene-duration integration
 - [x] Milestone J.11: Added migration integration coverage for constructor-safe `add/remove` translations and unsupported-argument fallback TODO behavior
+- [x] Milestone J.12: Added geometry unit coverage for `Annulus`/`Sector` radius validation and deterministic boundary-point contracts
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers
