@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <vector>
 
 #include <gtest/gtest.h>
@@ -77,6 +78,48 @@ TEST(AnimationComposition, ScenePlayUsesComposedAnimationDuration) {
   scene.play(parallel, 2);
 
   EXPECT_NEAR(scene.time_seconds(), 2.25, 1e-12);
+}
+
+TEST(AnimationComposition, LaggedStartAnimationMapsGlobalTimeWithOffsets) {
+  AlphaCaptureAnimation first;
+  AlphaCaptureAnimation second;
+  first.set_run_time_seconds(2.0);
+  second.set_run_time_seconds(2.0);
+
+  manim_cpp::animation::LaggedStartAnimation lagged({&first, &second}, 0.5);
+  lagged.begin();
+  lagged.interpolate(1.0 / 3.0);  // t=1.0 of total 3.0
+  lagged.interpolate(2.0 / 3.0);  // t=2.0 of total 3.0
+  lagged.interpolate(1.0);        // t=3.0 of total 3.0
+  lagged.finish();
+
+  ASSERT_EQ(first.alphas.size(), static_cast<size_t>(3));
+  ASSERT_EQ(second.alphas.size(), static_cast<size_t>(3));
+  EXPECT_DOUBLE_EQ(first.alphas[0], 0.5);
+  EXPECT_DOUBLE_EQ(second.alphas[0], 0.0);
+  EXPECT_DOUBLE_EQ(first.alphas[1], 1.0);
+  EXPECT_DOUBLE_EQ(second.alphas[1], 0.5);
+  EXPECT_DOUBLE_EQ(first.alphas[2], 1.0);
+  EXPECT_DOUBLE_EQ(second.alphas[2], 1.0);
+}
+
+TEST(AnimationComposition, LaggedStartAnimationRejectsNegativeLagRatio) {
+  AlphaCaptureAnimation first;
+  EXPECT_THROW(manim_cpp::animation::LaggedStartAnimation({&first}, -0.1),
+               std::invalid_argument);
+}
+
+TEST(AnimationComposition, ScenePlayUsesLaggedAnimationTotalDuration) {
+  AlphaCaptureAnimation first;
+  AlphaCaptureAnimation second;
+  first.set_run_time_seconds(1.5);
+  second.set_run_time_seconds(0.5);
+
+  manim_cpp::animation::LaggedStartAnimation lagged({&first, &second}, 1.0);
+  EmptyScene scene;
+  scene.play(lagged, 2);
+
+  EXPECT_NEAR(scene.time_seconds(), 3.0, 1e-12);
 }
 
 }  // namespace
