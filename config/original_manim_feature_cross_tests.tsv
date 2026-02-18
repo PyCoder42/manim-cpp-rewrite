@@ -65,3 +65,5 @@ release_zero_python	Zero-Python/release policy gates	(PythonInventoryAllowlistCh
 release_workflow_matrix	C++ release/package/docker workflow policy gates	(CxxReleaseWorkflowCheck|PackageChannelWorkflowCheck|DockerTagContractCheck|NoPythonWorkflowToolingCheck|NoPythonScriptRuntimeCheck)
 repo_hygiene_cutover	repository cutover hygiene gates	(NoDuplicateCopyArtifactsCheck|NoBackupArtifactsCheck|LegacyArtifactsPurgeCheck|LegacyReferenceScopeCheck)
 docs_book_contract	mdBook documentation contract gates	(BookDocsCoverageCheck|BookMetadataCxxCheck|NoRstArtifactsCheck)
+config_contract_gate	manim.cfg parity contract gate	ManimCfgContractCheck
+toolchain_floor_contract	build/doc compiler floor contract gate	ToolchainFloorContractCheck

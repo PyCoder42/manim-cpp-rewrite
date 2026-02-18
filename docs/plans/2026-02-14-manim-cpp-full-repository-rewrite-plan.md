@@ -172,6 +172,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.28: Expanded original-feature matrix to include plugin failure aggregation/ABI rejection and migration directory/inheritance/translation parity buckets
 - [x] Milestone J.29: Raised minimum enforced original-feature matrix size from 30 to 60 rows after parity-scope expansion
 - [x] Milestone J.30: Expanded original-feature matrix to include CLI alias binary entrypoints and release/repo/docs policy gate parity buckets
+- [x] Milestone J.31: Expanded original-feature matrix to include explicit config-contract and toolchain-floor contract parity buckets
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers
