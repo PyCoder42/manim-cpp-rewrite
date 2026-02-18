@@ -66,6 +66,31 @@ math::Vec3 Circle::point_at_angle(const double angle_radians) const {
   };
 }
 
+Ellipse::Ellipse(const double width, const double height)
+    : width_(require_positive(width, "width")),
+      height_(require_positive(height, "height")) {}
+
+double Ellipse::width() const { return width_; }
+
+double Ellipse::height() const { return height_; }
+
+void Ellipse::set_width(const double width) {
+  width_ = require_positive(width, "width");
+}
+
+void Ellipse::set_height(const double height) {
+  height_ = require_positive(height, "height");
+}
+
+math::Vec3 Ellipse::point_at_angle(const double angle_radians) const {
+  const auto& c = center();
+  return math::Vec3{
+      c[0] + ((width_ / 2.0) * std::cos(angle_radians)),
+      c[1] + ((height_ / 2.0) * std::sin(angle_radians)),
+      c[2],
+  };
+}
+
 Square::Square(const double side_length)
     : side_length_(require_positive(side_length, "side_length")) {}
 

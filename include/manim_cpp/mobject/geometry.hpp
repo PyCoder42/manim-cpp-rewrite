@@ -33,6 +33,22 @@ class Circle : public Mobject {
   double radius_ = 1.0;
 };
 
+class Ellipse : public Mobject {
+ public:
+  Ellipse(double width = 4.0, double height = 2.0);
+
+  [[nodiscard]] std::string debug_name() const override { return "Ellipse"; }
+  [[nodiscard]] double width() const;
+  [[nodiscard]] double height() const;
+  void set_width(double width);
+  void set_height(double height);
+  [[nodiscard]] math::Vec3 point_at_angle(double angle_radians) const;
+
+ private:
+  double width_ = 4.0;
+  double height_ = 2.0;
+};
+
 class Square : public Mobject {
  public:
   explicit Square(double side_length = 2.0);

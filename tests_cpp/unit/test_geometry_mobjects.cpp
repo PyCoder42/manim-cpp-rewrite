@@ -11,6 +11,7 @@ namespace {
 using manim_cpp::math::Vec3;
 using manim_cpp::mobject::Circle;
 using manim_cpp::mobject::Dot;
+using manim_cpp::mobject::Ellipse;
 using manim_cpp::mobject::Line;
 using manim_cpp::mobject::Rectangle;
 using manim_cpp::mobject::RegularPolygon;
@@ -47,6 +48,23 @@ TEST(GeometryMobjects, CircleComputesPointAtAngleFromCenter) {
   EXPECT_NEAR(top[2], -1.0, 1e-12);
 
   EXPECT_THROW(circle.set_radius(-0.5), std::invalid_argument);
+}
+
+TEST(GeometryMobjects, EllipseComputesPointAtAngleFromCenter) {
+  Ellipse ellipse(6.0, 2.0);
+  ellipse.move_to(Vec3{1.0, 2.0, -3.0});
+
+  EXPECT_DOUBLE_EQ(ellipse.width(), 6.0);
+  EXPECT_DOUBLE_EQ(ellipse.height(), 2.0);
+
+  const Vec3 right = ellipse.point_at_angle(0.0);
+  expect_vec3_near(right, Vec3{4.0, 2.0, -3.0});
+
+  const Vec3 top = ellipse.point_at_angle(std::numbers::pi / 2.0);
+  expect_vec3_near(top, Vec3{1.0, 3.0, -3.0});
+
+  EXPECT_THROW(ellipse.set_width(0.0), std::invalid_argument);
+  EXPECT_THROW(ellipse.set_height(0.0), std::invalid_argument);
 }
 
 TEST(GeometryMobjects, SquareVerticesTrackCenterAndSideLength) {
