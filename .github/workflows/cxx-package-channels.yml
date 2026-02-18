@@ -1,0 +1,64 @@
+name: C++ Package Channels
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (example: 1.2.3)"
+        required: true
+        type: string
+  release:
+    types: [published]
+
+jobs:
+  package-channels:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Resolve release asset URL
+        id: release
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_EVENT_NAME}" == "release" ]]; then
+            tag="${{ github.event.release.tag_name }}"
+          else
+            raw_version="${{ inputs.version }}"
+            raw_version="${raw_version#v}"
+            tag="v${raw_version}"
+          fi
+          version="${tag#v}"
+          asset_url="https://github.com/${GITHUB_REPOSITORY}/releases/download/${tag}/manim-cpp-linux-x86_64.tar.gz"
+          mkdir -p dist
+          curl -fsSL "${asset_url}" -o dist/manim-cpp-linux-x86_64.tar.gz
+          sha256="$(sha256sum dist/manim-cpp-linux-x86_64.tar.gz | awk '{print $1}')"
+          echo "tag=${tag}" >> "${GITHUB_OUTPUT}"
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+          echo "asset_url=${asset_url}" >> "${GITHUB_OUTPUT}"
+          echo "sha256=${sha256}" >> "${GITHUB_OUTPUT}"
+
+      - name: Generate Homebrew Scoop Winget Chocolatey manifests
+        run: |
+          set -euo pipefail
+          ./tools/release/generate_package_channel_manifests.sh \
+            "${{ steps.release.outputs.version }}" \
+            "${{ steps.release.outputs.asset_url }}" \
+            "${{ steps.release.outputs.sha256 }}" \
+            dist/package-channels
+          tar -C dist -czf "dist/manim-cpp-package-channels-${{ steps.release.outputs.version }}.tar.gz" package-channels
+
+      - name: Upload package channel manifests
+        uses: actions/upload-artifact@v5
+        with:
+          name: manim-cpp-package-channels-${{ steps.release.outputs.version }}
+          path: dist/manim-cpp-package-channels-*.tar.gz
+
+      - name: Publish package channel manifests to GitHub Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release.outputs.tag }}
+          files: dist/manim-cpp-package-channels-*.tar.gz

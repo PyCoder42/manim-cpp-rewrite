@@ -129,6 +129,24 @@ add_test(
 )
 
 add_test(
+  NAME MilestoneGateReviewCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_milestone_gate_review.sh
+          ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+  NAME PackageChannelWorkflowCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_package_channel_workflow.sh
+          ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
+  NAME FinalCutoverGateCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_final_cutover_gate.sh
+          ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
   NAME CliAliasManimVersion
   COMMAND $<TARGET_FILE:manim> --version
 )

@@ -1,0 +1,20 @@
+name: Milestone Gate Review
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+
+jobs:
+  enforce-milestone-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require checked milestone gate review checkbox
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          set -euo pipefail
+          if ! grep -Fq -- "- [x] Milestone gate review completed for the current plan tranche." <<<"${PR_BODY}"; then
+            echo "Pull request body must check the milestone gate review checkbox before merge." >&2
+            exit 1
+          fi

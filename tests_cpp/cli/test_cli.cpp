@@ -114,6 +114,48 @@ TEST(Cli, HelpAndSubcommandDispatchSmoke) {
             0);
 }
 
+TEST(Cli, AliasVersionPrintsSunsetWarning) {
+  const std::array<const char*, 2> args = {"manim", "--version"};
+
+  std::ostringstream out_capture;
+  std::ostringstream err_capture;
+  std::streambuf* old_cout = std::cout.rdbuf(out_capture.rdbuf());
+  std::streambuf* old_cerr = std::cerr.rdbuf(err_capture.rdbuf());
+  const int exit_code =
+      manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data());
+  std::cout.rdbuf(old_cout);
+  std::cerr.rdbuf(old_cerr);
+
+  EXPECT_EQ(exit_code, 0);
+  EXPECT_NE(out_capture.str().find("manim-cpp v"), std::string::npos);
+  EXPECT_NE(
+      err_capture.str().find("Deprecated alias 'manim'; use 'manim-cpp' instead."),
+      std::string::npos);
+  EXPECT_NE(err_capture.str().find("supported through major version"),
+            std::string::npos);
+}
+
+TEST(Cli, AliasManimceVersionPrintsSunsetWarning) {
+  const std::array<const char*, 2> args = {"manimce", "--version"};
+
+  std::ostringstream out_capture;
+  std::ostringstream err_capture;
+  std::streambuf* old_cout = std::cout.rdbuf(out_capture.rdbuf());
+  std::streambuf* old_cerr = std::cerr.rdbuf(err_capture.rdbuf());
+  const int exit_code =
+      manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data());
+  std::cout.rdbuf(old_cout);
+  std::cerr.rdbuf(old_cerr);
+
+  EXPECT_EQ(exit_code, 0);
+  EXPECT_NE(out_capture.str().find("manim-cpp v"), std::string::npos);
+  EXPECT_NE(
+      err_capture.str().find("Deprecated alias 'manimce'; use 'manim-cpp' instead."),
+      std::string::npos);
+  EXPECT_NE(err_capture.str().find("supported through major version"),
+            std::string::npos);
+}
+
 TEST(Cli, RenderHelpIncludesCoreOptions) {
   const std::array<const char*, 3> render_help_args = {
       "manim-cpp", "render", "--help"};

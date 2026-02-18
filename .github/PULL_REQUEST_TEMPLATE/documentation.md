@@ -16,9 +16,11 @@ release. Write RST between the following start and end comments.-->
 - [ ] I have read the [Contributing Guidelines](https://docs.manim.community/en/latest/contributing.html)
 - [ ] I have written a descriptive PR title (see top of PR template for examples)
 - [ ] My new documentation builds, looks correctly formatted, and adds no additional build warnings
+- [ ] Milestone gate review completed for the current plan tranche.
 
 <!-- Do not modify the lines below. These are for the reviewers of your PR -->
 ## Reviewer Checklist
 - [ ] The PR title is descriptive enough
 - [ ] The PR is labeled appropriately
 - [ ] Newly added documentation builds, looks correctly formatted, and adds no additional build warnings
+- [ ] Milestone gate review is complete for this tranche

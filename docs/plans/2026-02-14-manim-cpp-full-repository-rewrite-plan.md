@@ -179,6 +179,10 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone L.11: Replaced `scripts/dev_changelog.py` with `scripts/dev_changelog.sh` (non-Python) and removed the final tracked Python source file
 - [x] Milestone L.12: Emptied `config/python_allowlist.txt` to transition CI from transitional allowlist mode to strict zero-Python enforcement mode
 - [x] Milestone L.13: Added cross-platform `cxx-release.yml` artifact pipeline + non-Python release workflow enforcement (`CxxReleaseWorkflowCheck`)
+- [x] Milestone L.14: Added PR milestone-gate enforcement workflow/template contract with repository guard (`MilestoneGateReviewCheck`)
+- [x] Milestone L.15: Added CLI alias sunset contract (`manim`/`manimce`) with explicit deprecation warnings and one-major-version support metadata
+- [x] Milestone L.16: Added cross-platform package-channel manifest pipeline (`cxx-package-channels.yml`) plus release manifest generator for Homebrew/Scoop/Winget/Chocolatey
+- [x] Milestone L.17: Added explicit final cutover gate enforcement (`FinalCutoverGateCheck`) requiring checked parity gates before Python-free cutover completion
 
 ### Detailed Subsystem Mapping (Source-to-Source Intent)
 - [x] `manim/mobject` -> `src/manim_cpp/mobject`
@@ -203,10 +207,10 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 
 ### Rollout and Branching Strategy
 - [x] Use phased cutover via `codex/*` branch workflow
-- [ ] Require milestone gate reviews before merging next tranche
-- [ ] Keep `manim`/`manimce` aliases for one major version after stable `manim-cpp`
-- [ ] Publish binary artifacts via GitHub Releases + OS package channels
-- [ ] Final cutover removes Python assets only after all parity gates pass
+- [x] Require milestone gate reviews before merging next tranche
+- [x] Keep `manim`/`manimce` aliases for one major version after stable `manim-cpp`
+- [x] Publish binary artifacts via GitHub Releases + OS package channels
+- [x] Final cutover removes Python assets only after all parity gates pass
 
 ### Assumptions and Defaults (Locked)
 - [x] Absolute zero Python in final repository and CI

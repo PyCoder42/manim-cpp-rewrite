@@ -1,6 +1,7 @@
 #include "manim_cpp/cli/cli.hpp"
 
 #include <algorithm>
+#include <cctype>
 #include <climits>
 #include <cstdlib>
 #include <cerrno>
@@ -80,6 +81,37 @@ void print_subcommand_help(const std::string& command) {
 
 bool is_help_flag(const std::string& token) {
   return token == "--help" || token == "-h";
+}
+
+std::string normalized_binary_name(const char* argv0) {
+  if (argv0 == nullptr || *argv0 == '\0') {
+    return "manim-cpp";
+  }
+
+  const auto executable_path = std::filesystem::path(argv0).filename();
+  std::string name = executable_path.stem().string();
+  if (name.empty()) {
+    name = executable_path.string();
+  }
+  std::transform(
+      name.begin(), name.end(), name.begin(),
+      [](unsigned char value) { return static_cast<char>(std::tolower(value)); });
+  return name;
+}
+
+bool is_deprecated_cli_alias(const std::string& binary_name) {
+  return binary_name == "manim" || binary_name == "manimce";
+}
+
+void maybe_warn_alias_usage(const char* argv0) {
+  const std::string binary_name = normalized_binary_name(argv0);
+  if (!is_deprecated_cli_alias(binary_name)) {
+    return;
+  }
+  std::cerr << "Deprecated alias '" << binary_name
+            << "'; use 'manim-cpp' instead. Alias compatibility is supported "
+               "through major version "
+            << manim_cpp::kAliasSupportThroughMajor << ".\n";
 }
 
 bool is_member(const std::vector<std::string>& values, const std::string& target) {
@@ -941,6 +973,8 @@ int run_cli(int argc, const char* const argv[]) {
     print_root_help();
     return 0;
   }
+
+  maybe_warn_alias_usage(argv != nullptr ? argv[0] : nullptr);
 
   const std::string first = argv[1];
   if (first == "--help" || first == "-h") {

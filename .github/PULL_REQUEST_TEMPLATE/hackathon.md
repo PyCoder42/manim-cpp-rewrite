@@ -19,3 +19,6 @@ class HelloWorld(Scene):
 Copy+paste the output docstring to the right place in the source code.
 
 If you need any help, do not hesitate to ask the hackathon-mentors in the discord channel.
+
+## Checklist
+- [ ] Milestone gate review completed for the current plan tranche.

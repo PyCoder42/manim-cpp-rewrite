@@ -16,6 +16,9 @@
 ## Further Information and Comments
 <!-- If applicable, put further comments for the reviewers here. -->
 
+## Milestone Gate
+- [ ] Milestone gate review completed for the current plan tranche.
+
 
 
 <!-- Thank you again for contributing! Do not modify the lines below, they are for reviewers. -->
@@ -23,3 +26,4 @@
 - [ ] The PR title is descriptive enough for the changelog, and the PR is labeled correctly
 - [ ] If applicable: newly added non-private functions and classes have a docstring including a short summary and a PARAMETERS section
 - [ ] If applicable: newly added functions and classes are tested
+- [ ] Milestone gate review is complete for this tranche
