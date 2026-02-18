@@ -528,6 +528,19 @@ TEST(Cli, CheckhealthJsonModeIsAccepted) {
             std::string::npos);
 }
 
+TEST(Cli, CheckhealthTextModeReportsRenderersAndFormats) {
+  const std::array<const char*, 2> args = {"manim-cpp", "checkhealth"};
+  std::ostringstream out_capture;
+  std::streambuf* old_cout = std::cout.rdbuf(out_capture.rdbuf());
+  const int exit_code = manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data());
+  std::cout.rdbuf(old_cout);
+
+  EXPECT_EQ(exit_code, 0);
+  EXPECT_NE(out_capture.str().find("renderers: cairo, opengl"), std::string::npos);
+  EXPECT_NE(out_capture.str().find("formats: png, gif, mp4, webm, mov"),
+            std::string::npos);
+}
+
 TEST(Cli, InitSceneGeneratesTemplateFile) {
   const auto temp_root = std::filesystem::temp_directory_path() / "manim_cpp_cli_init";
   std::filesystem::remove_all(temp_root);
