@@ -29,6 +29,9 @@ fi
 line_number=0
 feature_count=0
 missing_count=0
+feature_id_tmp="$(mktemp)"
+regex_tmp="$(mktemp)"
+trap 'rm -f "${feature_id_tmp}" "${regex_tmp}"' EXIT
 
 while IFS= read -r line || [[ -n "${line}" ]]; do
   line_number=$((line_number + 1))
@@ -44,6 +47,8 @@ while IFS= read -r line || [[ -n "${line}" ]]; do
   fi
 
   feature_count=$((feature_count + 1))
+  printf '%s\n' "${feature_id}" >> "${feature_id_tmp}"
+  printf '%s\n' "${required_regex}" >> "${regex_tmp}"
 
   if ! printf '%s\n' "${ctest_listing}" | rg -n --pcre2 "${required_regex}" >/dev/null 2>&1; then
     echo "Missing cross-test coverage for feature '${feature_id}' (${legacy_surface})." >&2
@@ -51,6 +56,20 @@ while IFS= read -r line || [[ -n "${line}" ]]; do
     missing_count=$((missing_count + 1))
   fi
 done < "${matrix_path}"
+
+duplicate_feature_ids="$(sort "${feature_id_tmp}" | uniq -d || true)"
+if [[ -n "${duplicate_feature_ids}" ]]; then
+  echo "Feature matrix contains duplicate feature_id values:" >&2
+  printf '%s\n' "${duplicate_feature_ids}" >&2
+  exit 1
+fi
+
+duplicate_regexes="$(sort "${regex_tmp}" | uniq -d || true)"
+if [[ -n "${duplicate_regexes}" ]]; then
+  echo "Feature matrix contains duplicate required_test_regex values:" >&2
+  printf '%s\n' "${duplicate_regexes}" >&2
+  exit 1
+fi
 
 if [[ "${feature_count}" -lt 30 ]]; then
   echo "Feature matrix is unexpectedly small (${feature_count} rows)." >&2
