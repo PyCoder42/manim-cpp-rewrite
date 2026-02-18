@@ -163,7 +163,6 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.21: Added interaction-script unit/CLI coverage for deterministic command parsing, replay, and invalid-script failure handling
 - [x] Milestone J.22: Added original-Manim feature cross-test matrix mapping parity-scope features to enforced CTest coverage (`OriginalFeatureCrossTestCoverageCheck`)
 - [x] Milestone J.23: Added `tools/tests/run_original_feature_cross_tests.sh` helper to execute parity-scope feature buckets from the cross-test matrix against CTest
-- [x] Milestone J.23: Added executable cross-test runner for the original-feature parity matrix (`tools/tests/run_original_feature_cross_tests.sh`) to run each feature bucket explicitly
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers
@@ -196,6 +195,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone L.22: Converted GitHub pull-request templates to `manim-cpp` wording and added repository enforcement (`PRTemplateCxxCheck`)
 - [x] Milestone L.23: Converted CodeQL workflow language target from Python to C++ and added repository enforcement (`CodeqlCxxWorkflowCheck`)
 - [x] Milestone L.24: Converted package-channel manifest metadata from legacy `ManimCommunity/manim` URLs to dynamic current-repo URLs and added repository enforcement (`PackageManifestProjectUrlCheck`)
+- [x] Milestone L.25: Converted Docker publish workflow to namespace-configurable tags (`IMAGE_NAMESPACE`) with repository enforcement (`DockerTagContractCheck`)
 - [x] Milestone K.4: Expanded mdBook docs from scaffold pages to C++ workflow chapters (installation, quickstart, CLI, plugins, testing) and added repository enforcement (`BookDocsCoverageCheck`)
 
 ### Detailed Subsystem Mapping (Source-to-Source Intent)

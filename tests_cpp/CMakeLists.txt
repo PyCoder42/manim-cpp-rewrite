@@ -147,6 +147,12 @@ add_test(
 )
 
 add_test(
+  NAME DockerTagContractCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_docker_tag_contract.sh
+          ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
   NAME FinalCutoverGateCheck
   COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_final_cutover_gate.sh
           ${PROJECT_SOURCE_DIR}
