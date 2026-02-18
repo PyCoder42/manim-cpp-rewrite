@@ -814,9 +814,7 @@ int handle_plugins(const int argc, const char* const argv[]) {
     return 2;
   }
   if (root.empty()) {
-    std::cerr << "Usage: manim-cpp plugins " << subcommand
-              << " [--recursive] <directory>\n";
-    return 2;
+    root = resolve_plugin_dir();
   }
 
   if (subcommand == "list") {

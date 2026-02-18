@@ -591,9 +591,9 @@ TEST(Cli, RenderWatchOnlyKeepsWindowClosedByDefault) {
 }
 
 TEST(Cli, AcceptsKnownScaffoldedSubcommands) {
-  const std::array<const char*, 3> plugins_list_args = {"manim-cpp", "plugins", "list"};
-  EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(plugins_list_args.size()),
-                                    plugins_list_args.data()),
+  const std::array<const char*, 3> plugins_invalid_args = {"manim-cpp", "plugins", "bogus"};
+  EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(plugins_invalid_args.size()),
+                                    plugins_invalid_args.data()),
             2);
 }
 
@@ -646,6 +646,37 @@ TEST(Cli, PluginsListReadsDirectory) {
   const std::array<const char*, 4> args = {
       "manim-cpp", "plugins", "list", path_string.c_str()};
   EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data()), 0);
+
+  std::filesystem::remove_all(temp_root);
+}
+
+TEST(Cli, PluginsListDefaultsToResolvedPluginDirWhenDirectoryIsOmitted) {
+  const auto temp_root =
+      std::filesystem::temp_directory_path() / "manim_cpp_cli_plugins_default_path";
+  std::filesystem::remove_all(temp_root);
+  std::filesystem::create_directories(temp_root);
+  ScopedEnvVar plugin_env("MANIM_CPP_PLUGIN_DIR", temp_root.string());
+
+#ifdef _WIN32
+  const auto plugin_path = temp_root / "sample.dll";
+#elif __APPLE__
+  const auto plugin_path = temp_root / "sample.dylib";
+#else
+  const auto plugin_path = temp_root / "sample.so";
+#endif
+  std::ofstream plugin_file(plugin_path);
+  plugin_file << "x";
+  plugin_file.close();
+
+  const std::array<const char*, 3> args = {"manim-cpp", "plugins", "list"};
+
+  std::ostringstream out_capture;
+  std::streambuf* old_cout = std::cout.rdbuf(out_capture.rdbuf());
+  const int exit_code = manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data());
+  std::cout.rdbuf(old_cout);
+
+  EXPECT_EQ(exit_code, 0);
+  EXPECT_NE(out_capture.str().find(plugin_path.filename().string()), std::string::npos);
 
   std::filesystem::remove_all(temp_root);
 }
