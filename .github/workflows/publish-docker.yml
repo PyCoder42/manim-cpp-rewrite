@@ -1,4 +1,4 @@
-name: Publish Docker Image
+name: Publish Docker Image (C++)
 
 on:
   push:
@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name != 'release'
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -31,12 +34,16 @@ jobs:
           push: true
           file: docker/Dockerfile
           tags: |
+            manimcommunity/manim-cpp:latest
             manimcommunity/manim:latest
 
   docker-release:
     runs-on: ubuntu-latest
     if: github.event_name == 'release'
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -51,14 +58,13 @@ jobs:
 
       - name: Get Version
         id: create_release
-        shell: python
+        shell: bash
         env:
-          tag_act: ${{ github.ref }}
+          TAG_REF: ${{ github.ref }}
         run: |
-          import os
-          ref_tag = os.getenv('tag_act').split('/')[-1]
-          with open(os.getenv('GITHUB_OUTPUT'), 'w') as f:
-            print(f"tag_name={ref_tag}", file=f)
+          set -euo pipefail
+          ref_tag="${TAG_REF##*/}"
+          echo "tag_name=${ref_tag}" >> "${GITHUB_OUTPUT}"
 
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -67,6 +73,8 @@ jobs:
           push: true
           file: docker/Dockerfile
           tags: |
+            manimcommunity/manim-cpp:stable
+            manimcommunity/manim-cpp:latest
+            manimcommunity/manim-cpp:${{ steps.create_release.outputs.tag_name }}
             manimcommunity/manim:stable
-            manimcommunity/manim:latest
             manimcommunity/manim:${{ steps.create_release.outputs.tag_name }}

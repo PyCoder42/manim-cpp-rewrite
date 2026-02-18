@@ -168,7 +168,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone L: Release engineering and cutover
 - [x] Milestone L.1: Added transitional Python inventory allowlist gate (`PythonInventoryAllowlistCheck`) to track and shrink legacy Python footprint
 - [x] Milestone L.2: Updated GitHub Python gate workflow to enforce allowlist inventory now and strict zero-Python automatically when allowlist is empty
-- [x] Milestone L.3: Transitioned legacy Python workflows (`ci.yml`, `python-publish.yml`, `release-publish-documentation.yml`) to manual-only triggers with CTest enforcement (`LegacyPythonWorkflowModeCheck`)
+- [x] Milestone L.3: Removed legacy Python workflows (`ci.yml`, `python-publish.yml`, `release-publish-documentation.yml`) and enforced absence via CTest (`LegacyPythonWorkflowModeCheck`)
 - [x] Milestone L.4: Removed `.github/scripts/ci_build_cairo.py` and tightened transitional allowlist scope by dropping `.github/scripts/*`
 - [x] Milestone L.5: Replaced `scripts/make_and_open_docs.py` with `scripts/make_and_open_docs.sh` and migrated the docstring template from `.py` to `.rst`, shrinking `scripts/` allowlist scope
 - [x] Milestone L.6: Removed legacy Sphinx `docs/source/conf.py` from tracked Python inventory after docs toolchain migration to mdBook + Doxygen
@@ -183,6 +183,8 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone L.15: Added CLI alias sunset contract (`manim`/`manimce`) with explicit deprecation warnings and one-major-version support metadata
 - [x] Milestone L.16: Added cross-platform package-channel manifest pipeline (`cxx-package-channels.yml`) plus release manifest generator for Homebrew/Scoop/Winget/Chocolatey
 - [x] Milestone L.17: Added explicit final cutover gate enforcement (`FinalCutoverGateCheck`) requiring checked parity gates before Python-free cutover completion
+- [x] Milestone L.18: Purged legacy docs artifacts (`docs/source`, `docs/html`, old docs requirements files) and added repository enforcement (`LegacyDocsPurgeCheck`)
+- [x] Milestone L.19: Converted `publish-docker.yml` to Python-free shell logic and `manim-cpp` image tags while keeping transitional `manim` tags
 
 ### Detailed Subsystem Mapping (Source-to-Source Intent)
 - [x] `manim/mobject` -> `src/manim_cpp/mobject`
