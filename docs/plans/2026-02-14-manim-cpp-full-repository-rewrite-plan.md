@@ -92,6 +92,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone F.9: `render --scene` now emits config-resolved media artifacts (output media file, manifest JSON, `.srt`) with deterministic metadata contract
 - [x] Milestone F.10: Section timeline metadata (`start_seconds`, `end_seconds`) now validates and serializes into media manifests for deterministic section timing parity
 - [x] Milestone F.11: Centralized media codec-hint contract in `scene::media_format` and wired `SceneFileWriter` summary metadata to use typed format mapping
+- [x] Milestone F.12: `render --scene` now seeds manifest section timeline metadata from measured scene elapsed time (`0.0 -> elapsed_seconds`) when animations run
 - [x] Milestone G: CLI/config parity
 - [x] Milestone G.1: Command/subcommand validation scaffolding with deterministic exit codes
 - [x] Milestone G.2: `cfg show` and `cfg write` operate on real config files/templates
@@ -152,6 +153,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.14: Added CLI integration coverage that renders every converted C++ example scene and validates media/manifest/subcaption artifact emission
 - [x] Milestone J.15: Added migration regression coverage that enforces TODO fallback for keyword-argument constructor calls in translated `add/remove` lines
 - [x] Milestone J.16: Added CLI integration coverage for `MANIM_CPP_PLUGIN_DIR` override behavior in `checkhealth --json` and `plugins path`
+- [x] Milestone J.17: Added CLI integration coverage enforcing manifest section timeline emission (`start_seconds`, `end_seconds`) for elapsed timed scenes
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers

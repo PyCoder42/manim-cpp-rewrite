@@ -425,6 +425,49 @@ TEST(Cli, RenderSceneWritesDeterministicFrameImagesForOpenGLRenderer) {
   std::filesystem::remove_all(temp_root);
 }
 
+TEST(Cli, RenderSceneManifestIncludesElapsedSectionTimeline) {
+  const auto temp_root =
+      std::filesystem::temp_directory_path() / "manim_cpp_cli_render_manifest_timeline";
+  std::filesystem::remove_all(temp_root);
+  std::filesystem::create_directories(temp_root);
+
+  std::ofstream cfg(temp_root / "manim.cfg");
+  cfg << "[CLI]\n";
+  cfg << "media_dir = ./media\n";
+  cfg << "video_dir = {media_dir}/videos/{module_name}/{quality}\n";
+  cfg << "images_dir = {media_dir}/images/{module_name}\n";
+  cfg << "partial_movie_dir = {video_dir}/partial_movie_files/{scene_name}\n";
+  cfg << "pixel_width = 640\n";
+  cfg << "pixel_height = 360\n";
+  cfg << "frame_rate = 4\n";
+  cfg.close();
+
+  std::ofstream input_scene(temp_root / "demo_scene.cpp");
+  input_scene << "// placeholder\n";
+  input_scene.close();
+
+  {
+    ScopedCurrentPath scoped_path(temp_root);
+    const std::array<const char*, 7> args = {"manim-cpp",
+                                             "render",
+                                             "demo_scene.cpp",
+                                             "--scene",
+                                             "CliRenderTimedScene",
+                                             "--renderer",
+                                             "cairo"};
+    EXPECT_EQ(manim_cpp::cli::run_cli(static_cast<int>(args.size()), args.data()), 0);
+  }
+
+  const auto manifest_path = temp_root / "media" / "videos" / "demo_scene" / "360p4" /
+                             "CliRenderTimedScene.json";
+  ASSERT_TRUE(std::filesystem::exists(manifest_path));
+  const std::string manifest = read_file(manifest_path);
+  EXPECT_NE(manifest.find("\"start_seconds\":0"), std::string::npos);
+  EXPECT_NE(manifest.find("\"end_seconds\":0.5"), std::string::npos);
+
+  std::filesystem::remove_all(temp_root);
+}
+
 TEST(Cli, RenderAcceptsWatchAndInteractiveFlags) {
   const std::array<const char*, 7> args = {
       "manim-cpp", "render", "example_scene.cpp", "--renderer", "opengl", "--watch",

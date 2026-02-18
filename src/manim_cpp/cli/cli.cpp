@@ -594,6 +594,9 @@ int handle_render(const int argc, const char* const argv[]) {
         elapsed_seconds > 0.0
             ? static_cast<std::size_t>(std::llround(elapsed_seconds * frame_rate))
             : static_cast<std::size_t>(1);
+    if (elapsed_seconds > 0.0) {
+      writer.set_section_timeline(0.0, elapsed_seconds);
+    }
     std::optional<std::filesystem::path> output_file = std::nullopt;
     std::optional<std::filesystem::path> manifest_path = std::nullopt;
     std::optional<std::filesystem::path> subcaption_path = std::nullopt;
