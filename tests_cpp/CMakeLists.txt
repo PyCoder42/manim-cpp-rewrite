@@ -165,6 +165,12 @@ add_test(
 )
 
 add_test(
+  NAME GettextTemplateScopeCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_gettext_template_scope.sh
+          ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
   NAME CliAliasManimVersion
   COMMAND $<TARGET_FILE:manim> --version
 )
