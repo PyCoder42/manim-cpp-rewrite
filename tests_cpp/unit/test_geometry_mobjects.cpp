@@ -13,6 +13,7 @@ using manim_cpp::mobject::Circle;
 using manim_cpp::mobject::Dot;
 using manim_cpp::mobject::Line;
 using manim_cpp::mobject::Rectangle;
+using manim_cpp::mobject::RegularPolygon;
 using manim_cpp::mobject::Square;
 using manim_cpp::mobject::Triangle;
 
@@ -108,6 +109,31 @@ TEST(GeometryMobjects, TriangleRejectsNonPositiveSideLength) {
 
   Triangle triangle;
   EXPECT_THROW(triangle.set_side_length(0.0), std::invalid_argument);
+}
+
+TEST(GeometryMobjects, RegularPolygonVerticesTrackCenterSidesAndRadius) {
+  RegularPolygon polygon(5, 2.0);
+  polygon.move_to(Vec3{1.0, -1.0, 0.25});
+
+  EXPECT_EQ(polygon.n_sides(), static_cast<size_t>(5));
+  EXPECT_DOUBLE_EQ(polygon.radius(), 2.0);
+
+  const auto vertices = polygon.vertices();
+  ASSERT_EQ(vertices.size(), static_cast<size_t>(5));
+  expect_vec3_near(vertices[0], Vec3{1.0, 1.0, 0.25});
+  expect_vec3_near(vertices[1], Vec3{-0.9021130325903071, -0.3819660112501051, 0.25});
+  expect_vec3_near(vertices[2], Vec3{-0.17557050458494672, -2.618033988749895, 0.25});
+  expect_vec3_near(vertices[3], Vec3{2.175570504584946, -2.618033988749895, 0.25});
+  expect_vec3_near(vertices[4], Vec3{2.9021130325903073, -0.38196601125010554, 0.25});
+}
+
+TEST(GeometryMobjects, RegularPolygonRejectsInvalidSidesAndRadius) {
+  EXPECT_THROW(RegularPolygon(2, 1.0), std::invalid_argument);
+  EXPECT_THROW(RegularPolygon(5, 0.0), std::invalid_argument);
+
+  RegularPolygon polygon;
+  EXPECT_THROW(polygon.set_n_sides(2), std::invalid_argument);
+  EXPECT_THROW(polygon.set_radius(0.0), std::invalid_argument);
 }
 
 TEST(GeometryMobjects, LineTracksEndpointsLengthAndDirection) {

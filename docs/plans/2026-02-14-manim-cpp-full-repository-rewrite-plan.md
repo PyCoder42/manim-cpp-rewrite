@@ -60,6 +60,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone C.14: Added `Line` geometry mobject parity (`start`, `end`, `length`, `unit_vector`, `set_points`) with degenerate-endpoint validation and deterministic transform behavior coverage
 - [x] Milestone C.15: Added `Rectangle` geometry mobject parity (`width`, `height`, center-tracked `vertices`) with non-positive dimension validation
 - [x] Milestone C.16: Added `Triangle` geometry mobject parity (`side_length`, centroid-centered equilateral `vertices`) with non-positive side-length validation
+- [x] Milestone C.17: Added `RegularPolygon` geometry mobject parity (`n_sides`, `radius`, deterministic top-start vertex winding) with side-count/radius validation
 - [x] Milestone D: Cairo backend parity
 - [x] Milestone D.1: Renderer type parsing, string conversion, and factory creation for Cairo/OpenGL backends
 - [x] Milestone D.2: Cairo renderer deterministic frame naming + static-frame signature dedupe scaffold

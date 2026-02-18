@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <vector>
 
 #include "manim_cpp/math/core.hpp"
@@ -72,6 +73,22 @@ class Triangle : public Mobject {
 
  private:
   double side_length_ = 2.0;
+};
+
+class RegularPolygon : public Mobject {
+ public:
+  RegularPolygon(std::size_t n_sides = 6, double radius = 1.0);
+
+  [[nodiscard]] std::string debug_name() const override { return "RegularPolygon"; }
+  [[nodiscard]] std::size_t n_sides() const;
+  [[nodiscard]] double radius() const;
+  void set_n_sides(std::size_t n_sides);
+  void set_radius(double radius);
+  [[nodiscard]] std::vector<math::Vec3> vertices() const;
+
+ private:
+  std::size_t n_sides_ = 6;
+  double radius_ = 1.0;
 };
 
 class Line : public Mobject {

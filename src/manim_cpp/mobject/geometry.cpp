@@ -1,6 +1,7 @@
 #include "manim_cpp/mobject/geometry.hpp"
 
 #include <cmath>
+#include <numbers>
 #include <stdexcept>
 #include <string>
 
@@ -11,6 +12,13 @@ namespace {
 double require_positive(const double value, const char* field_name) {
   if (value <= 0.0) {
     throw std::invalid_argument(std::string(field_name) + " must be positive");
+  }
+  return value;
+}
+
+std::size_t require_at_least_three(const std::size_t value, const char* field_name) {
+  if (value < 3) {
+    throw std::invalid_argument(std::string(field_name) + " must be at least 3");
   }
   return value;
 }
@@ -126,6 +134,39 @@ std::vector<math::Vec3> Triangle::vertices() const {
       math::Vec3{c[0] - half_side, base_y, c[2]},
       math::Vec3{c[0] + half_side, base_y, c[2]},
   };
+}
+
+RegularPolygon::RegularPolygon(const std::size_t n_sides, const double radius)
+    : n_sides_(require_at_least_three(n_sides, "n_sides")),
+      radius_(require_positive(radius, "radius")) {}
+
+std::size_t RegularPolygon::n_sides() const { return n_sides_; }
+
+double RegularPolygon::radius() const { return radius_; }
+
+void RegularPolygon::set_n_sides(const std::size_t n_sides) {
+  n_sides_ = require_at_least_three(n_sides, "n_sides");
+}
+
+void RegularPolygon::set_radius(const double radius) {
+  radius_ = require_positive(radius, "radius");
+}
+
+std::vector<math::Vec3> RegularPolygon::vertices() const {
+  const auto& c = center();
+  std::vector<math::Vec3> vertices;
+  vertices.reserve(n_sides_);
+  const double angle_step = (2.0 * std::numbers::pi) / static_cast<double>(n_sides_);
+  const double start_angle = std::numbers::pi / 2.0;
+  for (std::size_t i = 0; i < n_sides_; ++i) {
+    const double angle = start_angle + (static_cast<double>(i) * angle_step);
+    vertices.push_back(math::Vec3{
+        c[0] + (radius_ * std::cos(angle)),
+        c[1] + (radius_ * std::sin(angle)),
+        c[2],
+    });
+  }
+  return vertices;
 }
 
 Line::Line(const math::Vec3 start, const math::Vec3 end) {
