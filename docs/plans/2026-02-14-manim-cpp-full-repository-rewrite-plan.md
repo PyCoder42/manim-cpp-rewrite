@@ -176,19 +176,19 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone L.13: Added cross-platform `cxx-release.yml` artifact pipeline + non-Python release workflow enforcement (`CxxReleaseWorkflowCheck`)
 
 ### Detailed Subsystem Mapping (Source-to-Source Intent)
-- [ ] `manim/mobject` -> `src/manim_cpp/mobject`
-- [ ] `manim/animation` -> `src/manim_cpp/animation`
-- [ ] `manim/scene` -> `src/manim_cpp/scene`
-- [ ] `manim/renderer` -> `src/manim_cpp/renderer`
-- [ ] `manim/_config` and `manim/cli` -> `src/manim_cpp/config` + `apps/manim_cpp_cli`
-- [ ] `manim/plugins` -> `src/manim_cpp/plugin` + `plugins/sdk`
-- [ ] `docs/source` and `docs/i18n` -> `docs/book` and `docs/api` while preserving locale catalogs
+- [x] `manim/mobject` -> `src/manim_cpp/mobject`
+- [x] `manim/animation` -> `src/manim_cpp/animation`
+- [x] `manim/scene` -> `src/manim_cpp/scene`
+- [x] `manim/renderer` -> `src/manim_cpp/renderer`
+- [x] `manim/_config` and `manim/cli` -> `src/manim_cpp/config` + `apps/manim_cpp_cli`
+- [x] `manim/plugins` -> `src/manim_cpp/plugin` + `plugins/sdk`
+- [x] `docs/source` and `docs/i18n` -> `docs/book` and `docs/api` while preserving locale catalogs
 - [x] `tests/control_data` and `tests/test_graphical_units/control_data` consumed by C++ regression harness
 
 ### Test Cases and Acceptance Scenarios
 - [x] CLI compatibility snapshots
 - [ ] Render parity (per-platform bitwise)
-- [ ] Media parity (metadata/timing/section outputs)
+- [x] Media parity (metadata/timing/section outputs)
 - [x] Scene API parity on example scenes
 - [ ] Interaction parity (GLFW/ImGui)
 - [ ] Plugin ABI integration tests (all platforms)
