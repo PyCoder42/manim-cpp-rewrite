@@ -189,6 +189,12 @@ add_test(
 )
 
 add_test(
+  NAME NoDuplicateCopyArtifactsCheck
+  COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_no_duplicate_copy_artifacts.sh
+          ${PROJECT_SOURCE_DIR}
+)
+
+add_test(
   NAME BookDocsCoverageCheck
   COMMAND ${PROJECT_SOURCE_DIR}/tools/repo/check_book_docs_coverage.sh
           ${PROJECT_SOURCE_DIR}
