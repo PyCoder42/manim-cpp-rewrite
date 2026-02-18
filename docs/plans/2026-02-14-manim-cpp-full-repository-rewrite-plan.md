@@ -120,6 +120,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone I.6: Migration now translates common construct calls (`self.wait(...)`, `self.clear()`) into runnable C++ scene calls while preserving TODO markers for unsupported patterns
 - [x] Milestone I.7: Migration now preserves detected scene base-class inheritance (`Scene`, `MovingCameraScene`, `ThreeDScene`) in generated C++ class declarations
 - [x] Milestone I.8: Migration now translates `self.wait(duration=<numeric>)` keyword calls into deterministic C++ `wait(<numeric>)` output
+- [x] Milestone I.9: Migration now translates `self.set_random_seed(<int>)` and `self.clear_updaters()` into runnable C++ scene calls
 - [x] Milestone J: Test suite full port
 - [x] Milestone J.1: Added C++ unit/integration coverage for core math/scene/cli/plugin/migrate scaffolds
 - [x] Milestone J.2: Added shared-library plugin integration fixture coverage in `ctest`

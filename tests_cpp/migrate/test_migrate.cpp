@@ -100,6 +100,27 @@ TEST(MigrateTool, TranslatesWaitDurationKeywordLiteral) {
   EXPECT_NE(report.find("translated_calls=1"), std::string::npos);
 }
 
+TEST(MigrateTool, TranslatesSetRandomSeedAndClearUpdaters) {
+  const std::string source =
+      "from manim import *\n"
+      "class Demo(Scene):\n"
+      "    def construct(self):\n"
+      "        self.set_random_seed(42)\n"
+      "        self.clear_updaters()\n";
+
+  std::string report;
+  const std::string converted =
+      manim_cpp::migrate::translate_python_scene_to_cpp(source, &report);
+
+  EXPECT_NE(converted.find("set_random_seed(42);"), std::string::npos);
+  EXPECT_NE(converted.find("clear_updaters();"), std::string::npos);
+  EXPECT_EQ(converted.find("TODO(migrate): original call -> self.set_random_seed(42)"),
+            std::string::npos);
+  EXPECT_EQ(converted.find("TODO(migrate): original call -> self.clear_updaters()"),
+            std::string::npos);
+  EXPECT_NE(report.find("translated_calls=2"), std::string::npos);
+}
+
 TEST(MigrateTool, WritesReportFileWhenRequested) {
   const auto temp_root = std::filesystem::temp_directory_path() / "manim_cpp_migrate_report";
   std::filesystem::remove_all(temp_root);

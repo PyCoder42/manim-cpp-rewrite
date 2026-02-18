@@ -131,6 +131,12 @@ bool is_numeric_literal(const std::string& text) {
   return std::regex_match(text, kPattern);
 }
 
+bool is_integer_literal(const std::string& text) {
+  static const std::regex kPattern(R"(^[+-]?[0-9]+$)",
+                                   std::regex_constants::ECMAScript);
+  return std::regex_match(text, kPattern);
+}
+
 std::optional<std::string> parse_wait_argument(const std::string& argument) {
   if (argument.empty()) {
     return std::string("1.0");
@@ -156,6 +162,12 @@ std::optional<std::string> translate_construct_call(const std::string& call) {
   static const std::regex kClearPattern(
       R"(^self\.clear\(\)$)",
       std::regex_constants::ECMAScript);
+  static const std::regex kSetRandomSeedPattern(
+      R"(^self\.set_random_seed\(([^)]*)\)$)",
+      std::regex_constants::ECMAScript);
+  static const std::regex kClearUpdatersPattern(
+      R"(^self\.clear_updaters\(\)$)",
+      std::regex_constants::ECMAScript);
 
   std::smatch match;
   if (std::regex_match(call, match, kWaitPattern)) {
@@ -169,6 +181,18 @@ std::optional<std::string> translate_construct_call(const std::string& call) {
 
   if (std::regex_match(call, kClearPattern)) {
     return "clear();";
+  }
+
+  if (std::regex_match(call, match, kSetRandomSeedPattern)) {
+    const std::string argument = trim(match[1].str());
+    if (is_integer_literal(argument)) {
+      return "set_random_seed(" + argument + ");";
+    }
+    return std::nullopt;
+  }
+
+  if (std::regex_match(call, kClearUpdatersPattern)) {
+    return "clear_updaters();";
   }
 
   return std::nullopt;
