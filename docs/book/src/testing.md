@@ -9,6 +9,7 @@ CTest.
 cmake --preset debug
 cmake --build --preset debug -j4
 ctest --preset debug --output-on-failure
+./tools/tests/run_original_feature_cross_tests.sh
 ```
 
 ## Important Gate Categories

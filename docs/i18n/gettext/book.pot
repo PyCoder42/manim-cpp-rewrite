@@ -13,7 +13,7 @@ msgstr ""
 msgid "ABI Contract"
 msgstr ""
 
-#: testing.md:23
+#: testing.md:24
 msgid "All gates are expected to pass before merging to `main`."
 msgstr ""
 
@@ -37,7 +37,7 @@ msgstr ""
 msgid "CLI command behavior and config layering."
 msgstr ""
 
-#: testing.md:17
+#: testing.md:18
 msgid "CLI compatibility and alias contract checks."
 msgstr ""
 
@@ -73,7 +73,7 @@ msgstr ""
 msgid "Create a scene template and render it with the C++ CLI."
 msgstr ""
 
-#: testing.md:20
+#: testing.md:21
 msgid "Docs/i18n extraction and coverage checks."
 msgstr ""
 
@@ -101,7 +101,7 @@ msgstr ""
 msgid "Host version check is enforced with `MANIM_PLUGIN_ABI_VERSION_V1`."
 msgstr ""
 
-#: testing.md:14
+#: testing.md:15
 msgid "Important Gate Categories"
 msgstr ""
 
@@ -153,7 +153,7 @@ msgstr ""
 msgid "Migration workflow from legacy `.py` scenes."
 msgstr ""
 
-#: testing.md:21
+#: testing.md:22
 msgid "Original-Manim feature cross-test coverage matrix checks."
 msgstr ""
 
@@ -165,7 +165,7 @@ msgstr ""
 msgid "Plugin ABI and extension workflow."
 msgstr ""
 
-#: testing.md:18
+#: testing.md:19
 msgid "Plugin ABI loading and workflow enforcement checks."
 msgstr ""
 
@@ -197,7 +197,7 @@ msgstr ""
 msgid "Render Scene"
 msgstr ""
 
-#: testing.md:16
+#: testing.md:17
 msgid "Render regression and bitwise baseline checks."
 msgstr ""
 
@@ -309,7 +309,7 @@ msgstr ""
 msgid "Windows: `./tools/deps/install_windows.ps1`"
 msgstr ""
 
-#: testing.md:19
+#: testing.md:20
 msgid "Zero-Python and release/workflow policy checks."
 msgstr ""
 
