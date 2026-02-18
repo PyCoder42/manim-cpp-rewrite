@@ -30,6 +30,7 @@ interaction_window	Interactive window/monitor/size semantics	Interaction\.(Parse
 interaction_script	Interaction script replay and validation	Interaction\.(ParsesScriptTokensIntoCommandsAndSteps|RejectsInvalidScriptTokens)
 cli_help_dispatch	CLI command/subcommand help + dispatch	Cli\.HelpAndSubcommandDispatchSmoke
 cli_alias_contract	manim/manimce transitional aliases	Cli\.(AliasVersionPrintsSunsetWarning|AliasManimceVersionPrintsSunsetWarning)
+cli_alias_entrypoints	`manim` and `manimce` executable alias binaries	(CliAliasManimVersion|CliAliasManimceVersion)
 cli_render_backend_select	CLI renderer selection	Cli\.RenderValidatesRendererOption
 cli_render_scene_execution	CLI scene execution and unknown-scene errors	Cli\.(RenderRunsRegisteredSceneWhenRequested|RenderFailsForUnknownSceneWhenSceneFlagIsProvided)
 cli_media_format	CLI output format selection and codec hints	Cli\.(RenderValidatesFormatOption|RenderSceneReportsCodecHintForRequestedFormat)
@@ -61,3 +62,6 @@ render_bitwise_parity	Renderer output parity gate	RenderBitwiseParity\.CairoAndO
 example_scenes	Converted example scene registration and renderability	ExampleScenes\.(RegistryCanCreateConvertedExampleScenes|ConvertedExampleScenesRenderViaCliWithArtifacts)
 docs_i18n	Locale and gettext continuity gates	(DocsI18nCatalogCheck|DocsGettextTemplateCheck|I18nCatalogScopeCheck|GettextTemplateScopeCheck)
 release_zero_python	Zero-Python/release policy gates	(PythonInventoryAllowlistCheck|LegacyPythonWorkflowModeCheck|FinalCutoverGateCheck|CodeqlCxxWorkflowCheck)
+release_workflow_matrix	C++ release/package/docker workflow policy gates	(CxxReleaseWorkflowCheck|PackageChannelWorkflowCheck|DockerTagContractCheck|NoPythonWorkflowToolingCheck|NoPythonScriptRuntimeCheck)
+repo_hygiene_cutover	repository cutover hygiene gates	(NoDuplicateCopyArtifactsCheck|NoBackupArtifactsCheck|LegacyArtifactsPurgeCheck|LegacyReferenceScopeCheck)
+docs_book_contract	mdBook documentation contract gates	(BookDocsCoverageCheck|BookMetadataCxxCheck|NoRstArtifactsCheck)

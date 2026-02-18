@@ -170,6 +170,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.27: Expanded original-feature matrix to include media-writer output-path/partial-cache/render-summary and CLI render artifact parity buckets
 - [x] Milestone J.28: Expanded original-feature matrix to include plugin failure aggregation/ABI rejection and migration directory/inheritance/translation parity buckets
 - [x] Milestone J.29: Raised minimum enforced original-feature matrix size from 30 to 60 rows after parity-scope expansion
+- [x] Milestone J.30: Expanded original-feature matrix to include CLI alias binary entrypoints and release/repo/docs policy gate parity buckets
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers
@@ -211,6 +212,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone L.29: Added backup/conflict artifact guard for tracked/untracked filenames (`NoBackupArtifactsCheck`) to block `.orig`/`.rej`/`.bak`/`*~` drift
 - [x] Milestone L.30: Added workflow runtime guard to block Python setup/tool invocations in GitHub Actions (`NoPythonWorkflowToolingCheck`)
 - [x] Milestone L.31: Added scripts/tools runtime guard to block Python shebangs and python/pip execution in repository automation (`NoPythonScriptRuntimeCheck`)
+- [x] Milestone L.32: Fixed legacy-reference allowlist scope to include the reference-scope checker itself, restoring `LegacyReferenceScopeCheck` stability under expanded hygiene buckets
 - [x] Milestone K.4: Expanded mdBook docs from scaffold pages to C++ workflow chapters (installation, quickstart, CLI, plugins, testing) and added repository enforcement (`BookDocsCoverageCheck`)
 
 ### Detailed Subsystem Mapping (Source-to-Source Intent)
