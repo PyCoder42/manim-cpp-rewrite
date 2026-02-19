@@ -892,6 +892,14 @@ TEST(Cli, InitSceneGeneratesTemplateFile) {
   const std::string contents((std::istreambuf_iterator<char>(scene_file)),
                              std::istreambuf_iterator<char>());
   EXPECT_NE(contents.find("MANIM_REGISTER_SCENE"), std::string::npos);
+  EXPECT_NE(contents.find("#include \"manim_cpp/mobject/geometry.hpp\""),
+            std::string::npos);
+  EXPECT_NE(contents.find("#include \"manim_cpp/animation/basic_animations.hpp\""),
+            std::string::npos);
+  EXPECT_NE(contents.find("std::make_shared<manim_cpp::mobject::Circle>"),
+            std::string::npos);
+  EXPECT_NE(contents.find("manim_cpp::animation::ShiftAnimation"), std::string::npos);
+  EXPECT_EQ(contents.find("TODO: author scene animations"), std::string::npos);
 
   std::filesystem::remove_all(temp_root);
 }
@@ -916,6 +924,14 @@ TEST(Cli, InitProjectGeneratesProjectScaffold) {
   const std::string contents((std::istreambuf_iterator<char>(scene_file)),
                              std::istreambuf_iterator<char>());
   EXPECT_NE(contents.find("MANIM_REGISTER_SCENE"), std::string::npos);
+  EXPECT_NE(contents.find("#include \"manim_cpp/mobject/geometry.hpp\""),
+            std::string::npos);
+  EXPECT_NE(contents.find("#include \"manim_cpp/animation/basic_animations.hpp\""),
+            std::string::npos);
+  EXPECT_NE(contents.find("std::make_shared<manim_cpp::mobject::Circle>"),
+            std::string::npos);
+  EXPECT_NE(contents.find("manim_cpp::animation::ShiftAnimation"), std::string::npos);
+  EXPECT_EQ(contents.find("TODO: author scene animations"), std::string::npos);
 
   std::filesystem::remove_all(temp_root);
 }

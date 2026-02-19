@@ -289,6 +289,9 @@ bool write_scene_template(const std::filesystem::path& output_path,
     return false;
   }
 
+  output << "#include <memory>\n";
+  output << "#include \"manim_cpp/animation/basic_animations.hpp\"\n";
+  output << "#include \"manim_cpp/mobject/geometry.hpp\"\n";
   output << "#include \"manim_cpp/scene/registry.hpp\"\n";
   output << "#include \"manim_cpp/scene/scene.hpp\"\n\n";
   output << "using namespace manim_cpp::scene;\n\n";
@@ -297,7 +300,13 @@ bool write_scene_template(const std::filesystem::path& output_path,
   output << "  std::string scene_name() const override { return \"" << scene_identifier
          << "\"; }\n";
   output << "  void construct() override {\n";
-  output << "    // TODO: author scene animations.\n";
+  output << "    auto circle = std::make_shared<manim_cpp::mobject::Circle>(1.0);\n";
+  output << "    add(circle);\n";
+  output << "    circle->set_opacity(0.7);\n";
+  output << "    manim_cpp::animation::ShiftAnimation shift(\n";
+  output << "        circle, manim_cpp::math::Vec3{1.5, 0.0, 0.0});\n";
+  output << "    play(shift);\n";
+  output << "    wait(0.5);\n";
   output << "  }\n";
   output << "};\n\n";
   output << "MANIM_REGISTER_SCENE(" << scene_identifier << ");\n";

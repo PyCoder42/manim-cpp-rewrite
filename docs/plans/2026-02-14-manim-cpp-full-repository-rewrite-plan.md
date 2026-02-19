@@ -119,6 +119,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone G.20: `plugins path` and `checkhealth` now honor `MANIM_CPP_PLUGIN_DIR` override for environment-driven plugin directory resolution
 - [x] Milestone G.21: `plugins list/load` now default to resolved plugin directory (including `MANIM_CPP_PLUGIN_DIR` override) when `<directory>` is omitted
 - [x] Milestone G.22: Added `manim.cfg` section/key compatibility enforcement for parity-critical sections (`[CLI]`, `[custom_folders]`, `[logger]`, `[ffmpeg]`, `[jupyter]`) via `ManimCfgContractCheck`
+- [x] Milestone G.23: `init scene` / `init project` templates now emit runnable C++ animation scaffolds (geometry + `ShiftAnimation` + `wait`) instead of TODO-only construct bodies
 - [x] Milestone H: Plugin system parity
 - [x] Milestone H.1: Plugin discovery by shared-library extension + host ABI version gate
 - [x] Milestone H.2: Batch plugin loading API with deterministic failure aggregation
@@ -177,6 +178,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.30: Expanded original-feature matrix to include CLI alias binary entrypoints and release/repo/docs policy gate parity buckets
 - [x] Milestone J.31: Expanded original-feature matrix to include explicit config-contract and toolchain-floor contract parity buckets
 - [x] Milestone J.32: Added migrate regression coverage for variable-based add/remove translation, per-scene call scoping, and simple play-pattern translation (`FadeIn/FadeOut/Create/Write`)
+- [x] Milestone J.33: Tightened CLI init-template integration checks to enforce runnable scaffold content (geometry includes, animation primitives, and no TODO-only construct body)
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers
