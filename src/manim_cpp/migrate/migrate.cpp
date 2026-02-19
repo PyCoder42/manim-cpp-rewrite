@@ -494,21 +494,34 @@ std::optional<std::string> translate_play_call(const std::string& argument_text,
   std::vector<std::string> lines;
 
   if (animation_name == "Create" || animation_name == "Write") {
-    if (run_time_literal.has_value()) {
-      return std::nullopt;
-    }
+    std::string add_line;
     if (is_identifier(target_expression) &&
         context->known_mobject_variables.find(target_expression) !=
             context->known_mobject_variables.end()) {
-      lines.push_back("add(" + target_expression + ");");
+      add_line = "add(" + target_expression + ");";
+    } else {
+      const auto converted_target =
+          translate_geometry_constructor_expression(target_expression);
+      if (!converted_target.has_value()) {
+        return std::nullopt;
+      }
+      add_line = "add(" + converted_target.value() + ");";
+    }
+    lines.push_back(add_line);
+    if (run_time_literal.has_value()) {
+      lines.push_back("wait(" + run_time_literal.value() + ");");
+    }
+    if (lines.size() == 1) {
       return lines.front();
     }
-    const auto converted_target =
-        translate_geometry_constructor_expression(target_expression);
-    if (!converted_target.has_value()) {
-      return std::nullopt;
+    std::ostringstream translated;
+    for (std::size_t i = 0; i < lines.size(); ++i) {
+      if (i > 0) {
+        translated << "\n    ";
+      }
+      translated << lines[i];
     }
-    return "add(" + converted_target.value() + ");";
+    return translated.str();
   }
 
   const auto target_symbol = resolve_mobject_expression_for_animation(
