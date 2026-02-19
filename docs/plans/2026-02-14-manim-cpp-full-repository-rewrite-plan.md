@@ -149,6 +149,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone I.15: Migration now scopes construct-call translation per detected scene class (prevents cross-class call leakage in multi-scene inputs)
 - [x] Milestone I.16: Migration now translates simple `self.play(...)` patterns for `FadeIn`/`FadeOut`/`Create`/`Write` into runnable C++ scaffolds using existing animation/mobject APIs
 - [x] Milestone I.17: Migration now translates literal `run_time=` keyword for supported fade play-patterns by wiring `set_run_time_seconds(...)` into generated C++ animation scaffolds
+- [x] Milestone I.18: Migration now scopes generated scene-type includes to detected base classes only (drops unused specialized scene headers in scaffold output)
 - [x] Milestone J: Test suite full port
 - [x] Milestone J.1: Added C++ unit/integration coverage for core math/scene/cli/plugin/migrate scaffolds
 - [x] Milestone J.2: Added shared-library plugin integration fixture coverage in `ctest`
@@ -187,6 +188,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.35: Added migration regression coverage for `self.play(..., run_time=<numeric>)` translation on supported fade patterns
 - [x] Milestone J.36: Expanded CLI init-project integration coverage to enforce generated `CMakeLists.txt` scaffold content (`cmake_minimum_required`, C++23, executable source wiring)
 - [x] Milestone J.37: Expanded CLI checkhealth integration coverage to enforce compiler and `.npz` writer metadata emission in JSON/text modes
+- [x] Milestone J.38: Added migration regression coverage for scene-type include minimization (`EmitsOnlyRequiredSceneTypeIncludes`, `EmitsSpecializedSceneIncludesWhenRequired`)
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers

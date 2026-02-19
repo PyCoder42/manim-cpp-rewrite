@@ -85,6 +85,52 @@ TEST(MigrateTool, PreservesZoomedSceneBaseClass) {
   EXPECT_NE(report.find("scenes_detected=1"), std::string::npos);
 }
 
+TEST(MigrateTool, EmitsOnlyRequiredSceneTypeIncludes) {
+  const std::string source =
+      "from manim import *\n"
+      "class Demo(Scene):\n"
+      "    def construct(self):\n"
+      "        self.wait(1)\n";
+
+  std::string report;
+  const std::string converted =
+      manim_cpp::migrate::translate_python_scene_to_cpp(source, &report);
+
+  EXPECT_NE(converted.find("#include \"manim_cpp/scene/scene.hpp\""), std::string::npos);
+  EXPECT_NE(converted.find("#include \"manim_cpp/scene/registry.hpp\""), std::string::npos);
+  EXPECT_EQ(converted.find("#include \"manim_cpp/scene/moving_camera_scene.hpp\""),
+            std::string::npos);
+  EXPECT_EQ(converted.find("#include \"manim_cpp/scene/three_d_scene.hpp\""),
+            std::string::npos);
+  EXPECT_EQ(converted.find("#include \"manim_cpp/scene/zoomed_scene.hpp\""),
+            std::string::npos);
+  EXPECT_NE(report.find("scenes_detected=1"), std::string::npos);
+}
+
+TEST(MigrateTool, EmitsSpecializedSceneIncludesWhenRequired) {
+  const std::string source =
+      "from manim import *\n"
+      "class OrbitDemo(ThreeDScene):\n"
+      "    def construct(self):\n"
+      "        self.wait(1)\n"
+      "\n"
+      "class ZoomDemo(ZoomedScene):\n"
+      "    def construct(self):\n"
+      "        self.wait(1)\n";
+
+  std::string report;
+  const std::string converted =
+      manim_cpp::migrate::translate_python_scene_to_cpp(source, &report);
+
+  EXPECT_NE(converted.find("#include \"manim_cpp/scene/three_d_scene.hpp\""),
+            std::string::npos);
+  EXPECT_NE(converted.find("#include \"manim_cpp/scene/zoomed_scene.hpp\""),
+            std::string::npos);
+  EXPECT_EQ(converted.find("#include \"manim_cpp/scene/moving_camera_scene.hpp\""),
+            std::string::npos);
+  EXPECT_NE(report.find("scenes_detected=2"), std::string::npos);
+}
+
 TEST(MigrateTool, TranslatesWaitWithoutArgumentsAndClearCall) {
   const std::string source =
       "from manim import *\n"

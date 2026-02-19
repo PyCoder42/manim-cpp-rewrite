@@ -702,6 +702,18 @@ std::string translate_python_scene_to_cpp(const std::string& source_text,
                                           std::string* report) {
   const auto scene_classes = detect_scene_classes(source_text);
   const auto hazards = detect_dynamic_hazards(source_text);
+  const bool uses_moving_camera_scene =
+      std::any_of(scene_classes.begin(), scene_classes.end(), [](const SceneClass& scene) {
+        return scene.base_class == "MovingCameraScene";
+      });
+  const bool uses_three_d_scene =
+      std::any_of(scene_classes.begin(), scene_classes.end(), [](const SceneClass& scene) {
+        return scene.base_class == "ThreeDScene";
+      });
+  const bool uses_zoomed_scene =
+      std::any_of(scene_classes.begin(), scene_classes.end(), [](const SceneClass& scene) {
+        return scene.base_class == "ZoomedScene";
+      });
   std::size_t calls_detected = 0;
   std::size_t translated_calls = 0;
 
@@ -710,9 +722,15 @@ std::string translate_python_scene_to_cpp(const std::string& source_text,
   converted << "#include \"manim_cpp/animation/basic_animations.hpp\"\n";
   converted << "#include \"manim_cpp/mobject/geometry.hpp\"\n";
   converted << "#include \"manim_cpp/scene/scene.hpp\"\n";
-  converted << "#include \"manim_cpp/scene/moving_camera_scene.hpp\"\n";
-  converted << "#include \"manim_cpp/scene/three_d_scene.hpp\"\n";
-  converted << "#include \"manim_cpp/scene/zoomed_scene.hpp\"\n";
+  if (uses_moving_camera_scene) {
+    converted << "#include \"manim_cpp/scene/moving_camera_scene.hpp\"\n";
+  }
+  if (uses_three_d_scene) {
+    converted << "#include \"manim_cpp/scene/three_d_scene.hpp\"\n";
+  }
+  if (uses_zoomed_scene) {
+    converted << "#include \"manim_cpp/scene/zoomed_scene.hpp\"\n";
+  }
   converted << "#include \"manim_cpp/scene/registry.hpp\"\n\n";
   converted << "using namespace manim_cpp::scene;\n\n";
 
