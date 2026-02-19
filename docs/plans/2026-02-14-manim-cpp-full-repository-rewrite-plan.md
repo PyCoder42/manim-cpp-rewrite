@@ -151,6 +151,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone I.17: Migration now translates literal `run_time=` keyword for supported fade play-patterns by wiring `set_run_time_seconds(...)` into generated C++ animation scaffolds
 - [x] Milestone I.18: Migration now scopes generated scene-type includes to detected base classes only (drops unused specialized scene headers in scaffold output)
 - [x] Milestone I.19: Migration now translates literal `run_time=` keyword for `Create`/`Write` play-patterns into deterministic scaffold timing (`add(...)` + `wait(...)`)
+- [x] Milestone I.20: Migration now translates multi-animation `self.play(...)` calls with supported animation expressions into deterministic sequential C++ scaffold steps
 - [x] Milestone J: Test suite full port
 - [x] Milestone J.1: Added C++ unit/integration coverage for core math/scene/cli/plugin/migrate scaffolds
 - [x] Milestone J.2: Added shared-library plugin integration fixture coverage in `ctest`
@@ -191,6 +192,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.37: Expanded CLI checkhealth integration coverage to enforce compiler and `.npz` writer metadata emission in JSON/text modes
 - [x] Milestone J.38: Added migration regression coverage for scene-type include minimization (`EmitsOnlyRequiredSceneTypeIncludes`, `EmitsSpecializedSceneIncludesWhenRequired`)
 - [x] Milestone J.39: Added migration regression coverage for `Create`/`Write` play-pattern `run_time` keyword translation (`TranslatesCreateWriteRunTimeKeywordLiteral`)
+- [x] Milestone J.40: Added migration regression coverage for multi-animation `self.play(...)` translation (`TranslatesMultiAnimationPlayCallWithoutRunTime`)
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers

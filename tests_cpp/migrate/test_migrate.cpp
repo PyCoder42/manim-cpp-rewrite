@@ -372,6 +372,28 @@ TEST(MigrateTool, TranslatesCreateWriteRunTimeKeywordLiteral) {
   EXPECT_NE(report.find("translated_calls=2"), std::string::npos);
 }
 
+TEST(MigrateTool, TranslatesMultiAnimationPlayCallWithoutRunTime) {
+  const std::string source =
+      "from manim import *\n"
+      "class Demo(Scene):\n"
+      "    def construct(self):\n"
+      "        circle = Circle()\n"
+      "        dot = Dot(0.2)\n"
+      "        self.play(FadeIn(circle), FadeOut(dot))\n";
+
+  std::string report;
+  const std::string converted =
+      manim_cpp::migrate::translate_python_scene_to_cpp(source, &report);
+
+  EXPECT_NE(converted.find("add(circle);"), std::string::npos);
+  EXPECT_NE(converted.find("remove(dot);"), std::string::npos);
+  EXPECT_NE(converted.find("manim_cpp::animation::FadeToOpacityAnimation"),
+            std::string::npos);
+  EXPECT_EQ(converted.find("TODO(migrate): original call -> self.play(FadeIn(circle), FadeOut(dot))"),
+            std::string::npos);
+  EXPECT_NE(report.find("translated_calls=1"), std::string::npos);
+}
+
 TEST(MigrateTool, LeavesAddTodoWhenConstructorArgumentsAreNotSupported) {
   const std::string source =
       "from manim import *\n"
