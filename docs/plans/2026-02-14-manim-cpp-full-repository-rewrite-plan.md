@@ -146,6 +146,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone I.14: Migration now hoists constructor assignments (e.g., `circle = Circle()`) into C++ declarations and translates `self.add(variable)` / `self.remove(variable)` calls
 - [x] Milestone I.15: Migration now scopes construct-call translation per detected scene class (prevents cross-class call leakage in multi-scene inputs)
 - [x] Milestone I.16: Migration now translates simple `self.play(...)` patterns for `FadeIn`/`FadeOut`/`Create`/`Write` into runnable C++ scaffolds using existing animation/mobject APIs
+- [x] Milestone I.17: Migration now translates literal `run_time=` keyword for supported fade play-patterns by wiring `set_run_time_seconds(...)` into generated C++ animation scaffolds
 - [x] Milestone J: Test suite full port
 - [x] Milestone J.1: Added C++ unit/integration coverage for core math/scene/cli/plugin/migrate scaffolds
 - [x] Milestone J.2: Added shared-library plugin integration fixture coverage in `ctest`
@@ -181,6 +182,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.32: Added migrate regression coverage for variable-based add/remove translation, per-scene call scoping, and simple play-pattern translation (`FadeIn/FadeOut/Create/Write`)
 - [x] Milestone J.33: Tightened CLI init-template integration checks to enforce runnable scaffold content (geometry includes, animation primitives, and no TODO-only construct body)
 - [x] Milestone J.34: Added `.npz` store-archive writer coverage (round-trip central-directory checks + duplicate/empty-name rejection) to enable C++ baseline artifact generation without Python
+- [x] Milestone J.35: Added migration regression coverage for `self.play(..., run_time=<numeric>)` translation on supported fade patterns
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers

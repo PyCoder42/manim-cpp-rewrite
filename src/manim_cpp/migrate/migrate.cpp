@@ -464,8 +464,21 @@ std::optional<std::string> translate_play_call(const std::string& argument_text,
                                                ConstructTranslationContext* context) {
   bool parsed_ok = false;
   const auto arguments = split_top_level_arguments(argument_text, &parsed_ok);
-  if (!parsed_ok || arguments.size() != 1) {
+  if (!parsed_ok || arguments.empty() || arguments.size() > 2) {
     return std::nullopt;
+  }
+
+  std::optional<std::string> run_time_literal;
+  if (arguments.size() == 2) {
+    static const std::regex kRunTimePattern(
+        R"(^run_time\s*=\s*([+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+))$)",
+        std::regex_constants::ECMAScript);
+    std::smatch run_time_match;
+    const std::string run_time_token = trim(arguments[1]);
+    if (!std::regex_match(run_time_token, run_time_match, kRunTimePattern)) {
+      return std::nullopt;
+    }
+    run_time_literal = run_time_match[1].str();
   }
 
   static const std::regex kAnimationPattern(
@@ -481,6 +494,9 @@ std::optional<std::string> translate_play_call(const std::string& argument_text,
   std::vector<std::string> lines;
 
   if (animation_name == "Create" || animation_name == "Write") {
+    if (run_time_literal.has_value()) {
+      return std::nullopt;
+    }
     if (is_identifier(target_expression) &&
         context->known_mobject_variables.find(target_expression) !=
             context->known_mobject_variables.end()) {
@@ -507,11 +523,19 @@ std::optional<std::string> translate_play_call(const std::string& argument_text,
     const std::string fade_symbol = next_generated_symbol("fade_in", context);
     lines.push_back("manim_cpp::animation::FadeToOpacityAnimation " + fade_symbol +
                     "(" + target_symbol.value() + ", 1.0);");
+    if (run_time_literal.has_value()) {
+      lines.push_back(fade_symbol + ".set_run_time_seconds(" + run_time_literal.value() +
+                      ");");
+    }
     lines.push_back("play(" + fade_symbol + ");");
   } else if (animation_name == "FadeOut") {
     const std::string fade_symbol = next_generated_symbol("fade_out", context);
     lines.push_back("manim_cpp::animation::FadeToOpacityAnimation " + fade_symbol +
                     "(" + target_symbol.value() + ", 0.0);");
+    if (run_time_literal.has_value()) {
+      lines.push_back(fade_symbol + ".set_run_time_seconds(" + run_time_literal.value() +
+                      ");");
+    }
     lines.push_back("play(" + fade_symbol + ");");
     lines.push_back("remove(" + target_symbol.value() + ");");
   } else {

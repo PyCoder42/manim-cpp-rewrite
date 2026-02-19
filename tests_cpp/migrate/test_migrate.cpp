@@ -279,6 +279,26 @@ TEST(MigrateTool, TranslatesSimplePlayFadeAndCreateWritePatterns) {
   EXPECT_NE(report.find("translated_calls=4"), std::string::npos);
 }
 
+TEST(MigrateTool, TranslatesFadePlayRunTimeKeywordLiteral) {
+  const std::string source =
+      "from manim import *\n"
+      "class Demo(Scene):\n"
+      "    def construct(self):\n"
+      "        circle = Circle()\n"
+      "        self.play(FadeIn(circle), run_time=2.5)\n";
+
+  std::string report;
+  const std::string converted =
+      manim_cpp::migrate::translate_python_scene_to_cpp(source, &report);
+
+  EXPECT_NE(converted.find("manim_cpp::animation::FadeToOpacityAnimation"), std::string::npos);
+  EXPECT_NE(converted.find(".set_run_time_seconds(2.5);"), std::string::npos);
+  EXPECT_EQ(
+      converted.find("TODO(migrate): original call -> self.play(FadeIn(circle), run_time=2.5)"),
+      std::string::npos);
+  EXPECT_NE(report.find("translated_calls=1"), std::string::npos);
+}
+
 TEST(MigrateTool, LeavesAddTodoWhenConstructorArgumentsAreNotSupported) {
   const std::string source =
       "from manim import *\n"
