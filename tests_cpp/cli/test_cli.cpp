@@ -917,8 +917,10 @@ TEST(Cli, InitProjectGeneratesProjectScaffold) {
 
   const auto cfg_path = project_root / "manim.cfg";
   const auto scene_path = project_root / "scenes" / "main_scene.cpp";
+  const auto cmake_path = project_root / "CMakeLists.txt";
   EXPECT_TRUE(std::filesystem::exists(cfg_path));
   EXPECT_TRUE(std::filesystem::exists(scene_path));
+  EXPECT_TRUE(std::filesystem::exists(cmake_path));
 
   std::ifstream scene_file(scene_path);
   const std::string contents((std::istreambuf_iterator<char>(scene_file)),
@@ -932,6 +934,14 @@ TEST(Cli, InitProjectGeneratesProjectScaffold) {
             std::string::npos);
   EXPECT_NE(contents.find("manim_cpp::animation::ShiftAnimation"), std::string::npos);
   EXPECT_EQ(contents.find("TODO: author scene animations"), std::string::npos);
+
+  std::ifstream cmake_file(cmake_path);
+  const std::string cmake_contents((std::istreambuf_iterator<char>(cmake_file)),
+                                   std::istreambuf_iterator<char>());
+  EXPECT_NE(cmake_contents.find("cmake_minimum_required"), std::string::npos);
+  EXPECT_NE(cmake_contents.find("add_executable"), std::string::npos);
+  EXPECT_NE(cmake_contents.find("scenes/main_scene.cpp"), std::string::npos);
+  EXPECT_NE(cmake_contents.find("CMAKE_CXX_STANDARD 23"), std::string::npos);
 
   std::filesystem::remove_all(temp_root);
 }

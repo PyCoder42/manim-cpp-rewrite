@@ -337,6 +337,31 @@ bool write_default_cfg(const std::filesystem::path& output_path) {
   return true;
 }
 
+bool write_project_cmake(const std::filesystem::path& project_root) {
+  const auto cmake_path = project_root / "CMakeLists.txt";
+  if (std::filesystem::exists(cmake_path)) {
+    std::cerr << "Refusing to overwrite existing file: " << cmake_path << "\n";
+    return false;
+  }
+
+  std::ofstream output(cmake_path);
+  if (!output.is_open()) {
+    std::cerr << "Unable to write project CMake file: " << cmake_path << "\n";
+    return false;
+  }
+
+  output << "cmake_minimum_required(VERSION 3.26)\n\n";
+  output << "project(manim_cpp_project LANGUAGES CXX)\n\n";
+  output << "set(CMAKE_CXX_STANDARD 23)\n";
+  output << "set(CMAKE_CXX_STANDARD_REQUIRED ON)\n";
+  output << "set(CMAKE_CXX_EXTENSIONS OFF)\n\n";
+  output << "add_executable(manim_cpp_project_scenes\n";
+  output << "  scenes/main_scene.cpp\n";
+  output << ")\n\n";
+  output << "target_link_libraries(manim_cpp_project_scenes PRIVATE manim_cpp_core)\n";
+  return true;
+}
+
 int handle_init_scene(const int argc, const char* const argv[]) {
   if (argc < 4) {
     std::cerr << "Usage: manim-cpp init scene <output.cpp>\n";
@@ -372,6 +397,10 @@ int handle_init_project(const int argc, const char* const argv[]) {
     return 2;
   }
   if (!write_default_cfg(cfg_path)) {
+    return 2;
+  }
+
+  if (!write_project_cmake(project_root)) {
     return 2;
   }
 

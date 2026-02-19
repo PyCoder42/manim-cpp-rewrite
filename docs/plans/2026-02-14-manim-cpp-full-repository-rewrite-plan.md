@@ -121,6 +121,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone G.21: `plugins list/load` now default to resolved plugin directory (including `MANIM_CPP_PLUGIN_DIR` override) when `<directory>` is omitted
 - [x] Milestone G.22: Added `manim.cfg` section/key compatibility enforcement for parity-critical sections (`[CLI]`, `[custom_folders]`, `[logger]`, `[ffmpeg]`, `[jupyter]`) via `ManimCfgContractCheck`
 - [x] Milestone G.23: `init scene` / `init project` templates now emit runnable C++ animation scaffolds (geometry + `ShiftAnimation` + `wait`) instead of TODO-only construct bodies
+- [x] Milestone G.24: `init project` now emits a starter `CMakeLists.txt` with C++23 settings and executable wiring for generated scene sources
 - [x] Milestone H: Plugin system parity
 - [x] Milestone H.1: Plugin discovery by shared-library extension + host ABI version gate
 - [x] Milestone H.2: Batch plugin loading API with deterministic failure aggregation
@@ -183,6 +184,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.33: Tightened CLI init-template integration checks to enforce runnable scaffold content (geometry includes, animation primitives, and no TODO-only construct body)
 - [x] Milestone J.34: Added `.npz` store-archive writer coverage (round-trip central-directory checks + duplicate/empty-name rejection) to enable C++ baseline artifact generation without Python
 - [x] Milestone J.35: Added migration regression coverage for `self.play(..., run_time=<numeric>)` translation on supported fade patterns
+- [x] Milestone J.36: Expanded CLI init-project integration coverage to enforce generated `CMakeLists.txt` scaffold content (`cmake_minimum_required`, C++23, executable source wiring)
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers
