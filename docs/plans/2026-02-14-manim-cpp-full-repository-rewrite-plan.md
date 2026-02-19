@@ -15,6 +15,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] `manim.cfg` compatibility baseline copied to `config/manim.cfg.default`
 - [x] Subtitle/media writer API scaffolding added (`SceneFileWriter`, sections, subcaption API placeholder)
 - [x] Baseline artifact contract acknowledged in tests/docs (npz retained for now)
+- [x] Baseline artifact contract now includes in-repo `.npz` read + write (store-mode) support for regression harness generation
 
 ### Repository Restructure (Final State)
 - [x] Runtime source in `src/manim_cpp/...`
@@ -179,6 +180,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.31: Expanded original-feature matrix to include explicit config-contract and toolchain-floor contract parity buckets
 - [x] Milestone J.32: Added migrate regression coverage for variable-based add/remove translation, per-scene call scoping, and simple play-pattern translation (`FadeIn/FadeOut/Create/Write`)
 - [x] Milestone J.33: Tightened CLI init-template integration checks to enforce runnable scaffold content (geometry includes, animation primitives, and no TODO-only construct body)
+- [x] Milestone J.34: Added `.npz` store-archive writer coverage (round-trip central-directory checks + duplicate/empty-name rejection) to enable C++ baseline artifact generation without Python
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers

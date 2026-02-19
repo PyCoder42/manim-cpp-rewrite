@@ -68,3 +68,74 @@ TEST(NpzArchive, ParsesAllGraphicalControlDataArchives) {
 
   EXPECT_GT(archive_count, static_cast<std::size_t>(0));
 }
+
+TEST(NpzArchive, WritesStoreArchiveRoundTripCentralDirectory) {
+  const auto temp_root = std::filesystem::temp_directory_path() / "manim_cpp_npz_writer";
+  std::filesystem::remove_all(temp_root);
+  std::filesystem::create_directories(temp_root);
+
+  const auto output_path = temp_root / "sample.npz";
+  const std::vector<manim_cpp::testing::NpzWriteEntry> write_entries = {
+      {
+          .name = "alpha.npy",
+          .bytes = {0x01, 0x02, 0x03, 0x04},
+      },
+      {
+          .name = "beta.npy",
+          .bytes = {0x0A, 0x0B},
+      },
+  };
+
+  ASSERT_TRUE(manim_cpp::testing::write_npz_store_archive(output_path, write_entries));
+  ASSERT_TRUE(std::filesystem::exists(output_path));
+
+  const auto read_entries = manim_cpp::testing::read_npz_central_directory(output_path);
+  ASSERT_TRUE(read_entries.has_value());
+  ASSERT_EQ(read_entries->size(), static_cast<std::size_t>(2));
+  EXPECT_EQ(read_entries->at(0).name, std::string("alpha.npy"));
+  EXPECT_EQ(read_entries->at(0).compression_method, static_cast<std::uint16_t>(0));
+  EXPECT_EQ(read_entries->at(0).compressed_size, static_cast<std::uint32_t>(4));
+  EXPECT_EQ(read_entries->at(0).uncompressed_size, static_cast<std::uint32_t>(4));
+  EXPECT_EQ(read_entries->at(1).name, std::string("beta.npy"));
+  EXPECT_EQ(read_entries->at(1).compression_method, static_cast<std::uint16_t>(0));
+  EXPECT_EQ(read_entries->at(1).compressed_size, static_cast<std::uint32_t>(2));
+  EXPECT_EQ(read_entries->at(1).uncompressed_size, static_cast<std::uint32_t>(2));
+  EXPECT_TRUE(manim_cpp::testing::has_npy_entry(*read_entries));
+
+  std::filesystem::remove_all(temp_root);
+}
+
+TEST(NpzArchive, RejectsDuplicateOrEmptyEntryNamesWhenWriting) {
+  const auto temp_root =
+      std::filesystem::temp_directory_path() / "manim_cpp_npz_writer_invalid";
+  std::filesystem::remove_all(temp_root);
+  std::filesystem::create_directories(temp_root);
+
+  const auto duplicate_path = temp_root / "duplicate.npz";
+  const std::vector<manim_cpp::testing::NpzWriteEntry> duplicate_entries = {
+      {
+          .name = "frame.npy",
+          .bytes = {0x01},
+      },
+      {
+          .name = "frame.npy",
+          .bytes = {0x02},
+      },
+  };
+  EXPECT_FALSE(
+      manim_cpp::testing::write_npz_store_archive(duplicate_path, duplicate_entries));
+  EXPECT_FALSE(std::filesystem::exists(duplicate_path));
+
+  const auto empty_name_path = temp_root / "empty_name.npz";
+  const std::vector<manim_cpp::testing::NpzWriteEntry> empty_name_entries = {
+      {
+          .name = "",
+          .bytes = {0x01},
+      },
+  };
+  EXPECT_FALSE(
+      manim_cpp::testing::write_npz_store_archive(empty_name_path, empty_name_entries));
+  EXPECT_FALSE(std::filesystem::exists(empty_name_path));
+
+  std::filesystem::remove_all(temp_root);
+}
