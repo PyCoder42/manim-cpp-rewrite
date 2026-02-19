@@ -141,6 +141,9 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone I.11: Migration now translates constructor-safe `self.add(...)` and `self.remove(...)` calls into deterministic C++ `std::make_shared` geometry mobject expressions
 - [x] Milestone I.12: Migration argument splitting now handles nested delimiters/quotes to safely parse multi-argument construct calls
 - [x] Milestone I.13: Migration now rejects Python keyword-argument constructor calls during `add/remove` translation and falls back to explicit TODO markers (prevents invalid C++ output)
+- [x] Milestone I.14: Migration now hoists constructor assignments (e.g., `circle = Circle()`) into C++ declarations and translates `self.add(variable)` / `self.remove(variable)` calls
+- [x] Milestone I.15: Migration now scopes construct-call translation per detected scene class (prevents cross-class call leakage in multi-scene inputs)
+- [x] Milestone I.16: Migration now translates simple `self.play(...)` patterns for `FadeIn`/`FadeOut`/`Create`/`Write` into runnable C++ scaffolds using existing animation/mobject APIs
 - [x] Milestone J: Test suite full port
 - [x] Milestone J.1: Added C++ unit/integration coverage for core math/scene/cli/plugin/migrate scaffolds
 - [x] Milestone J.2: Added shared-library plugin integration fixture coverage in `ctest`
@@ -173,6 +176,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.29: Raised minimum enforced original-feature matrix size from 30 to 60 rows after parity-scope expansion
 - [x] Milestone J.30: Expanded original-feature matrix to include CLI alias binary entrypoints and release/repo/docs policy gate parity buckets
 - [x] Milestone J.31: Expanded original-feature matrix to include explicit config-contract and toolchain-floor contract parity buckets
+- [x] Milestone J.32: Added migrate regression coverage for variable-based add/remove translation, per-scene call scoping, and simple play-pattern translation (`FadeIn/FadeOut/Create/Write`)
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers

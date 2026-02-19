@@ -9,6 +9,7 @@
 #include <regex>
 #include <sstream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace manim_cpp::migrate {
@@ -17,6 +18,8 @@ namespace {
 struct SceneClass {
   std::string name;
   std::string base_class;
+  std::size_t start_offset = 0;
+  std::size_t end_offset = 0;
 };
 
 struct MigrateArgs {
@@ -83,6 +86,7 @@ std::vector<SceneClass> detect_scene_classes(const std::string& source_text) {
        it != std::sregex_iterator(); ++it) {
     const std::string class_name = (*it)[1].str();
     const std::string bases = (*it)[2].str();
+    const auto class_start = static_cast<std::size_t>(it->position());
 
     std::stringstream base_stream(bases);
     std::string base;
@@ -92,9 +96,18 @@ std::vector<SceneClass> detect_scene_classes(const std::string& source_text) {
           kSupportedBases.end()) {
         continue;
       }
-      classes.push_back(SceneClass{.name = class_name, .base_class = trimmed_base});
+      classes.push_back(SceneClass{
+          .name = class_name,
+          .base_class = trimmed_base,
+          .start_offset = class_start,
+          .end_offset = source_text.size(),
+      });
       break;
     }
+  }
+
+  for (std::size_t i = 0; i + 1 < classes.size(); ++i) {
+    classes[i].end_offset = classes[i + 1].start_offset;
   }
   return classes;
 }
@@ -125,6 +138,16 @@ std::vector<std::string> detect_construct_calls(const std::string& source_text) 
   return calls;
 }
 
+std::string scene_source_block(const std::string& source_text,
+                               const SceneClass& scene_class) {
+  if (scene_class.start_offset >= source_text.size() ||
+      scene_class.end_offset <= scene_class.start_offset) {
+    return {};
+  }
+  const auto length = scene_class.end_offset - scene_class.start_offset;
+  return source_text.substr(scene_class.start_offset, length);
+}
+
 bool is_numeric_literal(const std::string& text) {
   static const std::regex kPattern(
       R"(^[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$)",
@@ -134,6 +157,12 @@ bool is_numeric_literal(const std::string& text) {
 
 bool is_integer_literal(const std::string& text) {
   static const std::regex kPattern(R"(^[+-]?[0-9]+$)",
+                                   std::regex_constants::ECMAScript);
+  return std::regex_match(text, kPattern);
+}
+
+bool is_identifier(const std::string& text) {
+  static const std::regex kPattern(R"(^[A-Za-z_][A-Za-z0-9_]*$)",
                                    std::regex_constants::ECMAScript);
   return std::regex_match(text, kPattern);
 }
@@ -342,6 +371,12 @@ bool contains_top_level_assignment(const std::string& text) {
   return false;
 }
 
+struct ConstructTranslationContext {
+  std::vector<std::string> declaration_lines;
+  std::unordered_map<std::string, std::string> known_mobject_variables;
+  std::size_t generated_symbol_index = 0;
+};
+
 std::optional<std::string> translate_geometry_constructor_expression(
     const std::string& expression) {
   static const std::regex kCtorPattern(
@@ -368,8 +403,34 @@ std::optional<std::string> translate_geometry_constructor_expression(
          ")";
 }
 
+std::string next_generated_symbol(const std::string& prefix,
+                                  ConstructTranslationContext* context) {
+  context->generated_symbol_index += 1;
+  return "migrate_" + prefix + "_" + std::to_string(context->generated_symbol_index);
+}
+
+std::optional<std::string> resolve_mobject_expression_for_animation(
+    const std::string& expression, ConstructTranslationContext* context,
+    std::vector<std::string>* preamble_lines) {
+  if (is_identifier(expression) &&
+      context->known_mobject_variables.find(expression) !=
+          context->known_mobject_variables.end()) {
+    return expression;
+  }
+
+  const auto converted = translate_geometry_constructor_expression(expression);
+  if (!converted.has_value()) {
+    return std::nullopt;
+  }
+
+  const std::string symbol = next_generated_symbol("obj", context);
+  preamble_lines->push_back("auto " + symbol + " = " + converted.value() + ";");
+  return symbol;
+}
+
 std::optional<std::string> translate_add_or_remove_call(const std::string& method,
-                                                        const std::string& argument_text) {
+                                                        const std::string& argument_text,
+                                                        const ConstructTranslationContext& context) {
   bool parsed_ok = false;
   const auto arguments = split_top_level_arguments(argument_text, &parsed_ok);
   if (!parsed_ok || arguments.empty()) {
@@ -378,20 +439,97 @@ std::optional<std::string> translate_add_or_remove_call(const std::string& metho
 
   std::ostringstream translated;
   for (std::size_t i = 0; i < arguments.size(); ++i) {
-    const auto converted =
-        translate_geometry_constructor_expression(arguments[i]);
-    if (!converted.has_value()) {
-      return std::nullopt;
+    const std::string argument = trim(arguments[i]);
+    std::string translated_argument;
+    if (is_identifier(argument) &&
+        context.known_mobject_variables.find(argument) !=
+            context.known_mobject_variables.end()) {
+      translated_argument = argument;
+    } else {
+      const auto converted = translate_geometry_constructor_expression(argument);
+      if (!converted.has_value()) {
+        return std::nullopt;
+      }
+      translated_argument = converted.value();
     }
     if (i > 0) {
       translated << "\n    ";
     }
-    translated << method << "(" << converted.value() << ");";
+    translated << method << "(" << translated_argument << ");";
   }
   return translated.str();
 }
 
-std::optional<std::string> translate_construct_call(const std::string& call) {
+std::optional<std::string> translate_play_call(const std::string& argument_text,
+                                               ConstructTranslationContext* context) {
+  bool parsed_ok = false;
+  const auto arguments = split_top_level_arguments(argument_text, &parsed_ok);
+  if (!parsed_ok || arguments.size() != 1) {
+    return std::nullopt;
+  }
+
+  static const std::regex kAnimationPattern(
+      R"(^\s*(FadeIn|FadeOut|Create|Write)\((.*)\)\s*$)",
+      std::regex_constants::ECMAScript);
+  std::smatch match;
+  if (!std::regex_match(arguments.front(), match, kAnimationPattern)) {
+    return std::nullopt;
+  }
+
+  const std::string animation_name = trim(match[1].str());
+  const std::string target_expression = trim(match[2].str());
+  std::vector<std::string> lines;
+
+  if (animation_name == "Create" || animation_name == "Write") {
+    if (is_identifier(target_expression) &&
+        context->known_mobject_variables.find(target_expression) !=
+            context->known_mobject_variables.end()) {
+      lines.push_back("add(" + target_expression + ");");
+      return lines.front();
+    }
+    const auto converted_target =
+        translate_geometry_constructor_expression(target_expression);
+    if (!converted_target.has_value()) {
+      return std::nullopt;
+    }
+    return "add(" + converted_target.value() + ");";
+  }
+
+  const auto target_symbol = resolve_mobject_expression_for_animation(
+      target_expression, context, &lines);
+  if (!target_symbol.has_value()) {
+    return std::nullopt;
+  }
+
+  if (animation_name == "FadeIn") {
+    lines.push_back(target_symbol.value() + "->set_opacity(0.0);");
+    lines.push_back("add(" + target_symbol.value() + ");");
+    const std::string fade_symbol = next_generated_symbol("fade_in", context);
+    lines.push_back("manim_cpp::animation::FadeToOpacityAnimation " + fade_symbol +
+                    "(" + target_symbol.value() + ", 1.0);");
+    lines.push_back("play(" + fade_symbol + ");");
+  } else if (animation_name == "FadeOut") {
+    const std::string fade_symbol = next_generated_symbol("fade_out", context);
+    lines.push_back("manim_cpp::animation::FadeToOpacityAnimation " + fade_symbol +
+                    "(" + target_symbol.value() + ", 0.0);");
+    lines.push_back("play(" + fade_symbol + ");");
+    lines.push_back("remove(" + target_symbol.value() + ");");
+  } else {
+    return std::nullopt;
+  }
+
+  std::ostringstream translated;
+  for (std::size_t i = 0; i < lines.size(); ++i) {
+    if (i > 0) {
+      translated << "\n    ";
+    }
+    translated << lines[i];
+  }
+  return translated.str();
+}
+
+std::optional<std::string> translate_construct_call(
+    const std::string& call, ConstructTranslationContext* context) {
   static const std::regex kWaitPattern(
       R"(^self\.wait\(([^)]*)\)$)",
       std::regex_constants::ECMAScript);
@@ -410,6 +548,9 @@ std::optional<std::string> translate_construct_call(const std::string& call) {
   static const std::regex kClearUpdatersPattern(
       R"(^self\.clear_updaters\(\)$)",
       std::regex_constants::ECMAScript);
+  static const std::regex kPlayPattern(
+      R"(^self\.play\((.*)\)$)",
+      std::regex_constants::ECMAScript);
 
   std::smatch match;
   if (std::regex_match(call, match, kWaitPattern)) {
@@ -426,11 +567,15 @@ std::optional<std::string> translate_construct_call(const std::string& call) {
   }
 
   if (std::regex_match(call, match, kAddPattern)) {
-    return translate_add_or_remove_call("add", trim(match[1].str()));
+    return translate_add_or_remove_call("add", trim(match[1].str()), *context);
   }
 
   if (std::regex_match(call, match, kRemovePattern)) {
-    return translate_add_or_remove_call("remove", trim(match[1].str()));
+    return translate_add_or_remove_call("remove", trim(match[1].str()), *context);
+  }
+
+  if (std::regex_match(call, match, kPlayPattern)) {
+    return translate_play_call(trim(match[1].str()), context);
   }
 
   if (std::regex_match(call, match, kSetRandomSeedPattern)) {
@@ -446,6 +591,38 @@ std::optional<std::string> translate_construct_call(const std::string& call) {
   }
 
   return std::nullopt;
+}
+
+ConstructTranslationContext detect_construct_context(const std::string& scene_block) {
+  ConstructTranslationContext context;
+  std::regex assignment_pattern(
+      R"(^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*([A-Za-z_][A-Za-z0-9_]*\s*\(.*\))\s*$)",
+      std::regex_constants::ECMAScript | std::regex_constants::multiline);
+
+  for (std::sregex_iterator it(scene_block.begin(), scene_block.end(),
+                               assignment_pattern);
+       it != std::sregex_iterator(); ++it) {
+    const std::string variable = trim((*it)[1].str());
+    const std::string expression = trim((*it)[2].str());
+    if (!is_identifier(variable)) {
+      continue;
+    }
+    if (context.known_mobject_variables.find(variable) !=
+        context.known_mobject_variables.end()) {
+      continue;
+    }
+    const auto translated =
+        translate_geometry_constructor_expression(expression);
+    if (!translated.has_value()) {
+      continue;
+    }
+
+    context.known_mobject_variables.emplace(variable, translated.value());
+    context.declaration_lines.push_back("auto " + variable + " = " +
+                                        translated.value() + ";");
+  }
+
+  return context;
 }
 
 bool read_text_file(const std::filesystem::path& input_path, std::string* output) {
@@ -501,11 +678,12 @@ std::string translate_python_scene_to_cpp(const std::string& source_text,
                                           std::string* report) {
   const auto scene_classes = detect_scene_classes(source_text);
   const auto hazards = detect_dynamic_hazards(source_text);
-  const auto calls = detect_construct_calls(source_text);
+  std::size_t calls_detected = 0;
   std::size_t translated_calls = 0;
 
   std::ostringstream converted;
   converted << "#include <memory>\n";
+  converted << "#include \"manim_cpp/animation/basic_animations.hpp\"\n";
   converted << "#include \"manim_cpp/mobject/geometry.hpp\"\n";
   converted << "#include \"manim_cpp/scene/scene.hpp\"\n";
   converted << "#include \"manim_cpp/scene/moving_camera_scene.hpp\"\n";
@@ -519,6 +697,11 @@ std::string translate_python_scene_to_cpp(const std::string& source_text,
   }
 
   for (const auto& scene_class : scene_classes) {
+    const auto class_source = scene_source_block(source_text, scene_class);
+    const auto class_calls = detect_construct_calls(class_source);
+    calls_detected += class_calls.size();
+    auto context = detect_construct_context(class_source);
+
     converted << "class " << scene_class.name << " : public "
               << scene_class.base_class << " {\n";
     converted << " public:\n";
@@ -527,8 +710,11 @@ std::string translate_python_scene_to_cpp(const std::string& source_text,
     converted << "  void construct() override {\n";
     converted
         << "    // TODO(migrate): port Python construct() body manually.\n";
-    for (const auto& call : calls) {
-      const auto translated = translate_construct_call(call);
+    for (const auto& declaration : context.declaration_lines) {
+      converted << "    " << declaration << "\n";
+    }
+    for (const auto& call : class_calls) {
+      const auto translated = translate_construct_call(call, &context);
       if (translated.has_value()) {
         converted << "    " << translated.value() << "\n";
         ++translated_calls;
@@ -556,7 +742,7 @@ std::string translate_python_scene_to_cpp(const std::string& source_text,
     std::ostringstream summary;
     summary << "scenes_detected=" << scene_classes.size()
             << " hazards_detected=" << hazards.size()
-            << " calls_detected=" << calls.size()
+            << " calls_detected=" << calls_detected
             << " translated_calls=" << translated_calls;
     *report = summary.str();
   }

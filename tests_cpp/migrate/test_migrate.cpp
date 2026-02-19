@@ -185,6 +185,100 @@ TEST(MigrateTool, TranslatesRemoveCallsWithKnownGeometryConstructors) {
   EXPECT_NE(report.find("translated_calls=1"), std::string::npos);
 }
 
+TEST(MigrateTool, TranslatesAddAndRemoveCallsUsingAssignedGeometryVariables) {
+  const std::string source =
+      "from manim import *\n"
+      "class Demo(Scene):\n"
+      "    def construct(self):\n"
+      "        circle = Circle()\n"
+      "        self.add(circle)\n"
+      "        self.remove(circle)\n";
+
+  std::string report;
+  const std::string converted =
+      manim_cpp::migrate::translate_python_scene_to_cpp(source, &report);
+
+  EXPECT_NE(converted.find("auto circle = std::make_shared<manim_cpp::mobject::Circle>();"),
+            std::string::npos);
+  EXPECT_NE(converted.find("add(circle);"), std::string::npos);
+  EXPECT_NE(converted.find("remove(circle);"), std::string::npos);
+  EXPECT_EQ(converted.find("TODO(migrate): original call -> self.add(circle)"),
+            std::string::npos);
+  EXPECT_EQ(converted.find("TODO(migrate): original call -> self.remove(circle)"),
+            std::string::npos);
+  EXPECT_NE(report.find("translated_calls=2"), std::string::npos);
+}
+
+TEST(MigrateTool, ScopesConstructCallsPerSceneClass) {
+  const std::string source =
+      "from manim import *\n"
+      "class First(Scene):\n"
+      "    def construct(self):\n"
+      "        self.wait(1)\n"
+      "\n"
+      "class Second(Scene):\n"
+      "    def construct(self):\n"
+      "        self.clear()\n";
+
+  std::string report;
+  const std::string converted =
+      manim_cpp::migrate::translate_python_scene_to_cpp(source, &report);
+
+  const auto first_pos = converted.find("class First : public Scene");
+  const auto second_pos = converted.find("class Second : public Scene");
+  ASSERT_NE(first_pos, std::string::npos);
+  ASSERT_NE(second_pos, std::string::npos);
+  ASSERT_LT(first_pos, second_pos);
+
+  const std::string first_block = converted.substr(first_pos, second_pos - first_pos);
+  const std::string second_block = converted.substr(second_pos);
+
+  EXPECT_NE(first_block.find("wait(1);"), std::string::npos);
+  EXPECT_EQ(first_block.find("clear();"), std::string::npos);
+  EXPECT_NE(second_block.find("clear();"), std::string::npos);
+  EXPECT_EQ(second_block.find("wait(1);"), std::string::npos);
+  EXPECT_NE(report.find("calls_detected=2"), std::string::npos);
+  EXPECT_NE(report.find("translated_calls=2"), std::string::npos);
+}
+
+TEST(MigrateTool, TranslatesSimplePlayFadeAndCreateWritePatterns) {
+  const std::string source =
+      "from manim import *\n"
+      "class Demo(Scene):\n"
+      "    def construct(self):\n"
+      "        circle = Circle()\n"
+      "        self.play(FadeIn(circle))\n"
+      "        self.play(FadeOut(circle))\n"
+      "        self.play(Create(Rectangle(2, 1)))\n"
+      "        self.play(Write(Dot(0.2)))\n";
+
+  std::string report;
+  const std::string converted =
+      manim_cpp::migrate::translate_python_scene_to_cpp(source, &report);
+
+  EXPECT_NE(converted.find("#include \"manim_cpp/animation/basic_animations.hpp\""),
+            std::string::npos);
+  EXPECT_NE(converted.find("circle->set_opacity(0.0);"), std::string::npos);
+  EXPECT_NE(converted.find("add(circle);"), std::string::npos);
+  EXPECT_NE(converted.find("manim_cpp::animation::FadeToOpacityAnimation"), std::string::npos);
+  EXPECT_NE(converted.find("remove(circle);"), std::string::npos);
+  EXPECT_NE(converted.find("add(std::make_shared<manim_cpp::mobject::Rectangle>(2, 1));"),
+            std::string::npos);
+  EXPECT_NE(converted.find("add(std::make_shared<manim_cpp::mobject::Dot>(0.2));"),
+            std::string::npos);
+  EXPECT_EQ(converted.find("TODO(migrate): original call -> self.play(FadeIn(circle))"),
+            std::string::npos);
+  EXPECT_EQ(
+      converted.find("TODO(migrate): original call -> self.play(FadeOut(circle))"),
+      std::string::npos);
+  EXPECT_EQ(
+      converted.find("TODO(migrate): original call -> self.play(Create(Rectangle(2, 1)))"),
+      std::string::npos);
+  EXPECT_EQ(converted.find("TODO(migrate): original call -> self.play(Write(Dot(0.2)))"),
+            std::string::npos);
+  EXPECT_NE(report.find("translated_calls=4"), std::string::npos);
+}
+
 TEST(MigrateTool, LeavesAddTodoWhenConstructorArgumentsAreNotSupported) {
   const std::string source =
       "from manim import *\n"
