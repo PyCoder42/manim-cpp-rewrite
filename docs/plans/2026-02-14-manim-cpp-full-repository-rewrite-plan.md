@@ -122,6 +122,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone G.22: Added `manim.cfg` section/key compatibility enforcement for parity-critical sections (`[CLI]`, `[custom_folders]`, `[logger]`, `[ffmpeg]`, `[jupyter]`) via `ManimCfgContractCheck`
 - [x] Milestone G.23: `init scene` / `init project` templates now emit runnable C++ animation scaffolds (geometry + `ShiftAnimation` + `wait`) instead of TODO-only construct bodies
 - [x] Milestone G.24: `init project` now emits a starter `CMakeLists.txt` with C++23 settings and executable wiring for generated scene sources
+- [x] Milestone G.25: `checkhealth` now reports compiler identity and `.npz` writer availability in both JSON and text output modes for automation diagnostics
 - [x] Milestone H: Plugin system parity
 - [x] Milestone H.1: Plugin discovery by shared-library extension + host ABI version gate
 - [x] Milestone H.2: Batch plugin loading API with deterministic failure aggregation
@@ -185,6 +186,7 @@ Target is near-1:1 Manim CE behavior parity, dual Cairo/OpenGL support, bitwise 
 - [x] Milestone J.34: Added `.npz` store-archive writer coverage (round-trip central-directory checks + duplicate/empty-name rejection) to enable C++ baseline artifact generation without Python
 - [x] Milestone J.35: Added migration regression coverage for `self.play(..., run_time=<numeric>)` translation on supported fade patterns
 - [x] Milestone J.36: Expanded CLI init-project integration coverage to enforce generated `CMakeLists.txt` scaffold content (`cmake_minimum_required`, C++23, executable source wiring)
+- [x] Milestone J.37: Expanded CLI checkhealth integration coverage to enforce compiler and `.npz` writer metadata emission in JSON/text modes
 - [x] Milestone K: Docs and i18n migration parity
 - [x] Milestone K.1: Added non-Python i18n catalog continuity check (`DocsI18nCatalogCheck`) to `ctest`
 - [x] Milestone K.2: Added non-Python docs build entrypoint (`tools/docs/build_docs.sh`) and updated `docs/Makefile`/`docs/make.bat` wrappers

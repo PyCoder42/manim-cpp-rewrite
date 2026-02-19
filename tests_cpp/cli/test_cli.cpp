@@ -845,6 +845,8 @@ TEST(Cli, CheckhealthJsonModeIsAccepted) {
             std::string::npos);
   EXPECT_NE(out_capture.str().find("\"formats\":[\"png\",\"gif\",\"mp4\",\"webm\",\"mov\"]"),
             std::string::npos);
+  EXPECT_NE(out_capture.str().find("\"npz_writer\":true"), std::string::npos);
+  EXPECT_NE(out_capture.str().find("\"compiler\":\""), std::string::npos);
 }
 
 TEST(Cli, CheckhealthJsonReportsPluginDirFromEnvironmentOverride) {
@@ -874,6 +876,8 @@ TEST(Cli, CheckhealthTextModeReportsRenderersAndFormats) {
   EXPECT_NE(out_capture.str().find("renderers: cairo, opengl"), std::string::npos);
   EXPECT_NE(out_capture.str().find("formats: png, gif, mp4, webm, mov"),
             std::string::npos);
+  EXPECT_NE(out_capture.str().find("npz_writer: available"), std::string::npos);
+  EXPECT_NE(out_capture.str().find("compiler: "), std::string::npos);
 }
 
 TEST(Cli, InitSceneGeneratesTemplateFile) {

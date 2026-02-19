@@ -181,6 +181,23 @@ std::filesystem::path resolve_plugin_dir() {
   return std::filesystem::current_path() / "plugins";
 }
 
+std::string compiler_descriptor() {
+#if defined(__clang__)
+  return std::string("clang ") + __clang_version__;
+#elif defined(__GNUC__)
+  return std::string("gcc ") + std::to_string(__GNUC__) + "." +
+         std::to_string(__GNUC_MINOR__) + "." + std::to_string(__GNUC_PATCHLEVEL__);
+#elif defined(_MSC_VER)
+  return std::string("msvc ") + std::to_string(_MSC_VER);
+#else
+  return "unknown";
+#endif
+}
+
+bool npz_writer_available() {
+  return true;
+}
+
 bool parse_int_strict(const std::string& value, int* output) {
   if (value.empty() || output == nullptr) {
     return false;
@@ -886,10 +903,14 @@ int handle_checkhealth(const int argc, const char* const argv[]) {
 
   const bool ffmpeg_found = command_on_path("ffmpeg");
   const auto plugin_dir = resolve_plugin_dir();
+  const bool npz_writer = npz_writer_available();
+  const auto compiler = compiler_descriptor();
   if (json) {
     std::cout << "{"
               << "\"ffmpeg\":" << (ffmpeg_found ? "true" : "false") << ","
               << "\"plugin_dir\":\"" << plugin_dir.string() << "\","
+              << "\"compiler\":\"" << compiler << "\","
+              << "\"npz_writer\":" << (npz_writer ? "true" : "false") << ","
               << "\"renderers\":[\"cairo\",\"opengl\"],"
               << "\"formats\":[\"png\",\"gif\",\"mp4\",\"webm\",\"mov\"]"
               << "}\n";
@@ -899,6 +920,8 @@ int handle_checkhealth(const int argc, const char* const argv[]) {
   std::cout << "checkhealth results:\n";
   std::cout << "  ffmpeg: " << (ffmpeg_found ? "found" : "missing") << "\n";
   std::cout << "  plugin_dir: " << plugin_dir << "\n";
+  std::cout << "  compiler: " << compiler << "\n";
+  std::cout << "  npz_writer: " << (npz_writer ? "available" : "missing") << "\n";
   std::cout << "  renderers: cairo, opengl\n";
   std::cout << "  formats: png, gif, mp4, webm, mov\n";
   return 0;
